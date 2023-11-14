@@ -1,0 +1,9 @@
+.dockerignore
+.editorconfig
+.github
+.gitignore
+.pre-commit-config.yaml
+.git
+docker-compose.yml
+htmlcov/
+Makefile
