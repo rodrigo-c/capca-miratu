@@ -7,8 +7,9 @@ repos:
     hooks:
       - id: trailing-whitespace
         files: (.*\.py$|.*\.css$|.*\.js$|.*\.html$)
-        exclude: (^.*\/migrations\/.*\.py$|.*\.min\..*)
+        exclude: (^.*\/migrations\/.*\.py$)
       - id: end-of-file-fixer
+        exclude: (.*\.project\.css$|.*\.min\..*|.*project\.css$|.*vendors\.js$)
       - id: check-json
       - id: check-xml
       - id: check-yaml
