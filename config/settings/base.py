@@ -29,7 +29,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Apps
 
 DJANGO_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -39,12 +38,17 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = []
 
-LOCAL_APPS = []
+LOCAL_APPS = [
+    "apps.users",
+    "apps.admin.apps.AdminConfig",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Authentication
 
+AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 # https://docs.djangoproject.com/en/4.2/topics/auth/passwords/#using-argon2-with-django
 PASSWORD_HASHERS = [
