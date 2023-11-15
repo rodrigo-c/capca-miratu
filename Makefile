@@ -32,12 +32,10 @@ rebuild: ## rebuild base Docker images
 .PHONY: reset
 reset: ## update Docker images and reset local databases
 	@docker compose down --volumes --remove-orphans
-	@docker compose pull
 
 .PHONY: pull
 pull: ## update Docker images without losing local databases
 	@docker compose down --remove-orphans
-	@docker compose pull
 
 .PHONY: fromscratch
 fromscratch: reset pull up
