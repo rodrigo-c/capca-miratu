@@ -14,7 +14,7 @@ class UserAdmin(UserAdmin):
     ordering = ["email"]
     fieldsets = (
         (None, {"fields": ["password"]}),
-        (("Personal info"), {"fields": ("first_name", "last_name")}),
+        ("Personal info", {"fields": ("first_name", "last_name")}),
         (
             "Permissions",
             {
