@@ -14,35 +14,39 @@ export DJANGO_SETTINGS_MODULE=config.settings.${ENVIROMENT}
 postgres_ready() {
 python << END
 import sys
+import time
 
-import psycopg2
+import psycopg
 
-try:
-    psycopg2.connect(
-        dbname="${POSTGRES_DB}",
-        user="${POSTGRES_USER}",
-        password="${POSTGRES_PASSWORD}",
-        host="${POSTGRES_HOST}",
-        port="${POSTGRES_PORT}",
-    )
-except psycopg2.OperationalError:
-    sys.exit(-1)
-sys.exit(0)
+suggest_unrecoverable_after = 30
+start = time.time()
 
+while True:
+    try:
+        psycopg.connect(
+            dbname="${POSTGRES_DB}",
+            user="${POSTGRES_USER}",
+            password="${POSTGRES_PASSWORD}",
+            host="${POSTGRES_HOST}",
+            port="${POSTGRES_PORT}",
+        )
+        break
+    except psycopg.OperationalError as error:
+        sys.stderr.write("Waiting for PostgreSQL to become available...\n")
+
+        if time.time() - start > suggest_unrecoverable_after:
+            sys.stderr.write("  This is taking longer than expected. The following exception may be indicative of an unrecoverable error: '{}'\n".format(error))
+
+    time.sleep(1)
 END
 }
-# avoid check postgresql with root user
-is_user_root () { [ "${EUID:-$(id -u)}" -eq 0 ]; }
-if is_user_root; then
-    echo "Logging as root user"
-else
-    until postgres_ready; do
-      >&2 echo 'Waiting for PostgreSQL to become available...'
-      >&2 echo $DATABASE_URL
-      sleep 1
-    done
-    >&2 echo 'PostgreSQL is available'
-fi
+
+until postgres_ready; do
+  >&2 echo 'Waiting for PostgreSQL to become available...'
+  >&2 echo $DATABASE_URL
+  sleep 1
+done
+>&2 echo 'PostgreSQL is available'
 
 cd /app
 
