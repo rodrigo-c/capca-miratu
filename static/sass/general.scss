@@ -1,0 +1,25 @@
+body {
+  background-color: $white;
+  color: $secondary;
+  font-family: Roboto;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.main-container {
+  letter-spacing: .5px;
+}
+
+.content-container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 2rem;
+  max-width: 90%;
+
+  @include small {
+    max-width: 70%;
+  }
+}
