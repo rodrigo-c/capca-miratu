@@ -1,22 +1,30 @@
 {% extends "public_queries/base.html" %}
 {% block content %}
-    <div class="public-query content-container">
-        <div class="section-title">Consulta</div>
-        <div class="card-title"
+    <div class="content-container">
+        <div class="section title">Consulta</div>
+        <div class="card"
              style="background-image: url('{{ public_query.image }}');
                     )">
             <div class="content">
-                <div class="title">{{ public_query.name }}</div>
+                <div class="subtitle">{{ public_query.name }}</div>
                 <div class="times">
-                    {% if public_query.start_at %}<div class="start_at">Desde: {{ public_query.start_at|date:"d-m-y" }}</div>{% endif %}
-                    {% if public_query.end_at %}<div class="end_at">Hasta: {{ public_query.end_at|date:"d-m-y" }}</div>{% endif %}
+                    {% if public_query.start_at %}
+                        <div class="start_at">
+                            <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
+                        </div>
+                    {% endif %}
+                    {% if public_query.end_at %}
+                        <div class="end_at">
+                            <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        <div class="section-title with-line">Detalles</div>
-        <div class="section-subtitle">En qué consiste</div>
-        <div class="section-content">{{ public_query.description }}</div>
-        <div class="section-subtitle terciary-color">Más información</div>
+        <div class="section title with-line">Detalles</div>
+        <div class="section subtitle">En qué consiste</div>
+        <div class="section text-content">{{ public_query.description|linebreaks }}</div>
+        <div class="section subtitle terciary-color">Más información</div>
         <div class="button">Rellenar Formulario</div>
     </div>
 {% endblock content %}
