@@ -8,6 +8,7 @@ from apps.admin.site import admin_site
 
 urlpatterns = [
     path("admin/", admin_site.urls),
+    path("", include("apps.public_queries.urls", namespace="public_queries")),
 ]
 
 # Media
