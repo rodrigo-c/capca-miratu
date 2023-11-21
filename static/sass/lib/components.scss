@@ -23,6 +23,10 @@
   margin: 1rem;
   padding: 1rem;
   text-transform: uppercase;
+
+  @include small {
+    font-size: .9rem;
+  }
 }
 
 .section.title {
