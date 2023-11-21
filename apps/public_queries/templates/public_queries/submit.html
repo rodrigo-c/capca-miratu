@@ -7,14 +7,14 @@
                     )">
             <div class="content">
                 <div class="subtitle">{{ public_query.name }}</div>
-                <div class="times">
+                <div class="card-times">
                     {% if public_query.start_at %}
-                        <div class="start_at">
+                        <div class="start-at">
                             <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
                         </div>
                     {% endif %}
                     {% if public_query.end_at %}
-                        <div class="end_at">
+                        <div class="end-at">
                             <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
                         </div>
                     {% endif %}
