@@ -33,7 +33,7 @@ shift || _usage
 
 case ${arg} in
 up|run)
-  python manage.py runserver_plus 0.0.0.0:8000
+  python manage.py runserver 0.0.0.0:8000
 ;;
 celery)
   celery -A config.celery_app worker -c 1 -l DEBUG
