@@ -2,9 +2,10 @@ from uuid import UUID
 
 from django.utils import timezone
 
-from apps.public_queries.lib.dataclasses import PublicQueryData
+from apps.public_queries.lib.dataclasses import PublicQueryData, QuestionData
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
 from apps.public_queries.providers import public_query as public_query_providers
+from apps.public_queries.providers import question as question_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
 
@@ -26,10 +27,24 @@ def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
     is_after_start = public_query.start_at is None or public_query.start_at < now
     is_before_end = public_query.end_at is None or public_query.end_at > now
     if is_after_start and is_before_end:
+        question_queryset = question_providers.get_questions_by_public_query_uuid(
+            uuid=uuid
+        )
+        questions = [
+            build_dataclass_from_model_instance(
+                klass=QuestionData,
+                instance=question,
+                uuid=question.id,
+                query_uuid=uuid,
+                index=index,
+            )
+            for index, question in enumerate(question_queryset)
+        ]
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
             instance=public_query,
             uuid=public_query.id,
             image=public_query.image.url if public_query.image else None,
+            questions=questions or None,
         )
     raise PublicQueryDoesNotExist

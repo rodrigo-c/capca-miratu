@@ -6,9 +6,9 @@ from django.utils.timezone import make_aware
 from freezegun import freeze_time
 
 from apps.public_queries import services
-from apps.public_queries.lib.dataclasses import PublicQueryData
+from apps.public_queries.lib.dataclasses import PublicQueryData, QuestionData
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
-from apps.public_queries.tests.recipes import public_query_recipe
+from apps.public_queries.tests.recipes import public_query_recipe, question_recipe
 
 
 @pytest.mark.django_db
@@ -32,6 +32,21 @@ class TestGetActivePublicQueryByUUID:
         assert public_query_data.uuid == public_query.id
         assert isinstance(public_query_data.name, str)
         assert public_query_data.image is None
+
+    def test_with_questions(self):
+        public_query = public_query_recipe.make(active=True)
+        questions = [
+            question_recipe.make(query_id=public_query.id) for index in range(5)
+        ]
+        public_query_data = services.get_active_public_query_by_uuid(
+            uuid=public_query.id
+        )
+        for index, question in enumerate(questions):
+            question_data = public_query_data.questions[index]
+            assert isinstance(question_data, QuestionData)
+            assert question.id == question_data.uuid
+            assert question.query_id == question_data.query_uuid
+            assert index == question_data.index
 
     def test_out_of_start_time(self):
         public_query = public_query_recipe.make(
