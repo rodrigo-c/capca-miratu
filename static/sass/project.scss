@@ -1,36 +1,145 @@
 @import 'custom_bootstrap_vars';
-@import '~bootstrap/scss/bootstrap';
-
-// project specific CSS goes here
+// @import '~bootstrap/scss/bootstrap';
 
 ///////////////
 // Variables //
 ///////////////
 
-// Alert colors
+// Main Colors
+
+$primary: #000000;
+$secondary: #454546;
+$terciary: #979797;
+$inactive: #D8D8D8;
 
 $white: #fff;
-$mint-green: #d6e9c6;
-$black: #000;
-$pink: #f2dede;
-$dark-pink: #eed3d7;
-$red: #b94a48;
+$gore-primary: #E74810;
+$gore-secondary: #0D3A5C;
 
-////////////
-// Alerts //
-////////////
+// General
 
-// bootstrap alert CSS, translated to the django-standard levels of
-// debug, info, success, warning, error
-
-.alert-debug {
+body {
+  color: #000;
+  margin: 0px;
+  font-family: Roboto;
+  font-size: .9rem;
   background-color: $white;
-  border-color: $mint-green;
-  color: $black;
 }
 
-.alert-error {
-  background-color: $pink;
-  border-color: $dark-pink;
-  color: $red;
+.with-line {
+  border-bottom: 2px solid $primary;
+}
+
+.button {
+  background-color: $primary;
+  border-radius: 6px;
+  padding: 1rem;
+  color: $white;
+  text-transform: uppercase;
+  margin: 1rem;
+  align-self: center;
+}
+
+// Navigation
+
+.main-container {
+  .navigation {
+    border-radius: 2px;
+    background: #FFF;
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.25) inset;
+    .title {
+      font-size: 1rem;
+      color: $secondary;
+      text-align: center;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 218%;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: Roboto;
+      padding: 1rem;
+    }
+  }
+}
+
+// Public Query
+
+.public-query.content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 70%;
+  margin: auto;
+  margin-bottom: 2rem;
+
+  .section-title {
+    font-size: .8rem;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 218%;
+    letter-spacing: 0.5px;
+    padding-top: 1.5rem;
+    margin-bottom: 1rem;
+    width: 50%;
+  }
+  .card-title {
+    background-color: $terciary;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    border-radius: 6px;
+
+    .content {
+      width: 100%;
+      border: 0.3px solid $secondary;
+      border-radius: 6px;
+      box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.25);
+      margin-top: 10%;
+      background-color: #fff;
+
+      .title {
+        color: $secondary;
+        font-weight: 700;
+        line-height: 108%;
+        letter-spacing: 0.5px;
+        padding: .8rem;
+        font-size: 1rem;
+      }
+      .times {
+        display: flex;
+        padding: 1rem;
+
+        .start_at,.end_at {
+          color: $secondary;
+          line-height: 1rem;
+          letter-spacing: 0.5px;
+          padding-left: 2rem;
+          font-size: .9rem;
+        }
+      }
+    }
+  }
+  .section-subtitle {
+    color: $secondary;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 13px; /* 144.444% */
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  .section-subtitle.terciary-color {
+    color: $terciary;
+  }
+
+  .section-content {
+    color: $secondary;
+    font-weight: 400;
+    line-height: 144%;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+  }
 }
