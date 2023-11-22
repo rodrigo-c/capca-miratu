@@ -86,8 +86,11 @@
       }
     }
   }
-}
 
+  &.no-image {
+    .content {margin-top: 0;}
+  }
+}
 
 .card-times {
   display: flex;
@@ -112,5 +115,56 @@
         font-size: .9rem;
       }
     }
+  }
+}
+
+.form-field {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  width: 100%;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 144%;
+
+    @include small {
+      font-size: 1rem;
+    }
+  }
+
+  input {
+    min-width: 50%;
+  }
+
+  textarea {
+    font-size: 9px;
+    width: 100%;
+
+    @include small {
+      font-size: .9rem;
+      padding: 1rem;
+    }
+  }
+}
+
+.question-name {
+  font-size: 9px;
+  margin-bottom: 10px;
+  margin-top: 20px;
+
+  @include small {
+    font-size: .9rem;
+  }
+}
+
+.question-description {
+  font-size: 8px;
+  margin-bottom: 10px;
+
+  @include small {
+    font-size: .8rem;
   }
 }
