@@ -99,7 +99,7 @@ class Response(BaseModel):
         related_name="responses",
     )
     send_at = models.DateTimeField(null=False)
-    location = models.PointField(null=True)
+    location = models.PointField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     rut = models.CharField(max_length=10, null=True, blank=True)
 
