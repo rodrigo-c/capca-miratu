@@ -88,13 +88,13 @@ MIDDLEWARE = [
 
 # Static
 
-STATIC_ROOT = str(ROOT_DIR / "static")
 STATIC_URL = "static/"
+STATICFILES_DIRS = [str(ROOT_DIR / "static")]
 
 # Media
 
-MEDIA_ROOT = str(ROOT_DIR / "media")
 MEDIA_URL = "media/"
+MEDIA_ROOT = str(ROOT_DIR / "media")
 
 # Template
 

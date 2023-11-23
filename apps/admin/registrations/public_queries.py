@@ -18,7 +18,7 @@ class QuestionAdmin(ModelAdmin):
     list_display = [
         "name",
         "kind",
-        "query",
+        "query_id",
         "order",
         "required",
         "max_answers",

@@ -1,0 +1,23 @@
+.with-line {
+  border-bottom: 1px solid $primary;
+}
+
+.terciary-color {
+  color: $terciary;
+}
+
+.title {
+  font-weight: 500;
+  line-height: 218%;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-weight: 600;
+  line-height: 144%;
+}
+
+.text-content {
+  font-weight: 400;
+  line-height: 144%;
+}
