@@ -1,6 +1,11 @@
-from django.contrib.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin, StackedInline
 
-from apps.public_queries.models import PublicQuery, Question
+from apps.public_queries.models import Answer, PublicQuery, Question, Response
+
+
+class QuestionInLine(StackedInline):
+    model = Question
+    extra = 0
 
 
 class PublicQueryAdmin(ModelAdmin):
@@ -12,22 +17,20 @@ class PublicQueryAdmin(ModelAdmin):
         ("Activation", {"fields": ["active", "start_at", "end_at"]}),
         ("Visualization", {"fields": ["image"]}),
     ]
+    inlines = [QuestionInLine]
 
 
-class QuestionAdmin(ModelAdmin):
-    list_display = [
-        "name",
-        "kind",
-        "query_id",
-        "order",
-        "required",
-        "max_answers",
-        "text_max_length",
-    ]
+class AnswerInLine(StackedInline):
+    model = Answer
+    fk_name = "response"
     ordering = ["query", "order"]
+
+
+class ResponseAdmin(ModelAdmin):
+    inlines = [AnswerInLine]
 
 
 public_queries_tuple_models = [
     (PublicQuery, PublicQueryAdmin),
-    (Question, QuestionAdmin),
+    (Response, ResponseAdmin),
 ]
