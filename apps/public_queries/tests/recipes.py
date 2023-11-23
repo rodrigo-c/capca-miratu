@@ -12,3 +12,7 @@ question_recipe = Recipe(
     kind=QuestionConstants.KIND_TEXT,
     query=foreign_key(public_query_recipe),
 )
+
+response_recipe = Recipe(
+    "public_queries.Response", query=foreign_key(public_query_recipe)
+)

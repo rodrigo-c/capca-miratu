@@ -11,3 +11,8 @@ def public_query():
 @pytest.fixture
 def question():
     return recipes.question_recipe.make()
+
+
+@pytest.fixture
+def response():
+    return recipes.response_recipe.make()
