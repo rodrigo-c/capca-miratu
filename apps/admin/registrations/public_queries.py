@@ -6,6 +6,7 @@ from apps.public_queries.models import Answer, PublicQuery, Question, Response
 class QuestionInLine(StackedInline):
     model = Question
     extra = 0
+    ordering = ["order"]
 
 
 class PublicQueryAdmin(ModelAdmin):
@@ -23,7 +24,7 @@ class PublicQueryAdmin(ModelAdmin):
 class AnswerInLine(StackedInline):
     model = Answer
     fk_name = "response"
-    ordering = ["query", "order"]
+    ordering = ["question__order"]
 
 
 class ResponseAdmin(ModelAdmin):
