@@ -6,7 +6,12 @@ from django.utils.timezone import make_aware
 from freezegun import freeze_time
 
 from apps.public_queries import services
-from apps.public_queries.lib.dataclasses import PublicQueryData, QuestionData
+from apps.public_queries.lib.dataclasses import (
+    AnswerData,
+    PublicQueryData,
+    QuestionData,
+    ResponseData,
+)
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
 from apps.public_queries.tests.recipes import public_query_recipe, question_recipe
 
@@ -63,3 +68,28 @@ class TestGetActivePublicQueryByUUID:
         with freeze_time("2023-01-02"):
             with pytest.raises(PublicQueryDoesNotExist):
                 services.get_active_public_query_by_uuid(uuid=public_query.id)
+
+
+@pytest.mark.django_db
+class TestSubmitResponse:
+    def test_success(self):
+        public_query = public_query_recipe.make(active=True)
+        questions = [
+            question_recipe.make(query_id=public_query.id, order=index)
+            for index in range(5)
+        ]
+        answer_data_list = [
+            AnswerData(
+                question_uuid=question.id, text=f"fake response {question.order}"
+            )
+            for question in questions
+        ]
+        response_data = ResponseData(
+            query_uuid=public_query.id,
+            answers=answer_data_list,
+        )
+        returned_response = services.submit_response(response=response_data)
+
+        assert returned_response.uuid
+        assert all(answer.uuid for answer in returned_response.answers)
+        assert returned_response.uuid == public_query.responses.first().id
