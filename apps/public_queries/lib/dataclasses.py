@@ -46,3 +46,4 @@ class ResponseData:
     send_at: datetime | None = None
     email: str | None = None
     rut: str | None = None
+    query_data: PublicQueryData | None = None

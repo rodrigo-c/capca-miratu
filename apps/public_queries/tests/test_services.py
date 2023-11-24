@@ -21,7 +21,7 @@ def test_get_public_query_by_uuid(public_query):
     public_query_data = services.get_public_query_by_uuid(uuid=public_query.id)
     assert isinstance(public_query_data, PublicQueryData)
     assert public_query_data.uuid == public_query.id
-    assert public_query_data.active is False
+    assert public_query_data.active is True
     assert isinstance(public_query_data.name, str)
     assert public_query_data.image is None
 
@@ -68,6 +68,14 @@ class TestGetActivePublicQueryByUUID:
         with freeze_time("2023-01-02"):
             with pytest.raises(PublicQueryDoesNotExist):
                 services.get_active_public_query_by_uuid(uuid=public_query.id)
+
+
+@pytest.mark.django_db
+def test_get_response_by_uuid(response):
+    response_data = services.get_response_by_uuid(uuid=response.id)
+    assert response_data.uuid == response.id
+    assert isinstance(response_data, ResponseData)
+    assert isinstance(response_data.query_data, PublicQueryData)
 
 
 @pytest.mark.django_db

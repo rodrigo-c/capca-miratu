@@ -60,6 +60,18 @@ def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
     raise PublicQueryDoesNotExist
 
 
+def get_response_by_uuid(uuid: UUID) -> ResponseData:
+    instance = response_providers.get_response_by_uuid(uuid=uuid)
+    public_query_data = get_active_public_query_by_uuid(uuid=instance.query_id)
+    return build_dataclass_from_model_instance(
+        klass=ResponseData,
+        instance=instance,
+        uuid=instance.id,
+        query_uuid=instance.query_id,
+        query_data=public_query_data,
+    )
+
+
 class SubmitResponseEngine:
     def __init__(
         self, response: ResponseData, public_query: PublicQueryData | None = None
@@ -138,6 +150,7 @@ class SubmitResponseEngine:
             uuid=response_instance.id,
             query_uuid=response_instance.query_id,
             answers=answers,
+            query_data=self.public_query,
         )
 
 
