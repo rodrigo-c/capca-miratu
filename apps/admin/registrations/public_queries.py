@@ -28,6 +28,14 @@ class AnswerInLine(StackedInline):
 
 
 class ResponseAdmin(ModelAdmin):
+    list_display = [
+        "id",
+        "query_id",
+        "send_at",
+        "location",
+        "email",
+        "rut",
+    ]
     inlines = [AnswerInLine]
 
 
