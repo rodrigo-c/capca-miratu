@@ -2,25 +2,7 @@
 {% block content %}
     <div class="detail content-container">
         <div class="section title">Consulta</div>
-        <div class="card"
-             style="background-image: url('{{ public_query.image }}');
-                    )">
-            <div class="content">
-                <div class="subtitle">{{ public_query.name }}</div>
-                <div class="card-times">
-                    {% if public_query.start_at %}
-                        <div class="start-at">
-                            <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
-                        </div>
-                    {% endif %}
-                    {% if public_query.end_at %}
-                        <div class="end-at">
-                            <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+        {% include "public_queries/components/public-query-card.html" %}
         <div class="section title with-line">Detalles</div>
         <div class="section subtitle">En qué consiste</div>
         <div class="section text-content">{{ public_query.description|linebreaks }}</div>
@@ -34,47 +16,38 @@
               method="post"
               name="response-form"
               enctype="multipart/form-data">
-            <div class="response content-container" id="response-container">
+            {% csrf_token %}
+            <div class="response content-container hidden" id="response-container">
                 <div class="section title">Formulario</div>
                 {% for field in response_form.hidden_fields %}{{ field }}{% endfor %}
                 {% for field in response_form.visible_fields %}
-                    <div class="form-field">
+                    <div class="form-field{% if field.errors %} error{% endif %}">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
+                        {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
                     </div>
                 {% endfor %}
                 <div class="button">Siguiente</div>
             </div>
             {{ answer_formset.management_form }}
             {% for answer_form in answer_formset %}
-                <div class="content-container question"
+                <div class="content-container question hidden"
                      id="question-container-{{ answer_form.question_data.index }}">
                     <div class="section title">Formulario</div>
-                    <div class="card no-image">
-                        <div class="content">
-                            <div class="subtitle">{{ public_query.name }}</div>
-                            <div class="card-times">
-                                {% if public_query.start_at %}
-                                    <div class="start-at">
-                                        <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
-                                    </div>
-                                {% endif %}
-                                {% if public_query.end_at %}
-                                    <div class="end-at">
-                                        <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    {% include "public_queries/components/public-query-card.html" with noimage="true" %}
                     <div class="question-name subtitle">{{ answer_form.question_data.name }}</div>
                     {% if answer_form.question_data.description %}
                         <div class="question-description text-content">{{ answer_form.question_data.description }}</div>
                     {% endif %}
                     {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
-                    {% for field in answer_form.visible_fields %}<div class="form-field">{{ field }}</div>{% endfor %}
+                    {% for field in answer_form.visible_fields %}
+                        <div class="form-field{% if field.errors %} error{% endif %}">
+                            {{ field }}
+                            {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
                     {% if forloop.last %}
-                        <div class="button">Enviar</div>
+                        <input class="button" type="submit" value="Enviar" />
                     {% else %}
                         <div class="button">Siguiente</div>
                     {% endif %}
