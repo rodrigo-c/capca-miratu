@@ -36,9 +36,17 @@ class PublicQuerySubmit(TemplateView):
         )
         answer_formset = self.get_answer_formset(data=request.POST, files=request.FILES)
 
-        if not response_form.is_valid() & answer_formset.is_valid():
+        if not (response_form.is_valid() & answer_formset.is_valid()):
+            if not response_form.is_valid():
+                focus = "response"
+            else:
+                focus = next(
+                    index
+                    for index, form in enumerate(answer_formset)
+                    if not form.is_valid()
+                )
             context = self.get_context_data(
-                response_form=response_form, answer_formset=answer_formset
+                response_form=response_form, answer_formset=answer_formset, focus=focus
             )
             return self.render_to_response(context)
 
@@ -57,10 +65,11 @@ class PublicQuerySubmit(TemplateView):
         self,
         response_form: ResponseForm | None = None,
         answer_formset: AnswerFormSet | None = None,
+        focus: str | None = None,
     ) -> dict:
         context = super().get_context_data(public_query=self.public_query)
+        context["focus"] = focus if focus is not None else "detail"
         context["navigation_title"] = "Consulta Pública"
-
         context["response_form"] = response_form or self.get_response_form()
         if self.public_query.questions:
             context["answer_formset"] = answer_formset or self.get_answer_formset()

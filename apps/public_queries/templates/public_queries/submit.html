@@ -1,13 +1,14 @@
 {% extends "public_queries/base.html" %}
 {% block content %}
-    <div class="detail content-container">
+    <div class="detail content-container {% if focus != 'detail' %}hidden{% endif %}"
+         id="detail-container">
         <div class="section title">Consulta</div>
         {% include "public_queries/components/public-query-card.html" %}
         <div class="section title with-line">Detalles</div>
         <div class="section subtitle">En qué consiste</div>
         <div class="section text-content">{{ public_query.description|linebreaks }}</div>
         <div class="section subtitle terciary-color">Más información</div>
-        <div class="button">Rellenar Formulario</div>
+        <div class="button" id="start-button">Rellenar Formulario</div>
     </div>
     {% if answer_formset %}
         <form class="response-form"
@@ -17,7 +18,8 @@
               name="response-form"
               enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="response content-container hidden" id="response-container">
+            <div class="response content-container {% if focus != 'response' %}hidden{% endif %}"
+                 id="response-container">
                 <div class="section title">Formulario</div>
                 {% for field in response_form.hidden_fields %}{{ field }}{% endfor %}
                 {% for field in response_form.visible_fields %}
@@ -27,11 +29,11 @@
                         {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
                     </div>
                 {% endfor %}
-                <div class="button">Siguiente</div>
+                <div class="button" id="next-response-button">Siguiente</div>
             </div>
             {{ answer_formset.management_form }}
             {% for answer_form in answer_formset %}
-                <div class="content-container question hidden"
+                <div class="content-container question {% if focus != answer_form.question_data.index %}hidden{% endif %}"
                      id="question-container-{{ answer_form.question_data.index }}">
                     <div class="section title">Formulario</div>
                     {% include "public_queries/components/public-query-card.html" with noimage="true" %}
@@ -49,7 +51,8 @@
                     {% if forloop.last %}
                         <input class="button" type="submit" value="Enviar" />
                     {% else %}
-                        <div class="button">Siguiente</div>
+                        <div class="button"
+                             id="next-question-button-{{ answer_form.question_data.index }}">Siguiente</div>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -58,3 +61,6 @@
         <div class="no-questions">Preguntas no disponibles</div>
     {% endif %}
 {% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">const manager = new QuerySubmitManager();</script>
+{% endblock extra_js %}
