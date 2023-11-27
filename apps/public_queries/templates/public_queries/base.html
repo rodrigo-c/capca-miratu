@@ -30,7 +30,9 @@
     <body>
         <div class="main-container">
             <div class="navigation">
-                <div class="title">{{ navigation_title }}</div>
+                {% block navbar %}
+                    <div class="title">{{ navigation_title }}</div>
+                {% endblock navbar %}
             </div>
             {% if messages %}
                 <div class="base-content-messages">
