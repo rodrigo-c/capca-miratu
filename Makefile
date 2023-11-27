@@ -6,7 +6,7 @@ help:
 
 .PHONY: up
 up: ## run the project
-	@docker compose up
+	@docker compose up || true
 
 .PHONY: run
 run: ## run the project
@@ -50,12 +50,16 @@ rootbash: ## drops you into a running container as root
 
 .PHONY: migrate
 migrate: ## run django migrations
-	@docker compose run --rm django dev migrate
+	@docker compose run --rm django dev migrate || true
 
 .PHONY: test
 test: ## run django tests
 	@docker compose run --rm django dev test || true
 
 .PHONY: cov
-cov: ## run django tests
+cov: ## run django coverage
 	@docker compose run --rm django dev cov || true
+
+.PHONY: assets
+assets: ## build assets
+	@docker compose run --rm node npm run build|| true

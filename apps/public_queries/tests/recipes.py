@@ -5,10 +5,15 @@ from apps.public_queries.lib.constants import PublicQueryConstants, QuestionCons
 public_query_recipe = Recipe(
     "public_queries.PublicQuery",
     kind=PublicQueryConstants.KIND_OPEN,
+    active=True,
 )
 
 question_recipe = Recipe(
     "public_queries.Question",
     kind=QuestionConstants.KIND_TEXT,
     query=foreign_key(public_query_recipe),
+)
+
+response_recipe = Recipe(
+    "public_queries.Response", query=foreign_key(public_query_recipe)
 )

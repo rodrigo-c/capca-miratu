@@ -1,0 +1,28 @@
+.success.content-container {
+  align-items: center;
+  padding-top: 5vh;
+
+  .card {
+    opacity: 40%;
+  }
+
+  .success-message,
+  .success-gratitude {
+    color: $primary;
+    font-size: 14px;
+    margin: 15vh 10vw;
+    text-align: center;
+
+    @include small {
+      font-size: 1.2rem;
+    }
+  }
+
+  .success-message {
+    font-weight: 500;
+  }
+
+  .success-gratitude {
+    font-weight: 400;
+  }
+}

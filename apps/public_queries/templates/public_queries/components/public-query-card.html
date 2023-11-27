@@ -1,0 +1,18 @@
+<div class="card{% if noimage %} no-image{% endif %}"
+     {% if not noimage %}style="background-image: url('{{ public_query.image }}');"{% endif %}>
+    <div class="content">
+        <div class="subtitle">{{ public_query.name }}</div>
+        <div class="card-times">
+            {% if public_query.start_at %}
+                <div class="start-at">
+                    <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
+                </div>
+            {% endif %}
+            {% if public_query.end_at %}
+                <div class="end-at">
+                    <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -7,6 +7,7 @@ from uuid import UUID
 class QuestionData:
     uuid: UUID
     query_uuid: UUID
+    kind: str
     name: str
     order: int
     index: int
@@ -27,3 +28,22 @@ class PublicQueryData:
     end_at: datetime | None = None
     image: str | None = None
     questions: list[QuestionData] | None = None
+
+
+@dataclass
+class AnswerData:
+    question_uuid: UUID
+    text: str
+    uuid: UUID | None = None
+    response_uuid: UUID | None = None
+
+
+@dataclass
+class ResponseData:
+    query_uuid: UUID
+    answers: list[AnswerData]
+    uuid: UUID | None = None
+    send_at: datetime | None = None
+    email: str | None = None
+    rut: str | None = None
+    query_data: PublicQueryData | None = None

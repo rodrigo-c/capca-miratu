@@ -1,0 +1,22 @@
+.question-name {
+  font-size: 9px;
+  margin-bottom: 10px;
+  margin-top: 20px;
+
+  @include small {
+    font-size: .9rem;
+  }
+}
+
+.question-description {
+  font-size: 8px;
+  margin-bottom: 10px;
+
+  @include small {
+    font-size: .8rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
