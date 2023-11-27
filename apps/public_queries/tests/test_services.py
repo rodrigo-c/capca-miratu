@@ -71,6 +71,15 @@ class TestGetActivePublicQueryByUUID:
 
 
 @pytest.mark.django_db
+def test_get_public_query_by_url_code(public_query):
+    returned_query = services.get_active_public_query_by_url_code(
+        url_code=public_query.url_code
+    )
+    assert returned_query.uuid == public_query.id
+    assert isinstance(returned_query, PublicQueryData)
+
+
+@pytest.mark.django_db
 def test_get_response_by_uuid(response):
     response_data = services.get_response_by_uuid(uuid=response.id)
     assert response_data.uuid == response.id
