@@ -10,3 +10,11 @@ def get_public_query_by_uuid(uuid: UUID, **kwargs) -> PublicQuery:
     except PublicQuery.DoesNotExist:
         raise PublicQueryDoesNotExist
     return public_query
+
+
+def get_public_query_by_url_code(url_code: str, **kwargs) -> PublicQuery:
+    try:
+        public_query = PublicQuery.objects.get(url_code=url_code, **kwargs)
+    except PublicQuery.DoesNotExist:
+        raise PublicQueryDoesNotExist
+    return public_query
