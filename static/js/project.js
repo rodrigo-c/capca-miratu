@@ -7,34 +7,40 @@ class QuerySubmitManager {
       detail_id = "detail-container",
       response_id = "response-container",
       question_class_name = "question",
-      hidden_class_name = "hidden"
+      hidden_class_name = "hidden",
+      focus = "detail",
+      back_button_id = "back-button"
     } = {}
   ) {
     this.detail = document.getElementById(detail_id);
     this.response = document.getElementById(response_id);
     this.question_list = document.getElementsByClassName(question_class_name);
-    this.hidden_class_name = hidden_class_name
-    this._add_listener_events()
+    this.hidden_class_name = hidden_class_name;
+    this.back_button = document.getElementById(back_button_id)
+    this._add_listener_events();
+    if (!isNaN(focus)) {
+        focus = parseInt(focus)
+    }
+    this.focus = focus;
   }
 
   _add_listener_events() {
     var start_button = document.getElementById("start-button")
     var next_response_button = document.getElementById("next-response-button")
-    console.log(start_button)
-    console.log(next_response_button)
-    start_button.addEventListener("click", this.show_initial_form, false)
-    start_button.manager = this
-    next_response_button.addEventListener("click", this.show_question, false)
-    next_response_button.manager = this
+    this.callback_show_response_form = this.callback_show_response_form.bind(this)
+    this.callback_show_question_form = this.callback_show_question_form.bind(this)
+    this.show_back_form = this.show_back_form.bind(this)
+    start_button.addEventListener("click", this.callback_show_response_form, false)
+    next_response_button.addEventListener("click", this.callback_show_question_form, false)
     next_response_button.question_index = 0
     for (var i = this.question_list.length - 1; i >= 0; i--) {
         var next_question_button = document.getElementById(`next-question-button-${i}`)
         if (next_question_button) {
-            next_question_button.addEventListener("click", this.show_question, false)
+            next_question_button.addEventListener("click", this.callback_show_question_form, false)
             next_question_button.question_index = i + 1
-            next_question_button.manager = this
         }
     }
+    this.back_button.addEventListener("click", this.show_back_form, false)
   }
 
   hide_all () {
@@ -45,16 +51,44 @@ class QuerySubmitManager {
     }
   }
 
-  show_initial_form (event) {
-    var manager = event.currentTarget.manager
-    manager.hide_all()
-    manager.response.classList.remove("hidden")
+  show_detail_form () {
+    this.hide_all()
+    this.back_button.classList.add(this.hidden_class_name)
+    this.detail.classList.remove(this.hidden_class_name)
+    this.focus = "detail"
   }
 
-  show_question(event) {
-    var manager = event.currentTarget.manager
+  show_response_form () {
+    this.hide_all()
+    this.back_button.classList.remove(this.hidden_class_name)
+    this.response.classList.remove(this.hidden_class_name)
+    this.focus = "response"
+  }
+
+  callback_show_response_form (event) {
+    this.show_response_form()
+  }
+
+  show_question_form(question_index) {
+    this.hide_all()
+    this.back_button.classList.remove("hidden")
+    this.question_list[question_index].classList.remove(this.hidden_class_name)
+    this.focus = question_index
+  }
+
+  callback_show_question_form(event) {
     var question_index = event.currentTarget.question_index
-    manager.hide_all()
-    manager.question_list[question_index].classList.remove("hidden")
+    this.show_question_form(question_index)
+  }
+
+  show_back_form () {
+    if (this.focus == "response") {
+        this.show_detail_form()
+    }
+    else if (!isNaN(this.focus)) {
+
+        if (this.focus == 0) {this.show_response_form()}
+        else {this.show_question_form(this.focus - 1)}
+    }
   }
 }
