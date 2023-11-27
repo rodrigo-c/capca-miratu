@@ -3,6 +3,7 @@ import uuid
 from django.contrib.gis.db import models
 
 from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
+from apps.utils.random import get_random_url_code
 
 
 class BaseModel(models.Model):
@@ -49,6 +50,11 @@ class PublicQuery(BaseModel):
         null=True,
         blank=True,
         related_name="public_queries",
+    )
+    url_code = models.CharField(
+        max_length=15,
+        unique=True,
+        default=get_random_url_code,
     )
 
     class Meta:
