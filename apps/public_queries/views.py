@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
+from apps.public_queries.lib.constants import QuestionConstants
 from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
     get_active_public_query_by_url_code,
@@ -40,20 +41,10 @@ class PublicQuerySubmit(TemplateView):
             initial={"query": self.public_query.uuid},
         )
         answer_formset = self.get_answer_formset(data=request.POST, files=request.FILES)
-
         if not (response_form.is_valid() & answer_formset.is_valid()):
-            if not response_form.is_valid():
-                focus = "response"
-            else:
-                focus = next(
-                    index
-                    for index, form in enumerate(answer_formset)
-                    if not form.is_valid()
-                )
-            context = self.get_context_data(
-                response_form=response_form, answer_formset=answer_formset, focus=focus
+            return self._return_invalid_forms(
+                response_form=response_form, answer_formset=answer_formset
             )
-            return self.render_to_response(context)
 
         submitted_response_data = submit_response(
             response=response_form.get_validated_dataclass(
@@ -65,6 +56,25 @@ class PublicQuerySubmit(TemplateView):
         return HttpResponseRedirect(
             redirect_to=self.get_success_url(response_uuid=submitted_response_data.uuid)
         )
+
+    def _return_invalid_forms(
+        self, response_form: ResponseForm, answer_formset: AnswerFormSet
+    ) -> HttpResponse:
+        if not response_form.is_valid():
+            focus = "response"
+        else:
+            focus = next(
+                index
+                for index, form in enumerate(answer_formset)
+                if (
+                    not form.is_valid()
+                    or form.question_data.kind == QuestionConstants.KIND_IMAGE
+                )
+            )
+        context = self.get_context_data(
+            response_form=response_form, answer_formset=answer_formset, focus=focus
+        )
+        return self.render_to_response(context)
 
     def get_context_data(
         self,
