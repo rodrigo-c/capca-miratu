@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -7,6 +8,7 @@ from django.views.generic import TemplateView
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
 from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
+    get_active_public_query_by_url_code,
     get_active_public_query_by_uuid,
     get_response_by_uuid,
     submit_response,
@@ -18,8 +20,11 @@ class PublicQuerySubmit(TemplateView):
 
     def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
         try:
-            uuid = UUID(uuid)
-            public_query = get_active_public_query_by_uuid(uuid=uuid)
+            if len(str(uuid)) <= getattr(settings, "MAXIMUM_URL_CHARS", 5):
+                public_query = get_active_public_query_by_url_code(url_code=uuid)
+            else:
+                uuid = UUID(uuid)
+                public_query = get_active_public_query_by_uuid(uuid=uuid)
         except (ValueError, ObjectDoesNotExist):
             raise Http404
         self.public_query = public_query

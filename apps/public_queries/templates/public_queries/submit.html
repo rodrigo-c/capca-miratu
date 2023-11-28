@@ -1,4 +1,11 @@
 {% extends "public_queries/base.html" %}
+{% block navbar %}
+    <div class="back-button button {% if focus == 'detail' %}hidden{% endif %}"
+         id="back-button">
+        < Atras
+    </div>
+    <div class="title">{{ navigation_title }}</div>
+{% endblock navbar %}
 {% block content %}
     <div class="detail content-container {% if focus != 'detail' %}hidden{% endif %}"
          id="detail-container">
@@ -43,10 +50,8 @@
                     {% endif %}
                     {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
                     {% for field in answer_form.visible_fields %}
-                        <div class="form-field{% if field.errors %} error{% endif %}">
-                            {{ field }}
-                            {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
-                        </div>
+                        {% if field.errors %}{{ field.errors }}{% endif %}
+                        <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
                     {% endfor %}
                     {% if forloop.last %}
                         <input class="button" type="submit" value="Enviar" />
@@ -62,5 +67,5 @@
     {% endif %}
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript">const manager = new QuerySubmitManager();</script>
+    <script type="text/javascript">const manager = new QuerySubmitManager({focus:'{{focus}}'});</script>
 {% endblock extra_js %}

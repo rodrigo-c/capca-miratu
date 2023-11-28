@@ -11,6 +11,7 @@ class TestPublicQueryAdmin:
     change_pattern = "admin:public_queries_publicquery_change"
 
     def test_changelist(self, admin_client):
+        public_query_recipes.public_query_recipe.make()
         url = reverse(self.change_list_pattern)
         response = admin_client.get(url)
         assert response.status_code == 200
@@ -32,6 +33,7 @@ class TestPublicQueryAdmin:
                 "name": fake_name,
                 "questions-TOTAL_FORMS": 0,
                 "questions-INITIAL_FORMS": 0,
+                "url_code": "Xkjsd,",
             },
         )
         assert response.status_code == 302

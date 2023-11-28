@@ -20,9 +20,21 @@ class TestPublicQuerySubmit:
         response = client.get(url)
         assert response.status_code == 200
 
+    def test_get_success_with_url_code(self, client):
+        public_query = public_query_recipe.make(active=True)
+        url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.url_code})
+        response = client.get(url)
+        assert response.status_code == 200
+
     def test_get_not_active(self, client):
         public_query = public_query_recipe.make(active=False)
         url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})
+        response = client.get(url)
+        assert response.status_code == 404
+
+    def test_get_not_active_with_url_code(self, client):
+        public_query = public_query_recipe.make(active=False)
+        url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.url_code})
         response = client.get(url)
         assert response.status_code == 404
 

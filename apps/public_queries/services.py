@@ -11,7 +11,7 @@ from apps.public_queries.lib.dataclasses import (
     ResponseData,
 )
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
-from apps.public_queries.models import Answer, Response
+from apps.public_queries.models import Answer, PublicQuery, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
@@ -29,23 +29,22 @@ def get_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
     )
 
 
-def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
+def _return_public_query_data_if_is_active(
+    public_query: PublicQuery,
+) -> PublicQueryData:
     now = timezone.now()
-    public_query = public_query_providers.get_public_query_by_uuid(
-        uuid=uuid, active=True
-    )
     is_after_start = public_query.start_at is None or public_query.start_at < now
     is_before_end = public_query.end_at is None or public_query.end_at > now
     if is_after_start and is_before_end:
         question_queryset = question_providers.get_questions_by_public_query_uuid(
-            uuid=uuid
+            uuid=public_query.id
         )
         questions = [
             build_dataclass_from_model_instance(
                 klass=QuestionData,
                 instance=question,
                 uuid=question.id,
-                query_uuid=uuid,
+                query_uuid=public_query.id,
                 index=index,
             )
             for index, question in enumerate(question_queryset)
@@ -58,6 +57,20 @@ def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
             questions=questions or None,
         )
     raise PublicQueryDoesNotExist
+
+
+def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
+    public_query = public_query_providers.get_public_query_by_uuid(
+        uuid=uuid, active=True
+    )
+    return _return_public_query_data_if_is_active(public_query=public_query)
+
+
+def get_active_public_query_by_url_code(url_code: str) -> PublicQueryData:
+    public_query = public_query_providers.get_public_query_by_url_code(
+        url_code=url_code, active=True
+    )
+    return _return_public_query_data_if_is_active(public_query=public_query)
 
 
 def get_response_by_uuid(uuid: UUID) -> ResponseData:
