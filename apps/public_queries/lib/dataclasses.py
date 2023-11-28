@@ -33,7 +33,8 @@ class PublicQueryData:
 @dataclass
 class AnswerData:
     question_uuid: UUID
-    text: str
+    text: str | None = None
+    image: list | None = None
     uuid: UUID | None = None
     response_uuid: UUID | None = None
 
