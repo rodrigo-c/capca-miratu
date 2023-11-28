@@ -43,7 +43,7 @@ class PublicQuery(BaseModel):
         blank=True,
     )
     active = models.BooleanField(default=False)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ImageField(null=True, blank=True, upload_to="public_queries/images/")
     created_by = models.ForeignKey(
         "users.User",
         on_delete=models.SET_NULL,
@@ -88,7 +88,7 @@ class Question(BaseModel):
     order = models.IntegerField(default=0)
     required = models.BooleanField(default=True)
     text_max_length = models.IntegerField(default=255)
-    max_answers = models.IntegerField(null=False, blank=False)
+    max_answers = models.IntegerField(null=False, blank=False, default=1)
 
     class Meta:
         ordering = ["order"]
@@ -129,6 +129,9 @@ class Answer(BaseModel):
     text = models.TextField(
         blank=True,
         null=True,
+    )
+    image = models.ImageField(
+        null=True, blank=True, upload_to="public_queries/answers/images/"
     )
 
     class Meta:
