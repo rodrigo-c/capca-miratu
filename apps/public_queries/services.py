@@ -142,21 +142,15 @@ class SubmitResponseEngine:
             }
             if question.kind == QuestionConstants.KIND_TEXT:
                 answer_data["text"] = answer.text
+            elif question.kind == QuestionConstants.KIND_IMAGE:
+                answer_data["image"] = answer.image
+            answer_data_list.append(answer_data)
         return answer_providers.bulk_create_answers(answers=answer_data_list)
 
     def _build_response_data(
         self, response_instance: Response, answer_instances: list[Answer]
     ) -> ResponseData:
-        answers = [
-            build_dataclass_from_model_instance(
-                klass=AnswerData,
-                instance=instance,
-                uuid=instance.id,
-                response_uuid=instance.response_id,
-                question_uuid=instance.question_id,
-            )
-            for instance in answer_instances
-        ]
+        answers = self._build_question_data_list(instances=answer_instances)
         return build_dataclass_from_model_instance(
             klass=ResponseData,
             instance=response_instance,
@@ -165,6 +159,20 @@ class SubmitResponseEngine:
             answers=answers,
             query_data=self.public_query,
         )
+
+    def _build_question_data_list(self, instances: list[Answer]) -> list[AnswerData]:
+        answers = [
+            build_dataclass_from_model_instance(
+                klass=AnswerData,
+                instance=instance,
+                uuid=instance.id,
+                response_uuid=instance.response_id,
+                question_uuid=instance.question_id,
+                image=instance.image.url if instance.image else None,
+            )
+            for instance in instances
+        ]
+        return answers
 
 
 def submit_response(
