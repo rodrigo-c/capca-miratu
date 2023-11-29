@@ -46,6 +46,11 @@
   &:hover {
     background-color: $primary-hover;
   }
+
+  &[disabled] {
+    background-color: $terciary;
+    cursor: not-allowed;
+  }
 }
 
 .section.title {
