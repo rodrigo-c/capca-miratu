@@ -24,4 +24,9 @@
 
 .errorlist {
   color: $error;
+  font-size: 9px;
+
+  @include small {
+    font-size: .9rem;
+  }
 }

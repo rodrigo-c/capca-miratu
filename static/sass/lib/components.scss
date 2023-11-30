@@ -18,10 +18,12 @@
   .button {
     background-color: $white;
     color: $secondary;
+    margin: 0;
+    padding: 2vh;
     position: absolute;
 
     &:hover {
-      background-color: $terciary;
+      background-color: $inactive;
     }
   }
 }
@@ -43,6 +45,11 @@
 
   &:hover {
     background-color: $primary-hover;
+  }
+
+  &[disabled] {
+    background-color: $terciary;
+    cursor: not-allowed;
   }
 }
 

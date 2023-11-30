@@ -1,5 +1,5 @@
 <div class="card{% if noimage %} no-image{% endif %}"
-     {% if not noimage %}style="background-image: url('{{ public_query.image }}');"{% endif %}>
+     {% if not noimage and public_query.image %}style="background-image: url('{{ public_query.image }}');"{% endif %}>
     <div class="content">
         <div class="subtitle">{{ public_query.name }}</div>
         <div class="card-times">

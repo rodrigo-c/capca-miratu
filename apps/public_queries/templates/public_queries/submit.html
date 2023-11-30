@@ -50,11 +50,13 @@
                     {% endif %}
                     {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
                     {% for field in answer_form.visible_fields %}
-                        {% if field.errors %}{{ field.errors }}{% endif %}
-                        <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
+                        {% if not field.field.disabled %}
+                            {% if field.errors %}{{ field.errors }}{% endif %}
+                            <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
+                        {% endif %}
                     {% endfor %}
                     {% if forloop.last %}
-                        <input class="button" type="submit" value="Enviar" />
+                        <input id="form-submit" class="button" type="submit" value="Enviar" />
                     {% else %}
                         <div class="button"
                              id="next-question-button-{{ answer_form.question_data.index }}">Siguiente</div>

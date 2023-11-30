@@ -20,3 +20,41 @@
 .hidden {
   display: none;
 }
+
+.form-field .image-input {
+  background: $inactive;
+  background-position: center;
+  background-size: cover;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 10vh 5vh 0 0;
+  text-align: center;
+  width: 100%;
+
+  @include small {
+    font-size: 1rem;
+  }
+
+  .image-icon {
+    background: $white;
+    border-radius: 100%;
+    display: inline-block;
+    height: 5vh;
+    margin-right: 5vh;
+    width: 5vh;
+  }
+
+  .more-images {
+    float: right;
+    font-size: 8vh;
+    opacity: 0;
+    padding-right: 10vw;
+  }
+
+  label {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+}

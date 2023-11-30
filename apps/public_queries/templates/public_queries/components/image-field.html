@@ -1,0 +1,12 @@
+<div class="image-input {% if widget.attrs.disabled %}hidden{% endif %}">
+    <label for="{{ widget.attrs.id }}">
+        <span class="image-icon"></span> Añadir fotografías
+    </label>
+    <span class="more-images">+</span>
+    <input class="hidden"
+           type="{{ widget.type }}"
+           name="{{ widget.name }}"
+           {% if widget.value != None %}value="{{ widget.value|stringformat:'s' }}"{% endif %}
+           {% include "django/forms/widgets/attrs.html" %}
+           {% if widget.min_num > 0 %}required{% endif %}>
+</div>

@@ -40,6 +40,7 @@ class PublicQueryAdmin(admin.ModelAdmin):
 
 class AnswerInLine(admin.StackedInline):
     model = Answer
+    extra = 0
     fk_name = "response"
     ordering = ["question__order"]
 
