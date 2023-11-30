@@ -54,6 +54,9 @@ class AnswerForm(forms.Form):
         widget=forms.Textarea(attrs={"placeholder": "Agregar comentarios"}),
     )
     images = MultiImageField(required=False, widget=MultipleImageInput())
+    options = forms.MultipleChoiceField(
+        required=False, widget=forms.CheckboxSelectMultiple()
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,6 +72,9 @@ class AnswerForm(forms.Form):
         elif kind == QuestionConstants.KIND_IMAGE:
             self._set_image_answer()
 
+        elif kind == QuestionConstants.KIND_SELECT:
+            self._set_select_answer()
+
     def _set_text_answer(self):
         field = self.fields["text"]
         field.required = self.question_data.required
@@ -79,6 +85,7 @@ class AnswerForm(forms.Form):
         field.widget.attrs["required"] = self.question_data.required
         field.widget.attrs["minlength"] = 1 if field.required else None
         self._hide_field("images")
+        self._hide_field("options")
 
     def _set_image_answer(self):
         field = self.fields["images"]
@@ -89,6 +96,26 @@ class AnswerForm(forms.Form):
         field.widget.attrs["minlength"] = 1 if field.required else None
         field.widget.attrs["required"] = self.question_data.required
         self._hide_field("text")
+        self._hide_field("options")
+
+    def _set_select_answer(self):
+        field = self.fields["options"]
+        field.required = self.question_data.required
+        field.choices = [
+            (option_data.uuid, option_data.name)
+            for option_data in self.question_data.options
+        ]
+        max_length = int(self.question_data.max_answers or 1)
+        field.max_length = max_length
+        message = (
+            f"Sólo puede seleccionar máximo {max_length} "
+            f"opci{'ones' if max_length > 1 else 'ón'}"
+        )
+        field.validators.append(
+            MaxLengthValidator(limit_value=max_length, message=message)
+        )
+        self._hide_field("text")
+        self._hide_field("images")
 
     def _hide_field(self, field: str) -> None:
         self.fields[field].disabled = True
@@ -110,6 +137,13 @@ class AnswerForm(forms.Form):
                 )
                 for image_file in image_files
             ]
+        elif self.question_data.kind == QuestionConstants.KIND_SELECT:
+            options = self.cleaned_data.get("options")
+            answer_data = AnswerData(
+                question_uuid=self.question_data.uuid,
+                options=[UUID(option_uuid) for option_uuid in options],
+            )
+            return [answer_data]
 
 
 def get_validated_dataclasses(formset) -> list[AnswerData]:
