@@ -37,7 +37,9 @@ DJANGO_APPS = [
     "django.contrib.gis",
 ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "nested_inline",
+]
 
 LOCAL_APPS = [
     "apps.users",
