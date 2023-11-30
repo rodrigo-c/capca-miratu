@@ -55,7 +55,8 @@ class AnswerForm(forms.Form):
     )
     images = MultiImageField(required=False, widget=MultipleImageInput())
     options = forms.MultipleChoiceField(
-        required=False, widget=forms.CheckboxSelectMultiple()
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "options-field"}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -79,7 +80,7 @@ class AnswerForm(forms.Form):
         field = self.fields["text"]
         field.required = self.question_data.required
         max_length = int(self.question_data.text_max_length or 255)
-        field.max_length = max_length
+        field.maxlength = max_length
         field.validators.append(MaxLengthValidator(max_length))
         field.widget.attrs["maxlength"] = max_length
         field.widget.attrs["required"] = self.question_data.required
@@ -92,6 +93,7 @@ class AnswerForm(forms.Form):
         field.required = self.question_data.required
         field.min_num = 1 if self.question_data.required else 0
         field.max_num = self.question_data.max_answers
+        field.maxlength = field.max_num
         field.widget.attrs["maxlength"] = field.max_num
         field.widget.attrs["minlength"] = 1 if field.required else None
         field.widget.attrs["required"] = self.question_data.required
@@ -106,7 +108,7 @@ class AnswerForm(forms.Form):
             for option_data in self.question_data.options
         ]
         max_length = int(self.question_data.max_answers or 1)
-        field.max_length = max_length
+        field.maxlength = max_length
         message = (
             f"Sólo puede seleccionar máximo {max_length} "
             f"opci{'ones' if max_length > 1 else 'ón'}"
