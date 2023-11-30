@@ -1,4 +1,9 @@
+from io import BytesIO
+
 import pytest
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
+from PIL import Image
 
 from apps.public_queries.lib.dataclasses import QuestionData
 from apps.public_queries.tests import recipes
@@ -35,3 +40,19 @@ def question_data():
 @pytest.fixture
 def response():
     return recipes.response_recipe.make()
+
+
+@pytest.fixture
+def uploaded_image(field_name="images"):
+    image = Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
+    image_file = BytesIO()
+    image.save(image_file, "PNG")
+    image_file.seek(0)
+    return InMemoryUploadedFile(
+        image_file,
+        name="fake-image.png",
+        field_name=field_name,
+        content_type="image/png",
+        size=len(image_file.getvalue()),
+        charset=None,
+    )
