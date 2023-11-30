@@ -111,6 +111,9 @@ class QuestionOption(BaseModel):
     )
     order = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ["order"]
+
     def __str__(self) -> str:
         return f"{self.__class__.__name__}: {self.name}"
 
