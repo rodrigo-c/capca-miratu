@@ -16,7 +16,11 @@ from apps.public_queries.lib.dataclasses import (
     ResponseData,
 )
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
-from apps.public_queries.tests.recipes import public_query_recipe, question_recipe
+from apps.public_queries.tests.recipes import (
+    public_query_recipe,
+    question_option_recipe,
+    question_recipe,
+)
 
 
 @pytest.mark.django_db
@@ -55,6 +59,21 @@ class TestGetActivePublicQueryByUUID:
             assert question.id == question_data.uuid
             assert question.query_id == question_data.query_uuid
             assert index == question_data.index
+
+    def test_with_questions_with_options(self):
+        public_query = public_query_recipe.make(active=True)
+        select_question = question_recipe.make(
+            query_id=public_query.id,
+            kind=QuestionConstants.KIND_SELECT,
+        )
+        option = question_option_recipe.make(question_id=select_question.id)
+        public_query_data = services.get_active_public_query_by_uuid(
+            uuid=public_query.id
+        )
+        question_data = public_query_data.questions[0]
+        option_data = question_data.options[0]
+        assert option_data.uuid == option.id
+        assert option_data.name == option.name
 
     def test_out_of_start_time(self):
         public_query = public_query_recipe.make(
@@ -140,3 +159,39 @@ class TestSubmitResponse:
         assert returned_response.uuid
         assert all(answer.uuid and answer.image for answer in returned_response.answers)
         assert returned_response.uuid == public_query.responses.first().id
+
+    def test_success_with_options(self):
+        public_query = public_query_recipe.make(active=True)
+        max_answers = 3
+        select_question = question_recipe.make(
+            query_id=public_query.id,
+            kind=QuestionConstants.KIND_SELECT,
+            max_answers=max_answers,
+        )
+        options = [
+            question_option_recipe.make(question_id=select_question.id, order=index)
+            for index in range(5)
+        ]
+        option_uuids = [opt.id for opt in options]
+        answer_data_list = [
+            AnswerData(
+                question_uuid=select_question.id, options=option_uuids[:max_answers]
+            )
+        ]
+        response_data = ResponseData(
+            query_uuid=public_query.id,
+            answers=answer_data_list,
+        )
+        returned_response = services.submit_response(response=response_data)
+        response_instance = public_query.responses.first()
+
+        assert returned_response.uuid
+        assert all(answer.uuid for answer in returned_response.answers)
+        assert returned_response.uuid == response_instance.id
+
+        answer_instance = response_instance.answers.first()
+        answer_instance_option_uuids = answer_instance.options.values_list(
+            "id", flat=True
+        )
+        assert len(answer_instance_option_uuids) == max_answers
+        assert all(uuid in option_uuids for uuid in answer_instance_option_uuids)

@@ -8,10 +8,11 @@ from apps.public_queries.lib.dataclasses import (
     AnswerData,
     PublicQueryData,
     QuestionData,
+    QuestionOptionData,
     ResponseData,
 )
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
-from apps.public_queries.models import Answer, PublicQuery, Response
+from apps.public_queries.models import Answer, PublicQuery, Question, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
@@ -27,6 +28,20 @@ def get_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
         uuid=public_query.id,
         image=public_query.image.url if public_query.image else None,
     )
+
+
+def _get_options_data(question: Question) -> list[QuestionOptionData]:
+    if question.kind == QuestionConstants.KIND_SELECT:
+        return [
+            build_dataclass_from_model_instance(
+                klass=QuestionOptionData,
+                instance=option,
+                uuid=option.id,
+                question_uuid=option.question_id,
+            )
+            # TODO: use one query select for all questions instead
+            for option in question.options.all()
+        ]
 
 
 def _return_public_query_data_if_is_active(
@@ -46,6 +61,7 @@ def _return_public_query_data_if_is_active(
                 uuid=question.id,
                 query_uuid=public_query.id,
                 index=index,
+                options=_get_options_data(question=question),
             )
             for index, question in enumerate(question_queryset)
         ]
@@ -134,6 +150,7 @@ class SubmitResponseEngine:
 
     def _create_answers(self, response_instance: Response) -> list[Answer]:
         answer_data_list = []
+        options_map = {}
         for answer in self.response.answers:
             question = self.question_map[answer.question_uuid]
             answer_data = {
@@ -144,13 +161,28 @@ class SubmitResponseEngine:
                 answer_data["text"] = answer.text
             elif question.kind == QuestionConstants.KIND_IMAGE:
                 answer_data["image"] = answer.image
+            elif question.kind == QuestionConstants.KIND_SELECT:
+                assert question.max_answers >= len(answer.options)
+                options_map[answer.question_uuid] = answer
             answer_data_list.append(answer_data)
-        return answer_providers.bulk_create_answers(answers=answer_data_list)
+        instances = answer_providers.bulk_create_answers(answers=answer_data_list)
+        return self._add_answer_options(instances=instances, options_map=options_map)
+
+    def _add_answer_options(
+        self, instances: list[Answer], options_map: dict[UUID, AnswerData]
+    ) -> list[Answer]:
+        for answer in instances:
+            options = None
+            if answer.question_id in options_map:
+                options = options_map[answer.question_id].options
+                answer.options.add(*options)
+            answer._cached_options = options
+        return instances
 
     def _build_response_data(
         self, response_instance: Response, answer_instances: list[Answer]
     ) -> ResponseData:
-        answers = self._build_question_data_list(instances=answer_instances)
+        answers = self._build_answer_data_list(instances=answer_instances)
         return build_dataclass_from_model_instance(
             klass=ResponseData,
             instance=response_instance,
@@ -160,7 +192,7 @@ class SubmitResponseEngine:
             query_data=self.public_query,
         )
 
-    def _build_question_data_list(self, instances: list[Answer]) -> list[AnswerData]:
+    def _build_answer_data_list(self, instances: list[Answer]) -> list[AnswerData]:
         answers = [
             build_dataclass_from_model_instance(
                 klass=AnswerData,
@@ -169,6 +201,7 @@ class SubmitResponseEngine:
                 response_uuid=instance.response_id,
                 question_uuid=instance.question_id,
                 image=instance.image.url if instance.image else None,
+                options=instance._cached_options,
             )
             for instance in instances
         ]
