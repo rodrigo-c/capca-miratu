@@ -16,6 +16,11 @@ def question():
 
 
 @pytest.fixture
+def question_option():
+    return recipes.question_option_recipe.make()
+
+
+@pytest.fixture
 def question_data():
     question = recipes.question_recipe.make(required=True)
     return build_dataclass_from_model_instance(
