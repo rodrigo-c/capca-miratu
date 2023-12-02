@@ -1,17 +1,42 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
-from apps.public_queries.models import Answer, PublicQuery, Question, Response
+from nested_inline.admin import (
+    NestedModelAdmin,
+    NestedStackedInline,
+    NestedTabularInline,
+)
+
+from apps.public_queries.models import (
+    Answer,
+    PublicQuery,
+    Question,
+    QuestionOption,
+    Response,
+)
 
 
-class QuestionInLine(admin.StackedInline):
+class NestedModelAdmin(NestedModelAdmin):
+    class Media:
+        js = ("admin/js/inlines-nested%s.js" % ("" if settings.DEBUG else ".min"),)
+        extend = False
+
+
+class QuestionOptionInLine(NestedTabularInline):
+    model = QuestionOption
+    extra = 0
+
+
+class QuestionInLine(NestedStackedInline):
     model = Question
     extra = 0
     ordering = ["order"]
+    inlines = [QuestionOptionInLine]
 
 
-class PublicQueryAdmin(admin.ModelAdmin):
+class PublicQueryAdmin(NestedModelAdmin):
     list_display = [
         "name",
         "view_url_code",

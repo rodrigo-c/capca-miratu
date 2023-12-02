@@ -14,6 +14,15 @@ question_recipe = Recipe(
     query=foreign_key(public_query_recipe),
 )
 
+question_select_recipe = question_recipe.extend(
+    kind=QuestionConstants.KIND_SELECT,
+)
+
+question_option_recipe = Recipe(
+    "public_queries.QuestionOption",
+    question=foreign_key(question_select_recipe),
+)
+
 response_recipe = Recipe(
     "public_queries.Response", query=foreign_key(public_query_recipe)
 )

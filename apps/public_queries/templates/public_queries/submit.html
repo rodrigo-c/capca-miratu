@@ -52,7 +52,10 @@
                     {% for field in answer_form.visible_fields %}
                         {% if not field.field.disabled %}
                             {% if field.errors %}{{ field.errors }}{% endif %}
-                            <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
+                            <div class="form-field{% if field.errors %} error{% endif %}"
+                                 maxlength="{{ field.field.maxlength }}"
+                                 field="{{ field.name }}"
+                                 {% if field.field.required %}required{% endif %}>{{ field }}</div>
                         {% endif %}
                     {% endfor %}
                     {% if forloop.last %}

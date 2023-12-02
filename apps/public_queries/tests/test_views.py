@@ -7,7 +7,12 @@ from django.utils.timezone import make_aware
 
 from freezegun import freeze_time
 
-from apps.public_queries.tests.recipes import public_query_recipe, question_recipe
+from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.tests.recipes import (
+    public_query_recipe,
+    question_option_recipe,
+    question_recipe,
+)
 
 
 @pytest.mark.django_db
@@ -106,22 +111,36 @@ class TestPublicQuerySubmit:
             "Enter a valid email address."
         ]
 
-    def test_post_success(self, client):
+    def test_post_success(self, client, uploaded_image):
         public_query = public_query_recipe.make(active=True)
         questions = [
-            question_recipe.make(query_id=public_query.id, required=True)
+            question_recipe.make(query_id=public_query.id),
+            question_recipe.make(
+                query_id=public_query.id,
+                kind=QuestionConstants.KIND_IMAGE,
+            ),
+            question_recipe.make(
+                query_id=public_query.id,
+                kind=QuestionConstants.KIND_SELECT,
+            ),
+        ]
+        options = [
+            question_option_recipe.make(question_id=questions[2].id, order=index)
             for index in range(5)
         ]
+
+        test_text = "test"
         data = {
             "rut": "100000-2",
             "email": "fake@email.com",
-            "form-TOTAL_FORMS": 5,
-            "form-INITIAL_FORMS": 5,
+            "form-TOTAL_FORMS": 3,
+            "form-INITIAL_FORMS": 3,
             "query": public_query.id,
+            "form-0-text": test_text,
+            "form-1-images": uploaded_image,
+            "form-2-options": [str(options[0].id)],
         }
-        for index, question in enumerate(questions):
-            data[f"form-{index}-question"] = str(question.id)
-            data[f"form-{index}-text"] = "r"
+
         url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})
         http_response = client.post(url, data=data)
         assert http_response.status_code == 302
@@ -129,6 +148,13 @@ class TestPublicQuerySubmit:
         assert created_response.email == data["email"]
         assert created_response.rut == data["rut"]
         assert str(created_response.id) == http_response.url[11:]
+        created_answers = list(created_response.answers.all())
+
+        assert created_answers[0].text == test_text
+        assert uploaded_image.name[:-4] in created_answers[1].image.name
+        assert (
+            created_answers[2].options.values_list("id", flat=True)[0] == options[0].id
+        )
 
 
 @pytest.mark.django_db

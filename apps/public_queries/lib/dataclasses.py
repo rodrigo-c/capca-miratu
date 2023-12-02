@@ -4,6 +4,14 @@ from uuid import UUID
 
 
 @dataclass
+class QuestionOptionData:
+    uuid: UUID
+    question_uuid: UUID
+    name: str
+    order: int
+
+
+@dataclass
 class QuestionData:
     uuid: UUID
     query_uuid: UUID
@@ -15,6 +23,7 @@ class QuestionData:
     max_answers: int
     text_max_length: int | None = None
     description: str | None = None
+    options: list | None = None
 
 
 @dataclass
@@ -34,7 +43,8 @@ class PublicQueryData:
 class AnswerData:
     question_uuid: UUID
     text: str | None = None
-    image: list | None = None
+    image: str | None = None
+    options: list | None = None
     uuid: UUID | None = None
     response_uuid: UUID | None = None
 

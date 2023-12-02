@@ -73,9 +73,7 @@ class QuerySubmitManager {
   }
 
   _set_inputs() {
-    this.change_image_input = this.change_image_input.bind(this)
     this.change_question_input = this.change_question_input.bind(this)
-
     this.input_map = {}
     for (let i = this.containers.question_list.length - 1; i >= 0; i--) {
       let question = this.containers.question_list[i]
@@ -83,10 +81,10 @@ class QuerySubmitManager {
 
       for (let input of question_inputs) {
         input.question_index = i
-        if (input.parentElement.classList.contains(this.kwargs.image_input_class_name)) {
-          input.addEventListener("change", this.change_image_input, false)
-        }
         input.addEventListener("input", this.change_question_input, false)
+        if (input.type == "checkbox") {
+          this.validate_options_question(input, false)
+        }
       }
       this.input_map[i] = question_inputs
       this.set_next_button_status(i, false)
@@ -105,33 +103,81 @@ class QuerySubmitManager {
   }
 
   change_question_input (event) {
+    console.log()
     let input = event.currentTarget
     if (input.type == "file") {
-      let maxlength = parseInt(input.getAttribute("maxlength"))
-      let errorlist = this.containers.question_list[input.question_index].querySelector(".errorlist")
-      if (maxlength >= input.files.length) {
-        if (errorlist) {errorlist.remove()}
-        input.setCustomValidity("")
-      } else {
-        let message = `Selecciona máximo ${maxlength} archivo${maxlength > 1? 's': ''}`
-        if (!errorlist) {
-          let errorlist = document.createElement("div")
-          errorlist.className = "errorlist"
-          errorlist.textContent = message
-          this.containers.question_list[input.question_index].insertBefore(
-            errorlist, input.parentElement.parentElement
-          )
-        } else {errorlist.textContent = message}
-        input.value = ""
-        input.setCustomValidity(message)
-        this.set_image_preview(input)
-      }
+      this.validate_image_question(input)
+    }
+    if (input.type == "checkbox") {
+      this.validate_options_question(input, true)
     }
     this.set_next_button_status(input.question_index, true)
   }
 
-  change_image_input (event) {
-    this.set_image_preview(event.currentTarget)
+  validate_image_question(input) {
+    let maxlength = parseInt(input.getAttribute("maxlength"))
+    let errorlist = this.containers.question_list[input.question_index].querySelector(".errorlist")
+    if (maxlength >= input.files.length) {
+      if (errorlist) {errorlist.remove()}
+      input.setCustomValidity("")
+    } else {
+      let message = `Selecciona máximo ${maxlength} archivo${maxlength > 1? 's': ''}`
+      if (!errorlist) {
+        let errorlist = document.createElement("div")
+        errorlist.className = "errorlist"
+        errorlist.textContent = message
+        this.containers.question_list[input.question_index].insertBefore(
+          errorlist, input.parentElement.parentElement
+        )
+      } else {errorlist.textContent = message}
+      input.value = ""
+      input.setCustomValidity(message)
+    }
+    this.set_image_preview(input)
+  }
+
+  validate_options_question(input, report) {
+    let field_container =  this.containers.question_list[input.question_index].querySelector("[field='options']")
+    let maxlength = parseInt(field_container.getAttribute("maxlength"))
+    let required = field_container.hasAttribute("required")
+    let checked_inputs = Array.from(field_container.querySelectorAll("input")).filter(input=>input.checked).length
+    let errorlist = this.get_error_list(input.question_index)
+
+    if (errorlist) {errorlist.remove()}
+    input.setCustomValidity("")
+
+    if (checked_inputs > maxlength && input.checked) {
+      let message = `Seleccione máximo ${maxlength} respuesta${maxlength > 1? 's': ''}`
+      this.create_error_list(input, message)
+      input.checked = false
+    }
+    else if (required && checked_inputs == 0 && !input.checked) {
+      let message = `Debe seleccionar al menos una opción`
+      if (report) {this.create_error_list(input, message)}
+      input.setCustomValidity(message)
+    }
+    else {
+      input.setCustomValidity("")
+    }
+    if (input.checked) {
+      input.parentElement.classList.add("checked")
+    } else {
+      input.parentElement.classList.remove("checked")
+    }
+  }
+
+  get_error_list(question_index) {
+    return this.containers.question_list[question_index].querySelector(".errorlist")
+  }
+
+  create_error_list(input, message) {
+    let errorlist = document.createElement("div")
+    let container = this.containers.question_list[input.question_index]
+    errorlist.className = "errorlist"
+    errorlist.textContent = message
+    container.insertBefore(
+      errorlist, container.querySelector(".form-field")
+    )
   }
 
   set_next_button_status(question_index, report) {
@@ -200,11 +246,15 @@ class QuerySubmitManager {
     }
     if (payload != "") {
       input_container.style.backgroundImage = payload
+    } else {
+      input_container.style.backgroundImage = null
     }
 
     if (files.length > 1) {
       input_label.innerText = `+${files.length - 1}`
       input_label.style.opacity = 1
+    } else {
+      input_label.style.opacity = 0
     }
 
     if (files.length > 0) {

@@ -97,6 +97,27 @@ class Question(BaseModel):
         return f"{self.__class__.__name__}: {self.name} ({self.id})"
 
 
+class QuestionOption(BaseModel):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        null=False,
+        related_name="options",
+    )
+    name = models.CharField(
+        max_length=255,
+        blank=False,
+        null=False,
+    )
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}: {self.name}"
+
+
 class Response(BaseModel):
     query = models.ForeignKey(
         PublicQuery,
@@ -132,6 +153,11 @@ class Answer(BaseModel):
     )
     image = models.ImageField(
         null=True, blank=True, upload_to="public_queries/answers/images/"
+    )
+    options = models.ManyToManyField(
+        QuestionOption,
+        related_name="answers",
+        limit_choices_to=models.Q(question_id=models.F("question_id")),
     )
 
     class Meta:
