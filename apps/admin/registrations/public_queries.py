@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.gis.db import models
+from django.contrib.gis.forms import OSMWidget
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -80,6 +82,7 @@ class ResponseAdmin(admin.ModelAdmin):
         "rut",
     ]
     inlines = [AnswerInLine]
+    formfield_overrides = {models.PointField: {"widget": OSMWidget}}
 
 
 public_queries_tuple_models = [
