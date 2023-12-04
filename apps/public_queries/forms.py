@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from django import forms
+from django.contrib.gis import forms
 from django.core.validators import MaxLengthValidator
 from django.forms import formset_factory
 
@@ -12,6 +12,7 @@ from apps.public_queries.lib.dataclasses import AnswerData, ResponseData
 
 class ResponseForm(forms.Form):
     query = forms.UUIDField(widget=forms.HiddenInput(), required=True)
+    location = forms.PointField(widget=forms.HiddenInput(), required=False)
     email = forms.EmailField(required=False)
     rut = forms.CharField(max_length=10, required=False)
 
@@ -30,6 +31,7 @@ class ResponseForm(forms.Form):
             answers=answers,
             email=self.cleaned_data.get("email") or None,
             rut=self.cleaned_data.get("rut") or None,
+            location=self.cleaned_data.get("location"),
         )
 
 
