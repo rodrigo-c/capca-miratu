@@ -146,6 +146,7 @@ class SubmitResponseEngine:
             send_at=now,
             email=self.response.email,
             rut=self.response.rut,
+            location=self.response.location,
         )
 
     def _create_answers(self, response_instance: Response) -> list[Answer]:
