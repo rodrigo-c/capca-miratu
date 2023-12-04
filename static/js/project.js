@@ -33,6 +33,7 @@ class QuerySubmitManager {
     this._set_containers()
     this._set_buttons()
     this._set_inputs()
+    this._set_response_geolocation()
   }
 
   _set_focus (focus) {this.focus = !isNaN(focus) ? parseInt(focus): focus}
@@ -86,8 +87,19 @@ class QuerySubmitManager {
           this.validate_options_question(input, false)
         }
       }
-      this.input_map[i] = question_inputs
+      this.input_map[i] = Array.from(question_inputs)
       this.set_next_button_status(i, false)
+    }
+  }
+
+  _set_response_geolocation () {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.response_position = position
+        let geolocation_input = this.containers.response.querySelector("input[name='location']")
+
+        geolocation_input.value = `POINT(${position.coords.longitude} ${position.coords.latitude})`
+      })
     }
   }
 
@@ -103,7 +115,6 @@ class QuerySubmitManager {
   }
 
   change_question_input (event) {
-    console.log()
     let input = event.currentTarget
     if (input.type == "file") {
       this.validate_image_question(input)
@@ -145,7 +156,6 @@ class QuerySubmitManager {
 
     if (errorlist) {errorlist.remove()}
     input.setCustomValidity("")
-
     if (checked_inputs > maxlength && input.checked) {
       let message = `Seleccione máximo ${maxlength} respuesta${maxlength > 1? 's': ''}`
       this.create_error_list(input, message)
@@ -157,7 +167,9 @@ class QuerySubmitManager {
       input.setCustomValidity(message)
     }
     else {
-      input.setCustomValidity("")
+      for (let i of field_container.querySelectorAll("input")) {
+        i.setCustomValidity("")
+      }
     }
     if (input.checked) {
       input.parentElement.classList.add("checked")
@@ -186,7 +198,7 @@ class QuerySubmitManager {
     let valid = true
     for (let input of this.input_map[question_index]) {
       valid &&= input.validity.valid
-      if (report) {input.reportValidity()}
+      if (!valid && report) {input.reportValidity()}
     }
     if (valid) {
       next_button.removeAttribute("disabled")
