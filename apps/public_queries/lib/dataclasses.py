@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
+from django.contrib.gis.geos import Point
+
 
 @dataclass
 class QuestionOptionData:
@@ -57,4 +59,5 @@ class ResponseData:
     send_at: datetime | None = None
     email: str | None = None
     rut: str | None = None
+    location: Point | None = None
     query_data: PublicQueryData | None = None
