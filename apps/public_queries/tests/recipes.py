@@ -26,3 +26,8 @@ question_option_recipe = Recipe(
 response_recipe = Recipe(
     "public_queries.Response", query=foreign_key(public_query_recipe)
 )
+
+answer_recipe = Recipe(
+    "public_queries.Answer",
+    response=foreign_key(response_recipe),
+)
