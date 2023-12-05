@@ -82,3 +82,17 @@
     display: none;
   }
 }
+
+.dj_map_wrapper { // scss-lint:disable SelectorFormat
+  width: 100%;
+
+  .clear_features a { // scss-lint:disable SelectorFormat
+    color: $secondary;
+    text-decoration: solid;
+  }
+
+  .dj_map { // scss-lint:disable SelectorFormat
+    height: 35vh;
+    width: 100%;
+  }
+}
