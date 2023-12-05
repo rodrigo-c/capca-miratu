@@ -1,7 +1,8 @@
 from django.apps import AppConfig
-from django.utils.translation import gettext_lazy
+
+from apps.public_queries.lib.constants import AppConstants
 
 
 class PublicQueriesConfig(AppConfig):
     name = "apps.public_queries"
-    verbose_name = gettext_lazy("Public Queries")
+    verbose_name = AppConstants.VERBOSE_NAME
