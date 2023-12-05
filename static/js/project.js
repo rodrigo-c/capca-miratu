@@ -14,6 +14,7 @@ class QuerySubmitManager {
       start_questions_button_id = "next-response-button",
       next_question_button_prefix = "next-question-button",
       submit_id = "form-submit",
+      varset = []
     } = {}
   ) {
     this.kwargs = {
@@ -27,6 +28,7 @@ class QuerySubmitManager {
       start_questions_button_id,
       next_question_button_prefix,
       submit_id,
+      varset,
     }
     this.hidden_class_name = hidden_class_name;
     this._set_focus(focus)
@@ -95,10 +97,21 @@ class QuerySubmitManager {
   _set_response_geolocation () {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.response_position = position
+        this.user_location = {
+          lon: position.coords.longitude,
+          lat: position.coords.latitude,
+        }
         let geolocation_input = this.containers.response.querySelector("input[name='location']")
-
-        geolocation_input.value = `POINT(${position.coords.longitude} ${position.coords.latitude})`
+        geolocation_input.value = `POINT(${this.user_location.lon} ${this.user_location.lat})`;
+        for (let var_name of this.kwargs.varset) {
+          try {
+            eval(var_name).map.getView().setCenter(
+              ol.proj.transform([this.user_location.lon, this.user_location.lat], 'EPSG:4326', 'EPSG:3857')
+            )
+          } catch (e){
+            console.log(e)
+          }
+        }
       })
     }
   }
