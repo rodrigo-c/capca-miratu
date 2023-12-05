@@ -50,6 +50,10 @@ class MultiImageField(MultiImageField):
             super().run_validators(value=image)
 
 
+class OSMWidget(forms.OSMWidget):
+    template_name = "public_queries/components/point-field.html"
+
+
 class AnswerForm(forms.Form):
     text = forms.CharField(
         required=False,
@@ -60,6 +64,7 @@ class AnswerForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={"class": "options-field"}),
     )
+    point = forms.PointField(required=False, widget=OSMWidget())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -78,6 +83,9 @@ class AnswerForm(forms.Form):
         elif kind == QuestionConstants.KIND_SELECT:
             self._set_select_answer()
 
+        elif kind == QuestionConstants.KIND_POINT:
+            self._set_point_answer()
+
     def _set_text_answer(self):
         field = self.fields["text"]
         field.required = self.question_data.required
@@ -89,6 +97,7 @@ class AnswerForm(forms.Form):
         field.widget.attrs["minlength"] = 1 if field.required else None
         self._hide_field("images")
         self._hide_field("options")
+        self._hide_field("point")
 
     def _set_image_answer(self):
         field = self.fields["images"]
@@ -101,6 +110,7 @@ class AnswerForm(forms.Form):
         field.widget.attrs["required"] = self.question_data.required
         self._hide_field("text")
         self._hide_field("options")
+        self._hide_field("point")
 
     def _set_select_answer(self):
         field = self.fields["options"]
@@ -120,19 +130,21 @@ class AnswerForm(forms.Form):
         )
         self._hide_field("text")
         self._hide_field("images")
+        self._hide_field("point")
+
+    def _set_point_answer(self):
+        field = self.fields["point"]
+        field.required = self.question_data.required
+        self._hide_field("text")
+        self._hide_field("images")
+        self._hide_field("options")
 
     def _hide_field(self, field: str) -> None:
         self.fields[field].disabled = True
         self.fields[field].widget.attrs.update({"class": "hidden"})
 
     def get_validated_dataclasses(self) -> list[AnswerData]:
-        if self.question_data.kind == QuestionConstants.KIND_TEXT:
-            answer_data = AnswerData(
-                question_uuid=self.question_data.uuid,
-                text=self.cleaned_data.get("text") or None,
-            )
-            return [answer_data]
-        elif self.question_data.kind == QuestionConstants.KIND_IMAGE:
+        if self.question_data.kind == QuestionConstants.KIND_IMAGE:
             image_files = self.cleaned_data.get("images", []) or []
             return [
                 AnswerData(
@@ -141,13 +153,23 @@ class AnswerForm(forms.Form):
                 )
                 for image_file in image_files
             ]
+        elif self.question_data.kind == QuestionConstants.KIND_TEXT:
+            answer_data = AnswerData(
+                question_uuid=self.question_data.uuid,
+                text=self.cleaned_data.get("text") or None,
+            )
         elif self.question_data.kind == QuestionConstants.KIND_SELECT:
             options = self.cleaned_data.get("options")
             answer_data = AnswerData(
                 question_uuid=self.question_data.uuid,
                 options=[UUID(option_uuid) for option_uuid in options],
             )
-            return [answer_data]
+        elif self.question_data.kind == QuestionConstants.KIND_POINT:
+            answer_data = AnswerData(
+                question_uuid=self.question_data.uuid,
+                point=self.cleaned_data.get("point") or None,
+            )
+        return [answer_data]
 
 
 def get_validated_dataclasses(formset) -> list[AnswerData]:
@@ -157,5 +179,21 @@ def get_validated_dataclasses(formset) -> list[AnswerData]:
     return validated_data_list
 
 
+def get_media(formset):
+    for form in formset.forms:
+        if "point" in form.fields:
+            return formset.media
+
+
+def get_point_varset(formset) -> list:
+    return [
+        f"geodjango_form_{index}_point"
+        for index, form in enumerate(formset)
+        if not form.fields["point"].disabled
+    ]
+
+
 AnswerFormSet = formset_factory(AnswerForm, extra=0)
 AnswerFormSet.get_validated_dataclasses = get_validated_dataclasses
+AnswerFormSet.get_media = get_media
+AnswerFormSet.get_point_varset = get_point_varset
