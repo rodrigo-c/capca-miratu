@@ -47,6 +47,7 @@ class AnswerData:
     text: str | None = None
     image: str | None = None
     options: list | None = None
+    point: Point = None
     uuid: UUID | None = None
     response_uuid: UUID | None = None
 
