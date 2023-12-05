@@ -118,14 +118,13 @@ class SubmitResponseEngine:
         self, response: ResponseData, public_query: PublicQueryData
     ) -> None:
         question_map = {question.uuid: question for question in public_query.questions}
-        question_uuids_with_question = [
+        question_uuids_with_answers = [
             answer.question_uuid for answer in response.answers
         ]
-
         assert response.query_uuid == public_query.uuid
         assert all(answer.question_uuid in question_map for answer in response.answers)
         assert all(
-            question.uuid in question_uuids_with_question
+            question.uuid in question_uuids_with_answers
             for question in public_query.questions
             if question.required
         )
@@ -165,6 +164,8 @@ class SubmitResponseEngine:
             elif question.kind == QuestionConstants.KIND_SELECT:
                 assert question.max_answers >= len(answer.options)
                 options_map[answer.question_uuid] = answer
+            elif question.kind == QuestionConstants.KIND_POINT:
+                answer_data["point"] = answer.point
             answer_data_list.append(answer_data)
         instances = answer_providers.bulk_create_answers(answers=answer_data_list)
         return self._add_answer_options(instances=instances, options_map=options_map)
