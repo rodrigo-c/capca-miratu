@@ -34,7 +34,9 @@ class QuerySubmitManager {
     this._set_focus(focus)
     this._set_containers()
     this._set_buttons()
-    this._set_inputs()
+    this.input_map = {}
+    this._set_response_inputs()
+    this._set_question_inputs()
     this._set_response_geolocation()
   }
 
@@ -75,9 +77,17 @@ class QuerySubmitManager {
     this.buttons = {start, back, start_questions, next_question_list, submit}
   }
 
-  _set_inputs() {
+  _set_response_inputs () {
+    this.change_response_input = this.change_response_input.bind(this)
+    let inputs = this.containers.response.querySelectorAll("input,textarea")
+    for (let input of inputs) {
+      input.addEventListener("input", this.change_response_input, false)
+    }
+    this.input_map.response = Array.from(inputs)
+  }
+
+  _set_question_inputs() {
     this.change_question_input = this.change_question_input.bind(this)
-    this.input_map = {}
     for (let i = this.containers.question_list.length - 1; i >= 0; i--) {
       let question = this.containers.question_list[i]
       let question_inputs = question.querySelectorAll("input,textarea")
@@ -88,9 +98,38 @@ class QuerySubmitManager {
         if (input.type == "checkbox") {
           this.validate_options_question(input, false)
         }
+        if (input.classList.contains("vSerializedField")) {
+          this._set_point_input_event(input)
+          this.validate_point_question(input, false)
+        }
       }
       this.input_map[i] = Array.from(question_inputs)
       this.set_next_button_status(i, false)
+    }
+  }
+
+  _set_point_input_event(input) {
+    for (var i = this.kwargs.varset.length - 1; i >= 0; i--) {
+      if (i == input.question_index) {
+        let var_name = this.kwargs.varset[i]
+        try {
+          let mapwidget = eval(var_name)
+          let _serializeFeatures = mapwidget.serializeFeatures
+          let _clearFeatures = mapwidget.clearFeatures
+          _serializeFeatures = _serializeFeatures.bind(mapwidget)
+          _clearFeatures = _clearFeatures.bind(mapwidget)
+          mapwidget.serializeFeatures = () => {
+            _serializeFeatures()
+            input.dispatchEvent(new Event("input"))
+          }
+          mapwidget.clearFeatures = () => {
+            _clearFeatures()
+            input.dispatchEvent(new Event("input"))
+          }
+        } catch (e){
+          console.log(e)
+        }
+      }
     }
   }
 
@@ -127,6 +166,24 @@ class QuerySubmitManager {
     }
   }
 
+  change_response_input (event) {
+    let input = event.currentTarget
+    let button = this.buttons.start_questions
+    let valid = true
+    for (let input of this.input_map.response) {
+      if (input.getAttribute("name") == "rut") {
+        this.validate_rut(input)
+      }
+      valid &&= input.validity.valid
+      input.reportValidity()
+    }
+    if (valid) {
+      button.removeAttribute("disabled")
+    } else {
+      button.setAttribute("disabled", true)
+    }
+  }
+
   change_question_input (event) {
     let input = event.currentTarget
     if (input.type == "file") {
@@ -135,7 +192,37 @@ class QuerySubmitManager {
     if (input.type == "checkbox") {
       this.validate_options_question(input, true)
     }
+    if (input.classList.contains("vSerializedField")) {
+      this.validate_point_question(input, true)
+    }
     this.set_next_button_status(input.question_index, true)
+  }
+
+  validate_rut(input) {
+    let validator = {
+      val: function (rut) {
+        if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rut)) {
+          return false
+        }
+        let tmp   = rut.split('-')
+        let digv  = tmp[1]
+        let _rut   = tmp[0]
+        if (digv == 'K') {digv = 'k'}
+        return (validator.dv(_rut) == digv );
+      },
+      dv: function(T){
+        let M=0, S=1;
+        for(;T;T=Math.floor(T/10))
+          S=(S+T%10*(9-M++%6))%11;
+        return S?S-1:'k';
+      }
+    }
+    if (!input.value || (input.value && validator.val(input.value))) {
+      input.setCustomValidity("")
+    } else {
+      let message = "Rut inválido"
+      input.setCustomValidity(message)
+    }
   }
 
   validate_image_question(input) {
@@ -188,6 +275,20 @@ class QuerySubmitManager {
       input.parentElement.classList.add("checked")
     } else {
       input.parentElement.classList.remove("checked")
+    }
+  }
+
+  validate_point_question (input, report) {
+    let field_container =  this.containers.question_list[input.question_index].querySelector("[field='point']")
+    let required = field_container.hasAttribute("required")
+    let errorlist = this.get_error_list(input.question_index)
+    if (errorlist) {errorlist.remove()}
+    input.setCustomValidity("")
+
+    if (required && !input.value) {
+      let message = "Debe seleccionar un punto en el mapa"
+      if (report) {this.create_error_list(input, message)}
+      input.setCustomValidity(message)
     }
   }
 
