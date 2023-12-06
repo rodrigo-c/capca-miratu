@@ -123,6 +123,10 @@ class TestPublicQuerySubmit:
                 query_id=public_query.id,
                 kind=QuestionConstants.KIND_SELECT,
             ),
+            question_recipe.make(
+                query_id=public_query.id,
+                kind=QuestionConstants.KIND_POINT,
+            ),
         ]
         options = [
             question_option_recipe.make(question_id=questions[2].id, order=index)
@@ -133,12 +137,13 @@ class TestPublicQuerySubmit:
         data = {
             "rut": "100000-2",
             "email": "fake@email.com",
-            "form-TOTAL_FORMS": 3,
-            "form-INITIAL_FORMS": 3,
+            "form-TOTAL_FORMS": 4,
+            "form-INITIAL_FORMS": 4,
             "query": public_query.id,
             "form-0-text": test_text,
             "form-1-images": uploaded_image,
             "form-2-options": [str(options[0].id)],
+            "form-3-point": '{"type":"Point","coordinates":[1, 1]}',
         }
 
         url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})

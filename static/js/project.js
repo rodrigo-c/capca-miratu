@@ -14,6 +14,7 @@ class QuerySubmitManager {
       start_questions_button_id = "next-response-button",
       next_question_button_prefix = "next-question-button",
       submit_id = "form-submit",
+      varset = []
     } = {}
   ) {
     this.kwargs = {
@@ -27,12 +28,14 @@ class QuerySubmitManager {
       start_questions_button_id,
       next_question_button_prefix,
       submit_id,
+      varset,
     }
     this.hidden_class_name = hidden_class_name;
     this._set_focus(focus)
     this._set_containers()
     this._set_buttons()
     this._set_inputs()
+    this._set_response_geolocation()
   }
 
   _set_focus (focus) {this.focus = !isNaN(focus) ? parseInt(focus): focus}
@@ -86,8 +89,30 @@ class QuerySubmitManager {
           this.validate_options_question(input, false)
         }
       }
-      this.input_map[i] = question_inputs
+      this.input_map[i] = Array.from(question_inputs)
       this.set_next_button_status(i, false)
+    }
+  }
+
+  _set_response_geolocation () {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.user_location = {
+          lon: position.coords.longitude,
+          lat: position.coords.latitude,
+        }
+        let geolocation_input = this.containers.response.querySelector("input[name='location']")
+        geolocation_input.value = `POINT(${this.user_location.lon} ${this.user_location.lat})`;
+        for (let var_name of this.kwargs.varset) {
+          try {
+            eval(var_name).map.getView().setCenter(
+              ol.proj.transform([this.user_location.lon, this.user_location.lat], 'EPSG:4326', 'EPSG:3857')
+            )
+          } catch (e){
+            console.log(e)
+          }
+        }
+      })
     }
   }
 
@@ -103,7 +128,6 @@ class QuerySubmitManager {
   }
 
   change_question_input (event) {
-    console.log()
     let input = event.currentTarget
     if (input.type == "file") {
       this.validate_image_question(input)
@@ -145,7 +169,6 @@ class QuerySubmitManager {
 
     if (errorlist) {errorlist.remove()}
     input.setCustomValidity("")
-
     if (checked_inputs > maxlength && input.checked) {
       let message = `Seleccione máximo ${maxlength} respuesta${maxlength > 1? 's': ''}`
       this.create_error_list(input, message)
@@ -157,7 +180,9 @@ class QuerySubmitManager {
       input.setCustomValidity(message)
     }
     else {
-      input.setCustomValidity("")
+      for (let i of field_container.querySelectorAll("input")) {
+        i.setCustomValidity("")
+      }
     }
     if (input.checked) {
       input.parentElement.classList.add("checked")
@@ -186,7 +211,7 @@ class QuerySubmitManager {
     let valid = true
     for (let input of this.input_map[question_index]) {
       valid &&= input.validity.valid
-      if (report) {input.reportValidity()}
+      if (!valid && report) {input.reportValidity()}
     }
     if (valid) {
       next_button.removeAttribute("disabled")

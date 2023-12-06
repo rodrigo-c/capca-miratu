@@ -25,6 +25,7 @@
               name="response-form"
               enctype="multipart/form-data">
             {% csrf_token %}
+            {{ answer_formset.get_media }}
             <div class="response content-container {% if focus != 'response' %}hidden{% endif %}"
                  id="response-container">
                 <div class="section title">Formulario</div>
@@ -72,5 +73,8 @@
     {% endif %}
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript">const manager = new QuerySubmitManager({focus:'{{focus}}'});</script>
+    <script type="text/javascript">const manager = new QuerySubmitManager(
+      {focus:'{{focus}}', {% if answer_formset.get_point_varset %}varset: {{answer_formset.get_point_varset|safe}}{% endif %} }
+    );
+    </script>
 {% endblock extra_js %}

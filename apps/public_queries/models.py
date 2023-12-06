@@ -2,7 +2,13 @@ import uuid
 
 from django.contrib.gis.db import models
 
-from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
+from apps.public_queries.lib.constants import (
+    AnswerConstants,
+    PublicQueryConstants,
+    QuestionConstants,
+    QuestionOptionConstants,
+    ResponseConstants,
+)
 from apps.utils.random import get_random_url_code
 
 
@@ -59,9 +65,11 @@ class PublicQuery(BaseModel):
 
     class Meta:
         ordering = ["start_at"]
+        verbose_name = PublicQueryConstants.VERBOSE_NAME
+        verbose_name_plural = PublicQueryConstants.VERBOSE_NAME_PLURAL
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {self.name} ({self.id})"
+        return f"{self.name} ({self.url_code})"
 
 
 class Question(BaseModel):
@@ -92,9 +100,14 @@ class Question(BaseModel):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = QuestionConstants.VERBOSE_NAME
+        verbose_name_plural = QuestionConstants.VERBOSE_NAME_PLURAL
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {self.name} ({self.id})"
+        return (
+            f"[{self.order}][{self.kind}] {self.name[:100]}"
+            f"{('...' if len(self.name) > 100 else '')}"
+        )
 
 
 class QuestionOption(BaseModel):
@@ -113,9 +126,11 @@ class QuestionOption(BaseModel):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = QuestionOptionConstants.VERBOSE_NAME
+        verbose_name_plural = QuestionOptionConstants.VERBOSE_NAME_PLURAL
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {self.name}"
+        return f"{self.name} [{self.id}]"
 
 
 class Response(BaseModel):
@@ -132,6 +147,14 @@ class Response(BaseModel):
 
     class Meta:
         ordering = ["send_at"]
+        verbose_name = ResponseConstants.VERBOSE_NAME
+        verbose_name_plural = ResponseConstants.VERBOSE_NAME_PLURAL
+
+    def __str__(self) -> str:
+        return (
+            f"[{str(self.send_at)[:19]}] > {self.query.name[:50]}"
+            f"{('...' if len(self.query.name) > 50 else '')}"
+        )
 
 
 class Answer(BaseModel):
@@ -159,6 +182,12 @@ class Answer(BaseModel):
         related_name="answers",
         limit_choices_to=models.Q(question_id=models.F("question_id")),
     )
+    point = models.PointField(null=True, blank=True)
 
     class Meta:
         ordering = ["question__order"]
+        verbose_name = AnswerConstants.VERBOSE_NAME
+        verbose_name_plural = AnswerConstants.VERBOSE_NAME_PLURAL
+
+    def __str__(self) -> str:
+        return f"> {self.question}"

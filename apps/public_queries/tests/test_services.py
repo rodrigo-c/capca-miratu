@@ -2,6 +2,7 @@ from datetime import datetime
 from tempfile import NamedTemporaryFile
 
 import pytest
+from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.timezone import make_aware
 
@@ -195,3 +196,22 @@ class TestSubmitResponse:
         )
         assert len(answer_instance_option_uuids) == max_answers
         assert all(uuid in option_uuids for uuid in answer_instance_option_uuids)
+
+    def test_success_with_point(self):
+        public_query = public_query_recipe.make(active=True)
+        select_question = question_recipe.make(
+            query_id=public_query.id,
+            kind=QuestionConstants.KIND_POINT,
+        )
+        point = Point(1, 1)
+        answer_data_list = [AnswerData(question_uuid=select_question.id, point=point)]
+        response_data = ResponseData(
+            query_uuid=public_query.id,
+            answers=answer_data_list,
+        )
+        returned_response = services.submit_response(response=response_data)
+        response_instance = public_query.responses.first()
+        assert returned_response.uuid
+        assert all(answer.uuid for answer in returned_response.answers)
+        assert returned_response.uuid == response_instance.id
+        assert response_instance.answers.first().point == point

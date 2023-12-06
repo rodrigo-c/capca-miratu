@@ -43,6 +43,11 @@ def response():
 
 
 @pytest.fixture
+def answer():
+    return recipes.answer_recipe.make()
+
+
+@pytest.fixture
 def uploaded_image(field_name="images"):
     image = Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
     image_file = BytesIO()
