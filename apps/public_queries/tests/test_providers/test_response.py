@@ -1,7 +1,6 @@
 import pytest
 from django.utils import timezone
 
-from apps.public_queries.lib.exceptions import ResponseDoesNotExist
 from apps.public_queries.models import Response
 from apps.public_queries.providers import response as response_providers
 
@@ -23,5 +22,3 @@ def test_create_response(public_query):
 def test_get_response_by_uuid(response):
     returned_instance = response_providers.get_response_by_uuid(uuid=response.id)
     assert response.id == returned_instance.id
-    with pytest.raises(ResponseDoesNotExist):
-        response_providers.get_response_by_uuid(uuid=0)
