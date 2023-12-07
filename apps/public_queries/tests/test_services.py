@@ -10,7 +10,10 @@ from django.utils.timezone import make_aware
 from freezegun import freeze_time
 
 from apps.public_queries import services
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import (
+    PublicQueryResultConstants,
+    QuestionConstants,
+)
 from apps.public_queries.lib.dataclasses import (
     AnswerData,
     PublicQueryData,
@@ -201,3 +204,41 @@ class TestSubmitResponse:
         assert all(answer.uuid for answer in returned_response.answers)
         assert returned_response.uuid == response_instance.id
         assert response_instance.answers.first().point == point
+
+
+@pytest.mark.django_db
+def test_get_public_query_result(ended_public_query):
+    public_query_data = services.get_public_query(identifier=ended_public_query.id)
+    result_data = services.get_public_query_result(public_query=public_query_data)
+    assert result_data.query == public_query_data
+    assert result_data.total_responses == 16
+    assert result_data.anonymous_responses == 8
+    assert (
+        len(result_data.partial_responses)
+        == PublicQueryResultConstants.LENGTH_PARTIAL_LIST
+    )
+    assert len(result_data.answer_results) == 4
+
+    for answer_result in result_data.answer_results:
+        if answer_result.question.kind in [
+            QuestionConstants.KIND_TEXT,
+            QuestionConstants.KIND_IMAGE,
+        ]:
+            assert (
+                len(answer_result.partial_list)
+                == PublicQueryResultConstants.LENGTH_PARTIAL_LIST
+            )
+        if answer_result.question.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_POINT,
+        ]:
+            assert answer_result.partial_list is None
+
+        if answer_result.question.kind == QuestionConstants.KIND_SELECT:
+            assert answer_result.options[0].total == 0
+            assert answer_result.options[0].percent == 0.0
+            assert answer_result.options[1].total == 8
+            assert answer_result.options[1].percent == 50.0
+            assert answer_result.options[2].total == 8
+            assert answer_result.options[2].percent == 50.0
+            assert answer_result.options[3].total == 0
