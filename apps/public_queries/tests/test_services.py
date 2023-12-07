@@ -1,5 +1,6 @@
 from datetime import datetime
 from tempfile import NamedTemporaryFile
+from uuid import uuid4
 
 import pytest
 from django.contrib.gis.geos import Point
@@ -91,6 +92,69 @@ class TestGetActivePublicQueryByUUID:
         with freeze_time("2023-01-02"):
             with pytest.raises(PublicQueryDoesNotExist):
                 services.get_active_public_query_by_uuid(uuid=public_query.id)
+
+
+@pytest.mark.django_db
+class TestGetPublicQuery:
+    def test_success(self):
+        public_query = public_query_recipe.make(active=True)
+        public_query_data = services.get_public_query(
+            identifier=public_query.id, active=True
+        )
+        assert isinstance(public_query_data, PublicQueryData)
+        assert public_query_data.uuid == public_query.id
+        assert isinstance(public_query_data.name, str)
+        assert public_query_data.image is None
+
+    def test_with_questions(self):
+        public_query = public_query_recipe.make(active=True)
+        questions = [
+            question_recipe.make(query_id=public_query.id) for index in range(5)
+        ]
+        public_query_data = services.get_public_query(identifier=str(public_query.id))
+        for index, question in enumerate(questions):
+            question_data = public_query_data.questions[index]
+            assert isinstance(question_data, QuestionData)
+            assert question.id == question_data.uuid
+            assert question.query_id == question_data.query_uuid
+            assert index == question_data.index
+
+    def test_with_questions_with_options(self):
+        public_query = public_query_recipe.make(active=True)
+        select_question = question_recipe.make(
+            query_id=public_query.id,
+            kind=QuestionConstants.KIND_SELECT,
+        )
+        option = question_option_recipe.make(question_id=select_question.id)
+        public_query_data = services.get_public_query(identifier=public_query.url_code)
+        question_data = public_query_data.questions[0]
+        option_data = question_data.options[0]
+        assert option_data.uuid == option.id
+        assert option_data.name == option.name
+
+    def test_does_not_exist_by_uuid(self):
+        with pytest.raises(PublicQueryDoesNotExist):
+            services.get_public_query(identifier=uuid4())
+
+    def test_does_not_exist_by_url_code(self):
+        with pytest.raises(PublicQueryDoesNotExist):
+            services.get_public_query(identifier="xs")
+
+    def test_out_of_start_time(self):
+        public_query = public_query_recipe.make(
+            active=True, start_at=make_aware(datetime(2023, 1, 2))
+        )
+        with freeze_time("2023-01-01"):
+            with pytest.raises(PublicQueryDoesNotExist):
+                services.get_public_query(identifier=public_query.id, active=True)
+
+    def test_out_of_end_time(self):
+        public_query = public_query_recipe.make(
+            active=True, end_at=make_aware(datetime(2023, 1, 1))
+        )
+        with freeze_time("2023-01-02"):
+            with pytest.raises(PublicQueryDoesNotExist):
+                services.get_public_query(identifier=public_query.id, active=True)
 
 
 @pytest.mark.django_db
