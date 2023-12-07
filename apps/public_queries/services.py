@@ -181,16 +181,22 @@ class SubmitResponseEngine:
                 "question_id": answer.question_uuid,
                 "response_id": response_instance.id,
             }
+            empty = True
             if question.kind == QuestionConstants.KIND_TEXT:
                 answer_data["text"] = answer.text
+                empty = False if answer.text else True
             elif question.kind == QuestionConstants.KIND_IMAGE:
                 answer_data["image"] = answer.image
+                empty = False if answer.image else True
             elif question.kind == QuestionConstants.KIND_SELECT:
                 assert question.max_answers >= len(answer.options)
                 options_map[answer.question_uuid] = answer
+                empty = False if answer.options else True
             elif question.kind == QuestionConstants.KIND_POINT:
                 answer_data["point"] = answer.point
-            answer_data_list.append(answer_data)
+                empty = False if answer.point else True
+            if not empty:
+                answer_data_list.append(answer_data)
         instances = answer_providers.bulk_create_answers(answers=answer_data_list)
         return self._add_answer_options(instances=instances, options_map=options_map)
 
