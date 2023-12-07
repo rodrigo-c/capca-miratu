@@ -14,22 +14,36 @@ from apps.public_queries.services import (
 )
 
 
-class PublicQuerySubmit(TemplateView):
-    template_name = "public_queries/submit.html"
+class UUIDObjectURL:
+    url_active_status = None
+    url_service = None
+    url_service_field = "identifier"
+    url_service_extra_kwargs = None
 
     def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
+        extra_kwargs = self.url_service_extra_kwargs or {}
         try:
-            public_query = get_public_query(identifier=uuid, active=True)
+            object_data = self.__class__.url_service(
+                **{self.url_service_field: uuid, **extra_kwargs}
+            )
         except ObjectDoesNotExist:
             raise Http404
-        self.public_query = public_query
+        self.object = object_data
         return super().dispatch(request, uuid, *args, **kwargs)
 
+
+class PublicQuerySubmit(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/submit.html"
+    url_service = get_public_query
+    url_service_extra_kwargs = {"active": True}
+
     def get(self, request, uuid) -> HttpResponse:
+        self.public_query = self.object
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
+        self.public_query = self.object
         response_form = ResponseForm(
             data=request.POST,
             initial={"query": self.public_query.uuid},
@@ -97,21 +111,14 @@ class PublicQuerySubmit(TemplateView):
         return reverse("public_queries:submit-success", kwargs={"uuid": response_uuid})
 
 
-class SuccessSubmit(TemplateView):
+class SuccessSubmit(UUIDObjectURL, TemplateView):
     template_name = "public_queries/success.html"
-
-    def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
-        try:
-            uuid = UUID(uuid)
-            response_data = get_response_by_uuid(uuid=uuid)
-        except (ValueError, ObjectDoesNotExist):
-            raise Http404
-        self.response_data = response_data
-        return super().dispatch(request, uuid, *args, **kwargs)
+    url_service = get_response_by_uuid
+    url_service_field = "uuid"
 
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
-        context["response_data"] = self.response_data
+        context["response_data"] = self.object
         context["navigation_title"] = "Consulta Pública"
         context["success_message"] = "El formulario fue enviado con éxito."
         context[
