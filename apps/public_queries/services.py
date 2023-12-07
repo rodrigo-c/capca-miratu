@@ -99,78 +99,9 @@ def get_public_query(
     return returner.get()
 
 
-def get_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
-    public_query = public_query_providers.get_public_query_by_uuid(uuid=uuid)
-    return build_dataclass_from_model_instance(
-        klass=PublicQueryData,
-        instance=public_query,
-        uuid=public_query.id,
-        image=public_query.image.url if public_query.image else None,
-    )
-
-
-def _get_options_data(question: Question) -> list[QuestionOptionData]:
-    if question.kind == QuestionConstants.KIND_SELECT:
-        return [
-            build_dataclass_from_model_instance(
-                klass=QuestionOptionData,
-                instance=option,
-                uuid=option.id,
-                question_uuid=option.question_id,
-            )
-            # TODO: use one query select for all questions instead
-            for option in question.options.all()
-        ]
-
-
-def _return_public_query_data_if_is_active(
-    public_query: PublicQuery,
-) -> PublicQueryData:
-    now = timezone.now()
-    is_after_start = public_query.start_at is None or public_query.start_at < now
-    is_before_end = public_query.end_at is None or public_query.end_at > now
-    if is_after_start and is_before_end:
-        question_queryset = question_providers.get_questions_by_public_query_uuid(
-            uuid=public_query.id
-        )
-        questions = [
-            build_dataclass_from_model_instance(
-                klass=QuestionData,
-                instance=question,
-                uuid=question.id,
-                query_uuid=public_query.id,
-                index=index,
-                options=_get_options_data(question=question),
-            )
-            for index, question in enumerate(question_queryset)
-        ]
-        return build_dataclass_from_model_instance(
-            klass=PublicQueryData,
-            instance=public_query,
-            uuid=public_query.id,
-            image=public_query.image.url if public_query.image else None,
-            questions=questions or None,
-        )
-    raise PublicQueryDoesNotExist
-
-
-def get_active_public_query_by_uuid(uuid: UUID) -> PublicQueryData:
-    public_query = public_query_providers.get_public_query_by_uuid(
-        uuid=uuid, active=True
-    )
-    return _return_public_query_data_if_is_active(public_query=public_query)
-
-
-def get_active_public_query_by_url_code(url_code: str) -> PublicQueryData:
-    public_query = public_query_providers.get_public_query_by_url_code(
-        url_code=url_code, active=True
-    )
-    return _return_public_query_data_if_is_active(public_query=public_query)
-
-
 def get_response_by_uuid(uuid: UUID) -> ResponseData:
     instance = response_providers.get_response_by_uuid(uuid=uuid)
-    public_query_data = get_active_public_query_by_uuid(uuid=instance.query_id)
+    public_query_data = get_public_query(identifier=instance.query_id)
     return build_dataclass_from_model_instance(
         klass=ResponseData,
         instance=instance,
@@ -185,7 +116,7 @@ class SubmitResponseEngine:
         self, response: ResponseData, public_query: PublicQueryData | None = None
     ):
         if not public_query:
-            public_query = get_active_public_query_by_uuid(uuid=response.query_uuid)
+            public_query = get_public_query(identifier=response.query_uuid)
 
         self.question_map = self._get_question_map(
             response=response, public_query=public_query
