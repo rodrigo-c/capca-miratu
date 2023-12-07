@@ -12,7 +12,10 @@ from apps.public_queries.lib.dataclasses import (
     QuestionOptionData,
     ResponseData,
 )
-from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
+from apps.public_queries.lib.exceptions import (
+    PublicQueryDoesNotExist,
+    ResponseDoesNotExist,
+)
 from apps.public_queries.models import Answer, PublicQuery, Question, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
@@ -100,7 +103,12 @@ def get_public_query(
 
 
 def get_response_by_uuid(uuid: UUID) -> ResponseData:
-    instance = response_providers.get_response_by_uuid(uuid=uuid)
+    try:
+        uuid = UUID(uuid) if not isinstance(uuid, UUID) else uuid
+        instance = response_providers.get_response_by_uuid(uuid=uuid)
+    except (ValueError, Response.DoesNotExist):
+        raise ResponseDoesNotExist
+
     public_query_data = get_public_query(identifier=instance.query_id)
     return build_dataclass_from_model_instance(
         klass=ResponseData,
