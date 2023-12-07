@@ -55,10 +55,35 @@ class AnswerData:
 @dataclass
 class ResponseData:
     query_uuid: UUID
-    answers: list[AnswerData]
+    answers: list[AnswerData] | None = None
     uuid: UUID | None = None
     send_at: datetime | None = None
     email: str | None = None
     rut: str | None = None
     location: Point | None = None
     query_data: PublicQueryData | None = None
+
+
+@dataclass
+class OptionResultData:
+    option_uuid: UUID
+    option_name: str
+    total: int
+    percent: float
+
+
+@dataclass
+class AnswerResultData:
+    question: QuestionData
+    total: int
+    partial_list: list | None = None
+    options: list[OptionResultData] | None = None
+
+
+@dataclass
+class PublicQueryResultData:
+    query: PublicQueryData
+    total_responses: int
+    anonymous_responses: int
+    partial_responses: list[ResponseData]
+    answer_results: list[AnswerResultData]
