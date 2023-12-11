@@ -1,0 +1,110 @@
+{% extends "public_queries/base.html" %}
+{% block content %}
+    <div class="query-result content-container">
+        {% include "public_queries/components/public-query-card.html" with public_query=result.query %}
+        <div class="response-result">
+            <div class="field-data">
+                <label>Estado:</label>
+                <span class="value-data">
+                    {% if result.query.is_active %}
+                        Activa
+                    {% else %}
+                        Inactiva
+                    {% endif %}
+                </span>
+            </div>
+            <div class="field-data">
+                <label>Participación total:</label>
+                <span class="value-data">{{ result.total_responses }}</span>
+            </div>
+            <div class="field-data">
+                <label>Participación anónima:</label>
+                <span class="value-data">{{ result.anonymous_responses }}</span>
+            </div>
+            <div class="partial-list">
+                <div class="subtitle">Lista parcial de respuestas ({{ result.partial_responses|length }})</div>
+                <table>
+                    <tr>
+                        <th>Enviado en</th>
+                        <th>Email</th>
+                        <th>Rut</th>
+                    </tr>
+                    {% for response in result.partial_responses %}
+                        <tr>
+                            <td>{{ response.send_at }}</td>
+                            {% if not response.email and not response.rut %}
+                                <td>Anónimo</td>
+                                <td></td>
+                            {% else %}
+                                <td>{{ response.email|default:"" }}</td>
+                                <td>{{ response.rut|default:"" }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="link-more">
+                    <a href="">Ver más</a>
+                </div>
+            </div>
+        </div>
+        <div class="answers-results">
+            <div class="title">Resultados por pregunta</div>
+            {% for answer_result in result.answer_results %}
+                <div class="answer-content">
+                    <div class="field-data">
+                        <label>Pregunta:</label>
+                        <span class="value-data">{{ answer_result.question.name }}</span>
+                    </div>
+                    <div class="field-data">
+                        <label>Tipo de pregunta:</label>
+                        <span class="value-data">{{ answer_result.question.kind }}</span>
+                    </div>
+                    <div class="field-data">
+                        <label>Total respuestas:</label>
+                        <span class="value-data">{{ answer_result.total }}</span>
+                    </div>
+                    {% if answer_result.partial_list %}
+                        <div class="partial-list {% if answer_result.question.kind == 'IMAGE' %}flex{% endif %}">
+                            {% for answer in answer_result.partial_list %}
+                                <div class="item">
+                                    {% if answer_result.question.kind == "TEXT" %}{{ answer.text }}{% endif %}
+                                    {% if answer_result.question.kind == "IMAGE" %}
+                                        <a href="{{ answer.image }}" target="_blank">
+                                            <img src="{{ answer.image }}" alt="" height="" width="">
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if answer_result.question.kind == "POINT" %}
+                        <div class="link-more">
+                            <a href="">Ver mapa</a>
+                        </div>
+                    {% elif answer_result.question.kind == "SELECT" %}
+                        <div class="options">
+                            <table>
+                                <tr>
+                                    <th>Opción</th>
+                                    <th>Cantidad</th>
+                                    <th>Porcentaje</th>
+                                </tr>
+                                {% for option in answer_result.options %}
+                                    <tr>
+                                        <td>{{ option.option_name }}</td>
+                                        <td>{{ option.total }}</td>
+                                        <td>{{ option.percent }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    {% elif answer_result.partial_list and answer_result.partial_list|length < answer_result.total %}
+                        <div class="link-more">
+                            <a href="">Ver más</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

@@ -3,16 +3,11 @@ from uuid import UUID
 
 from django.contrib.gis.geos import Point
 
-from apps.public_queries.lib.exceptions import ResponseDoesNotExist
 from apps.public_queries.models import Response
 
 
-def get_response_by_uuid(uuid: UUID) -> Response:
-    try:
-        response = Response.objects.get(id=uuid)
-    except Response.DoesNotExist:
-        raise ResponseDoesNotExist
-    return response
+def get_response_by_uuid(uuid: UUID, **kwargs) -> Response:
+    return Response.objects.get(id=uuid, **kwargs)
 
 
 def create_response(
@@ -25,3 +20,17 @@ def create_response(
     return Response.objects.create(
         query_id=query_uuid, send_at=send_at, location=location, email=email, rut=rut
     )
+
+
+def get_total_responses_by_query_uuid(query_uuid: UUID) -> int:
+    return Response.objects.filter(query_id=query_uuid).count()
+
+
+def get_anonymous_responses_by_query_uuid(query_uuid: UUID) -> int:
+    return Response.objects.filter(
+        query_id=query_uuid, email__isnull=True, rut__isnull=True
+    ).count()
+
+
+def get_responses_by_query_uuid(query_uuid: UUID) -> list[Response]:
+    return Response.objects.filter(query_id=query_uuid)

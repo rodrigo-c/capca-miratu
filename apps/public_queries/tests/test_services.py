@@ -1,5 +1,6 @@
 from datetime import datetime
 from tempfile import NamedTemporaryFile
+from uuid import uuid4
 
 import pytest
 from django.contrib.gis.geos import Point
@@ -9,7 +10,10 @@ from django.utils.timezone import make_aware
 from freezegun import freeze_time
 
 from apps.public_queries import services
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import (
+    PublicQueryResultConstants,
+    QuestionConstants,
+)
 from apps.public_queries.lib.dataclasses import (
     AnswerData,
     PublicQueryData,
@@ -25,21 +29,11 @@ from apps.public_queries.tests.recipes import (
 
 
 @pytest.mark.django_db
-def test_get_public_query_by_uuid(public_query):
-    public_query_data = services.get_public_query_by_uuid(uuid=public_query.id)
-    assert isinstance(public_query_data, PublicQueryData)
-    assert public_query_data.uuid == public_query.id
-    assert public_query_data.active is True
-    assert isinstance(public_query_data.name, str)
-    assert public_query_data.image is None
-
-
-@pytest.mark.django_db
-class TestGetActivePublicQueryByUUID:
+class TestGetPublicQuery:
     def test_success(self):
         public_query = public_query_recipe.make(active=True)
-        public_query_data = services.get_active_public_query_by_uuid(
-            uuid=public_query.id
+        public_query_data = services.get_public_query(
+            identifier=public_query.id, active=True
         )
         assert isinstance(public_query_data, PublicQueryData)
         assert public_query_data.uuid == public_query.id
@@ -51,9 +45,7 @@ class TestGetActivePublicQueryByUUID:
         questions = [
             question_recipe.make(query_id=public_query.id) for index in range(5)
         ]
-        public_query_data = services.get_active_public_query_by_uuid(
-            uuid=public_query.id
-        )
+        public_query_data = services.get_public_query(identifier=str(public_query.id))
         for index, question in enumerate(questions):
             question_data = public_query_data.questions[index]
             assert isinstance(question_data, QuestionData)
@@ -68,13 +60,19 @@ class TestGetActivePublicQueryByUUID:
             kind=QuestionConstants.KIND_SELECT,
         )
         option = question_option_recipe.make(question_id=select_question.id)
-        public_query_data = services.get_active_public_query_by_uuid(
-            uuid=public_query.id
-        )
+        public_query_data = services.get_public_query(identifier=public_query.url_code)
         question_data = public_query_data.questions[0]
         option_data = question_data.options[0]
         assert option_data.uuid == option.id
         assert option_data.name == option.name
+
+    def test_does_not_exist_by_uuid(self):
+        with pytest.raises(PublicQueryDoesNotExist):
+            services.get_public_query(identifier=uuid4())
+
+    def test_does_not_exist_by_url_code(self):
+        with pytest.raises(PublicQueryDoesNotExist):
+            services.get_public_query(identifier="xs")
 
     def test_out_of_start_time(self):
         public_query = public_query_recipe.make(
@@ -82,7 +80,7 @@ class TestGetActivePublicQueryByUUID:
         )
         with freeze_time("2023-01-01"):
             with pytest.raises(PublicQueryDoesNotExist):
-                services.get_active_public_query_by_uuid(uuid=public_query.id)
+                services.get_public_query(identifier=public_query.id, active=True)
 
     def test_out_of_end_time(self):
         public_query = public_query_recipe.make(
@@ -90,16 +88,7 @@ class TestGetActivePublicQueryByUUID:
         )
         with freeze_time("2023-01-02"):
             with pytest.raises(PublicQueryDoesNotExist):
-                services.get_active_public_query_by_uuid(uuid=public_query.id)
-
-
-@pytest.mark.django_db
-def test_get_public_query_by_url_code(public_query):
-    returned_query = services.get_active_public_query_by_url_code(
-        url_code=public_query.url_code
-    )
-    assert returned_query.uuid == public_query.id
-    assert isinstance(returned_query, PublicQueryData)
+                services.get_public_query(identifier=public_query.id, active=True)
 
 
 @pytest.mark.django_db
@@ -215,3 +204,41 @@ class TestSubmitResponse:
         assert all(answer.uuid for answer in returned_response.answers)
         assert returned_response.uuid == response_instance.id
         assert response_instance.answers.first().point == point
+
+
+@pytest.mark.django_db
+def test_get_public_query_result(ended_public_query):
+    public_query_data = services.get_public_query(identifier=ended_public_query.id)
+    result_data = services.get_public_query_result(public_query=public_query_data)
+    assert result_data.query == public_query_data
+    assert result_data.total_responses == 16
+    assert result_data.anonymous_responses == 8
+    assert (
+        len(result_data.partial_responses)
+        == PublicQueryResultConstants.LENGTH_PARTIAL_LIST
+    )
+    assert len(result_data.answer_results) == 4
+
+    for answer_result in result_data.answer_results:
+        if answer_result.question.kind in [
+            QuestionConstants.KIND_TEXT,
+            QuestionConstants.KIND_IMAGE,
+        ]:
+            assert (
+                len(answer_result.partial_list)
+                == PublicQueryResultConstants.LENGTH_PARTIAL_LIST
+            )
+        if answer_result.question.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_POINT,
+        ]:
+            assert answer_result.partial_list is None
+
+        if answer_result.question.kind == QuestionConstants.KIND_SELECT:
+            assert answer_result.options[0].total == 0
+            assert answer_result.options[0].percent == 0.0
+            assert answer_result.options[1].total == 8
+            assert answer_result.options[1].percent == 50.0
+            assert answer_result.options[2].total == 8
+            assert answer_result.options[2].percent == 50.0
+            assert answer_result.options[3].total == 0

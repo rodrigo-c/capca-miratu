@@ -26,6 +26,14 @@ class QuestionConstants:
     VERBOSE_NAME_PLURAL = "Preguntas"
 
 
+class PublicQueryResultConstants:
+    LENGTH_PARTIAL_LIST = 5
+    QUESTION_KIND_WITH_LIST = [
+        QuestionConstants.KIND_TEXT,
+        QuestionConstants.KIND_IMAGE,
+    ]
+
+
 class QuestionOptionConstants:
     VERBOSE_NAME = "Opción"
     VERBOSE_NAME_PLURAL = "Opciones"

@@ -1,6 +1,5 @@
 from uuid import UUID
 
-from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -9,33 +8,43 @@ from apps.public_queries.forms import AnswerFormSet, ResponseForm
 from apps.public_queries.lib.constants import QuestionConstants
 from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
-    get_active_public_query_by_url_code,
-    get_active_public_query_by_uuid,
+    get_public_query,
+    get_public_query_result,
     get_response_by_uuid,
     submit_response,
 )
 
 
-class PublicQuerySubmit(TemplateView):
-    template_name = "public_queries/submit.html"
+class UUIDObjectURL:
+    url_active_status = None
+    url_service = None
+    url_service_field = "identifier"
+    url_service_extra_kwargs = None
 
     def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
+        extra_kwargs = self.url_service_extra_kwargs or {}
         try:
-            if len(str(uuid)) <= getattr(settings, "MAXIMUM_URL_CHARS", 5):
-                public_query = get_active_public_query_by_url_code(url_code=uuid)
-            else:
-                uuid = UUID(uuid)
-                public_query = get_active_public_query_by_uuid(uuid=uuid)
-        except (ValueError, ObjectDoesNotExist):
+            object_data = self.__class__.url_service(
+                **{self.url_service_field: uuid, **extra_kwargs}
+            )
+        except ObjectDoesNotExist:
             raise Http404
-        self.public_query = public_query
+        self.object = object_data
         return super().dispatch(request, uuid, *args, **kwargs)
 
+
+class PublicQuerySubmit(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/submit.html"
+    url_service = get_public_query
+    url_service_extra_kwargs = {"active": True}
+
     def get(self, request, uuid) -> HttpResponse:
+        self.public_query = self.object
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
+        self.public_query = self.object
         response_form = ResponseForm(
             data=request.POST,
             initial={"query": self.public_query.uuid},
@@ -103,24 +112,28 @@ class PublicQuerySubmit(TemplateView):
         return reverse("public_queries:submit-success", kwargs={"uuid": response_uuid})
 
 
-class SuccessSubmit(TemplateView):
+class SuccessSubmit(UUIDObjectURL, TemplateView):
     template_name = "public_queries/success.html"
-
-    def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
-        try:
-            uuid = UUID(uuid)
-            response_data = get_response_by_uuid(uuid=uuid)
-        except (ValueError, ObjectDoesNotExist):
-            raise Http404
-        self.response_data = response_data
-        return super().dispatch(request, uuid, *args, **kwargs)
+    url_service = get_response_by_uuid
+    url_service_field = "uuid"
 
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
-        context["response_data"] = self.response_data
+        context["response_data"] = self.object
         context["navigation_title"] = "Consulta Pública"
         context["success_message"] = "El formulario fue enviado con éxito."
         context[
             "sucess_gratitude_message"
         ] = "¡Gracias por aportar con tu visión ciudadana!"
+        return context
+
+
+class PublicQueryResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/query-result.html"
+    url_service = get_public_query
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        context["result"] = get_public_query_result(public_query=self.object)
+        context["navigation_title"] = "Resultado de Consulta Pública"
         return context

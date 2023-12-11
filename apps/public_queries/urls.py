@@ -1,6 +1,10 @@
 from django.urls import path
 
-from apps.public_queries.views import PublicQuerySubmit, SuccessSubmit
+from apps.public_queries.views import (
+    PublicQueryResult,
+    PublicQuerySubmit,
+    SuccessSubmit,
+)
 
 app_name = "public_queries"
 
@@ -14,5 +18,10 @@ urlpatterns = [
         "submitted/<str:uuid>",
         view=SuccessSubmit.as_view(),
         name="submit-success",
+    ),
+    path(
+        "query/<str:uuid>/result",
+        view=PublicQueryResult.as_view(),
+        name="query-result",
     ),
 ]

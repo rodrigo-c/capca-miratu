@@ -1,6 +1,5 @@
 import pytest
 
-from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
 from apps.public_queries.providers import public_query as public_query_providers
 
 
@@ -12,10 +11,6 @@ class TestGetPublicQueryByUUID:
         )
         assert called_public_query.id == public_query.id
 
-    def test_not_exist(self):
-        with pytest.raises(PublicQueryDoesNotExist):
-            public_query_providers.get_public_query_by_uuid(uuid=0)
-
 
 @pytest.mark.django_db
 class TestGetPublicQueryByUrlCode:
@@ -24,7 +19,3 @@ class TestGetPublicQueryByUrlCode:
             url_code=public_query.url_code
         )
         assert called_public_query.id == public_query.id
-
-    def test_not_exist(self):
-        with pytest.raises(PublicQueryDoesNotExist):
-            public_query_providers.get_public_query_by_url_code(url_code=0)
