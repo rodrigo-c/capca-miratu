@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.utils import timezone
 
@@ -20,6 +21,7 @@ from apps.public_queries.lib.dataclasses import (
 )
 from apps.public_queries.lib.exceptions import (
     PublicQueryDoesNotExist,
+    QuestionDoesNotExist,
     ResponseDoesNotExist,
 )
 from apps.public_queries.models import Answer, PublicQuery, Question, Response
@@ -122,7 +124,24 @@ def get_response_by_uuid(uuid: UUID) -> ResponseData:
     )
 
 
-class SubmitResponseEngine:
+class ServiceBase:
+    def _build_answer_data_list(self, instances: list[Answer]) -> list[AnswerData]:
+        answers = [
+            build_dataclass_from_model_instance(
+                klass=AnswerData,
+                instance=instance,
+                uuid=instance.id,
+                response_uuid=instance.response_id,
+                question_uuid=instance.question_id,
+                image=instance.image.url if instance.image else None,
+                options=getattr(instance, "_cached_options", None),
+            )
+            for instance in instances
+        ]
+        return answers
+
+
+class SubmitResponseEngine(ServiceBase):
     def __init__(
         self, response: ResponseData, public_query: PublicQueryData | None = None
     ):
@@ -221,21 +240,6 @@ class SubmitResponseEngine:
             query_data=self.public_query,
         )
 
-    def _build_answer_data_list(self, instances: list[Answer]) -> list[AnswerData]:
-        answers = [
-            build_dataclass_from_model_instance(
-                klass=AnswerData,
-                instance=instance,
-                uuid=instance.id,
-                response_uuid=instance.response_id,
-                question_uuid=instance.question_id,
-                image=instance.image.url if instance.image else None,
-                options=instance._cached_options,
-            )
-            for instance in instances
-        ]
-        return answers
-
 
 def submit_response(
     response: ResponseData, public_query: PublicQueryData | None = None
@@ -244,7 +248,7 @@ def submit_response(
     return engine.submit()
 
 
-class PublicQueryResultReturner:
+class PublicQueryResultReturner(ServiceBase):
     def __init__(self, public_query: PublicQueryData):
         self.public_query = public_query
 
@@ -292,17 +296,9 @@ class PublicQueryResultReturner:
                 queryset = answer_providers.get_answers_by_question_uuid(
                     question_uuid=question.uuid
                 )
-                partial_list = [
-                    AnswerData(
-                        uuid=answer.id,
-                        question_uuid=question.uuid,
-                        text=answer.text,
-                        image=answer.image.url if answer.image else None,
-                    )
-                    for answer in queryset[
-                        : PublicQueryResultConstants.LENGTH_PARTIAL_LIST
-                    ]
-                ]
+                partial_list = self._build_answer_data_list(
+                    instances=queryset[: PublicQueryResultConstants.LENGTH_PARTIAL_LIST]
+                )
                 result.partial_list = partial_list
             elif question.kind == QuestionConstants.KIND_SELECT:
                 result.options = self._get_option_results(
@@ -332,3 +328,60 @@ class PublicQueryResultReturner:
 def get_public_query_result(public_query: PublicQueryData) -> PublicQueryResultData:
     returner = PublicQueryResultReturner(public_query=public_query)
     return returner.get()
+
+
+class AnswerResultReturner(ServiceBase):
+    def __init__(self, question_uuid: UUID, page_size: int | None = None):
+        try:
+            question = question_providers.get_question_by_uuid(uuid=question_uuid)
+        except Question.DoesNotExist:
+            raise QuestionDoesNotExist
+        if question.kind not in QuestionConstants.RESULT_AVAILABLE_KINDS:
+            raise QuestionDoesNotExist
+
+        self.question = question
+        self.page_size = page_size or PublicQueryResultConstants.DEFAULT_PAGE_SIZE
+        assert isinstance(self.page_size, int)
+        self.question_data = build_dataclass_from_model_instance(
+            klass=QuestionData,
+            instance=question,
+            uuid=question.id,
+            query_uuid=question.query_id,
+            index=None,
+        )
+
+    def get(self, page_num: int | None = None) -> AnswerResultData:
+        queryset = answer_providers.get_answers_by_question_uuid(
+            question_uuid=self.question_data.uuid
+        )
+        extra_kwargs = {}
+        if self.question.kind == QuestionConstants.KIND_POINT:
+            partial_list = queryset
+            total = queryset.count()
+        else:
+            paginator = Paginator(object_list=queryset, per_page=self.page_size)
+            total = paginator.count
+            page = paginator.get_page(number=page_num)
+            partial_list = page.object_list
+            extra_kwargs = {"num_pages": paginator.num_pages}
+        partial_list = self._build_answer_data_list(instances=partial_list)
+
+        return AnswerResultData(
+            question=self.question_data,
+            total=total,
+            partial_list=partial_list,
+            page_num=page_num,
+            **extra_kwargs,
+        )
+
+
+def get_answer_result(
+    question_uuid: UUID,
+    page_num: int | None = None,
+    page_size: int | None = None,
+) -> list[AnswerData]:
+    returner = AnswerResultReturner(
+        question_uuid=question_uuid,
+        page_size=page_size,
+    )
+    return returner.get(page_num=page_num)

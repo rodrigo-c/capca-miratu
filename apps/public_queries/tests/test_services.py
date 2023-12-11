@@ -20,7 +20,10 @@ from apps.public_queries.lib.dataclasses import (
     QuestionData,
     ResponseData,
 )
-from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
+from apps.public_queries.lib.exceptions import (
+    PublicQueryDoesNotExist,
+    QuestionDoesNotExist,
+)
 from apps.public_queries.tests.recipes import (
     public_query_recipe,
     question_option_recipe,
@@ -242,3 +245,60 @@ def test_get_public_query_result(ended_public_query):
             assert answer_result.options[2].total == 8
             assert answer_result.options[2].percent == 50.0
             assert answer_result.options[3].total == 0
+
+
+@pytest.mark.django_db
+class TestGetAnswerResult:
+    def test_with_text(self, ended_public_query):
+        question = ended_public_query.questions.filter(
+            kind=QuestionConstants.KIND_TEXT
+        ).first()
+        answer_result = services.get_answer_result(
+            question_uuid=question.id,
+            page_size=5,
+        )
+        assert answer_result.total == 16
+        assert answer_result.question.uuid == question.id
+        assert len(answer_result.partial_list) == 5
+        assert all(answer_data.text for answer_data in answer_result.partial_list)
+
+    def test_with_image(self, ended_public_query):
+        question = ended_public_query.questions.filter(
+            kind=QuestionConstants.KIND_IMAGE
+        ).first()
+        answer_result = services.get_answer_result(
+            question_uuid=question.id,
+            page_size=5,
+        )
+        assert answer_result.total == 16
+        assert answer_result.question.uuid == question.id
+        assert len(answer_result.partial_list) == 5
+        assert all(answer_data.image for answer_data in answer_result.partial_list)
+
+    def test_with_select(self, ended_public_query):
+        question = ended_public_query.questions.filter(
+            kind=QuestionConstants.KIND_SELECT
+        ).first()
+        with pytest.raises(QuestionDoesNotExist):
+            services.get_answer_result(
+                question_uuid=question.id,
+            )
+
+    def test_with_point(self, ended_public_query):
+        question = ended_public_query.questions.filter(
+            kind=QuestionConstants.KIND_POINT
+        ).first()
+        answer_result = services.get_answer_result(
+            question_uuid=question.id,
+            page_size=5,  # this must not work
+        )
+        assert answer_result.total == 16
+        assert answer_result.question.uuid == question.id
+        assert len(answer_result.partial_list) == 16
+        assert all(answer_data.point for answer_data in answer_result.partial_list)
+
+    def test_not_found(ended_public_query):
+        with pytest.raises(QuestionDoesNotExist):
+            services.get_answer_result(
+                question_uuid=uuid4(),
+            )
