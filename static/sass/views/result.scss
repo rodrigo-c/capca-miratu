@@ -1,0 +1,71 @@
+.response-result {
+  margin: 4vh 0;
+  width: 100%;
+
+}
+
+.field-data {
+  border-bottom: 1px solid $inactive;
+  display: flex;
+  padding: 1vh 0;
+
+  label {
+    font-weight: 600;
+    min-width: 30vw;
+  }
+}
+
+.partial-list {
+  margin: 4vh 2vw;
+
+  .subtitle {
+    margin-bottom: 2vh;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  .link-more {
+    text-align: right;
+  }
+}
+
+.answers-results {
+  width: 100%;
+
+  .answer-content {
+    border-bottom: 1px solid $secondary;
+    margin-bottom: 2vh;
+    padding-bottom: 2vh;
+  }
+
+  .link-more {
+    margin-right: 5vw;
+    padding-top: 2vh;
+    text-align: right;
+  }
+
+  .partial-list.flex {
+    display: flex;
+  }
+
+  .options {
+    display: flex;
+    padding: 5vh 5vw;
+  }
+}
+
+table {
+  border-spacing: 0;
+  text-align: left;
+  width: 100%;
+
+  th {
+    border-bottom: 1px solid $primary;
+  }
+
+  td {
+    border-bottom: 1px solid $inactive;
+  }
+}
