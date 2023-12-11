@@ -10,3 +10,9 @@ class TestGetQuestionsByPublicQuerUUID:
             uuid=question.query_id
         )
         assert queryset.first().id == question.id
+
+
+@pytest.mark.django_db
+def test_get_question_by_uuid(question):
+    returned_instance = question_providers.get_question_by_uuid(uuid=question.id)
+    assert returned_instance.id == question.id
