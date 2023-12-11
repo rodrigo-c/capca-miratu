@@ -34,6 +34,7 @@ class PublicQueryData:
     kind: str
     name: str
     active: bool
+    is_active: bool
     description: str | None = None
     start_at: datetime | None = None
     end_at: datetime | None = None

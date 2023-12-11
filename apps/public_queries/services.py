@@ -38,10 +38,7 @@ class PublicQueryReturner:
             public_query = self._get_obj_by_url_code(url_code=identifier, **kwargs)
         else:
             public_query = self._get_obj_by_uuid(uuid=identifier, **kwargs)
-        now = timezone.now()
-        is_after_start = public_query.start_at is None or public_query.start_at < now
-        is_before_end = public_query.end_at is None or public_query.end_at > now
-        if active and (not is_after_start or not is_before_end):
+        if active and not public_query.is_active:
             raise PublicQueryDoesNotExist
         self.public_query = public_query
 

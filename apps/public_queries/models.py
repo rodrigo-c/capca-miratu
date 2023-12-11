@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.gis.db import models
+from django.utils import timezone
 
 from apps.public_queries.lib.constants import (
     AnswerConstants,
@@ -70,6 +71,17 @@ class PublicQuery(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.url_code})"
+
+    @property
+    def is_active(self) -> bool:
+        if not self.active:
+            return False
+        now = timezone.now()
+        is_after_start = self.start_at is None or self.start_at < now
+        is_before_end = self.end_at is None or self.end_at > now
+        if is_after_start and is_before_end:
+            return True
+        return False
 
 
 class Question(BaseModel):
