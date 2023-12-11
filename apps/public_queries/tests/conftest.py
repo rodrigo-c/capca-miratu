@@ -1,6 +1,7 @@
 from io import BytesIO
 
 import pytest
+from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
@@ -14,6 +15,11 @@ from apps.utils.dataclasses import build_dataclass_from_model_instance
 @pytest.fixture
 def public_query():
     return recipes.public_query_recipe.make()
+
+
+@pytest.fixture
+def inactive_public_query():
+    return recipes.public_query_recipe.make(active=False)
 
 
 @pytest.fixture
@@ -75,7 +81,7 @@ def uploaded_image(field_name="images"):
 
 
 @pytest.fixture
-def ended_public_query():
+def ended_public_query(uploaded_image):
     public_query = recipes.public_query_recipe.make(active=True)
     questions = [
         recipes.question_recipe.make(query_id=public_query.id),
@@ -107,7 +113,24 @@ def ended_public_query():
         responses.append(response)
         for question in questions:
             answer = recipes.answer_recipe.make(
-                response_id=response.id, question_id=question.id
+                response_id=response.id,
+                question_id=question.id,
+                text=(
+                    f"Fake Text {index}"
+                    if question.kind == QuestionConstants.KIND_TEXT
+                    else None
+                ),
+                image=(
+                    uploaded_image
+                    if question.kind == QuestionConstants.KIND_IMAGE
+                    else None
+                ),
+                _create_files=(question.kind == QuestionConstants.KIND_IMAGE),
+                point=(
+                    Point(1, 1)
+                    if question.kind == QuestionConstants.KIND_POINT
+                    else None
+                ),
             )
             if question.kind == QuestionConstants.KIND_SELECT:
                 answer.options.add(options[1 if index % 2 == 0 else 2].id)
