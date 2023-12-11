@@ -20,12 +20,12 @@ class QuestionData:
     kind: str
     name: str
     order: int
-    index: int
     required: bool
     max_answers: int
     text_max_length: int | None = None
     description: str | None = None
     options: list | None = None
+    index: int | None = None
 
 
 @dataclass
@@ -79,6 +79,8 @@ class AnswerResultData:
     total: int
     partial_list: list | None = None
     options: list[OptionResultData] | None = None
+    page_num: int | None = None
+    num_pages: int | None = None
 
 
 @dataclass
