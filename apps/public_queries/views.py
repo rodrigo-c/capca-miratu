@@ -9,6 +9,7 @@ from apps.public_queries.lib.constants import QuestionConstants
 from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
     get_public_query,
+    get_public_query_result,
     get_response_by_uuid,
     submit_response,
 )
@@ -124,4 +125,15 @@ class SuccessSubmit(UUIDObjectURL, TemplateView):
         context[
             "sucess_gratitude_message"
         ] = "¡Gracias por aportar con tu visión ciudadana!"
+        return context
+
+
+class PublicQueryResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/query-result.html"
+    url_service = get_public_query
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        context["result"] = get_public_query_result(public_query=self.object)
+        context["navigation_title"] = "Resultado de Consulta Pública"
         return context
