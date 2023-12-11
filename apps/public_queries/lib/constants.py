@@ -27,7 +27,7 @@ class QuestionConstants:
 
 
 class PublicQueryResultConstants:
-    LENGTH_PARTIAL_LIST = 10
+    LENGTH_PARTIAL_LIST = 5
     QUESTION_KIND_WITH_LIST = [
         QuestionConstants.KIND_TEXT,
         QuestionConstants.KIND_IMAGE,
