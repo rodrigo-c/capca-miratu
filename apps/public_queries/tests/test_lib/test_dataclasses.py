@@ -1,13 +1,18 @@
 import json
 from datetime import datetime
 
+from django.contrib.gis.geos import Point
+
 from apps.public_queries.lib.dataclasses import AnswerData, AnswerResultData
 
 
 class TestAnswerResultData:
     def test_partial_list_json(self):
         partial_list = [
-            AnswerData(question_uuid=None, send_at=datetime.now()) for index in range(5)
+            AnswerData(
+                question_uuid=None, point=Point(index, index), send_at=datetime.now()
+            )
+            for index in range(5)
         ]
         answer_result_data = AnswerResultData(
             question=None, total=5, partial_list=partial_list
