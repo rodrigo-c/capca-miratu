@@ -41,6 +41,7 @@ class PublicQueryData:
     end_at: datetime | None = None
     image: str | None = None
     questions: list[QuestionData] | None = None
+    url_code: str | None = None
 
 
 @dataclass
