@@ -79,7 +79,7 @@
                     {% endif %}
                     {% if answer_result.question.kind == "POINT" %}
                         <div class="link-more">
-                            <a href="">Ver mapa</a>
+                            <a href="{% url 'public_queries:answer-result' answer_result.question.uuid %}">Ver mapa</a>
                         </div>
                     {% elif answer_result.question.kind == "SELECT" %}
                         <div class="options">
@@ -93,14 +93,14 @@
                                     <tr>
                                         <td>{{ option.option_name }}</td>
                                         <td>{{ option.total }}</td>
-                                        <td>{{ option.percent }}</td>
+                                        <td>{{ option.percent|floatformat }}%</td>
                                     </tr>
                                 {% endfor %}
                             </table>
                         </div>
                     {% elif answer_result.partial_list and answer_result.partial_list|length < answer_result.total %}
                         <div class="link-more">
-                            <a href="">Ver más</a>
+                            <a href="{% url 'public_queries:answer-result' answer_result.question.uuid %}">Ver más</a>
                         </div>
                     {% endif %}
                 </div>
