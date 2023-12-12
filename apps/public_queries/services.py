@@ -125,7 +125,9 @@ def get_response_by_uuid(uuid: UUID) -> ResponseData:
 
 
 class ServiceBase:
-    def _build_answer_data_list(self, instances: list[Answer]) -> list[AnswerData]:
+    def _build_answer_data_list(
+        self, instances: list[Answer], with_response: bool = False
+    ) -> list[AnswerData]:
         answers = [
             build_dataclass_from_model_instance(
                 klass=AnswerData,
@@ -135,6 +137,7 @@ class ServiceBase:
                 question_uuid=instance.question_id,
                 image=instance.image.url if instance.image else None,
                 options=getattr(instance, "_cached_options", None),
+                send_at=(instance.response.send_at if with_response else None),
             )
             for instance in instances
         ]
@@ -249,7 +252,8 @@ def submit_response(
 
 
 class PublicQueryResultReturner(ServiceBase):
-    def __init__(self, public_query: PublicQueryData):
+    def __init__(self, public_query: PublicQueryData, page_size: int | None = None):
+        self.page_size = page_size or PublicQueryResultConstants.DEFAULT_PAGE_SIZE
         self.public_query = public_query
 
     def get(self) -> PublicQueryResultData:
@@ -267,10 +271,36 @@ class PublicQueryResultReturner(ServiceBase):
             answer_results=self._get_answer_results(),
         )
 
+    def get_responses(self, page_num: int | None = None) -> PublicQueryResultData:
+        page_num = page_num if isinstance(page_num, int) and page_num > 0 else 1
+        partial_responses = self._get_paginated_responses(page_num=page_num)
+        return PublicQueryResultData(
+            query=self.public_query,
+            total_responses=response_providers.get_total_responses_by_query_uuid(
+                query_uuid=self.public_query.uuid
+            ),
+            anonymous_responses=(
+                response_providers.get_anonymous_responses_by_query_uuid(
+                    query_uuid=self.public_query.uuid
+                )
+            ),
+            partial_responses=partial_responses,
+            answer_results=None,
+            page_num=page_num,
+            num_pages=self.response_paginator.num_pages,
+        )
+
     def _get_partial_responses(self) -> list[ResponseData]:
         responses_queryset = response_providers.get_responses_by_query_uuid(
             query_uuid=self.public_query.uuid
         )
+        return self._to_response_dataclasses(
+            instances=responses_queryset[
+                : PublicQueryResultConstants.LENGTH_PARTIAL_LIST
+            ]
+        )
+
+    def _to_response_dataclasses(self, instances: list[Response]) -> list[ResponseData]:
         return [
             ResponseData(
                 query_uuid=response.query_id,
@@ -278,10 +308,17 @@ class PublicQueryResultReturner(ServiceBase):
                 email=response.email,
                 rut=response.rut,
             )
-            for response in responses_queryset[
-                : PublicQueryResultConstants.LENGTH_PARTIAL_LIST
-            ]
+            for response in instances
         ]
+
+    def _get_paginated_responses(self, page_num: int) -> list[ResponseData]:
+        responses_queryset = response_providers.get_responses_by_query_uuid(
+            query_uuid=self.public_query.uuid
+        )
+        paginator = Paginator(object_list=responses_queryset, per_page=self.page_size)
+        page = paginator.get_page(number=page_num)
+        self.response_paginator = paginator
+        return self._to_response_dataclasses(instances=page.object_list)
 
     def _get_answer_results(self) -> list[AnswerResultData]:
         answers_result_data_list = []
@@ -319,7 +356,7 @@ class PublicQueryResultReturner(ServiceBase):
                 option_uuid=option.uuid,
                 option_name=option.name,
                 total=option_total,
-                percent=(option_total / total) * 100,
+                percent=(option_total / total) * 100 if total else 0.0,
             )
             option_results.append(option_result)
         return option_results
@@ -328,6 +365,18 @@ class PublicQueryResultReturner(ServiceBase):
 def get_public_query_result(public_query: PublicQueryData) -> PublicQueryResultData:
     returner = PublicQueryResultReturner(public_query=public_query)
     return returner.get()
+
+
+def get_public_query_response_result(
+    public_query: PublicQueryData,
+    page_num: int | None = None,
+    page_size: int = PublicQueryResultConstants.DEFAULT_PAGE_SIZE,
+) -> PublicQueryResultData:
+    returner = PublicQueryResultReturner(
+        public_query=public_query,
+        page_size=page_size,
+    )
+    return returner.get_responses(page_num=page_num)
 
 
 class AnswerResultReturner(ServiceBase):
@@ -348,13 +397,19 @@ class AnswerResultReturner(ServiceBase):
             uuid=question.id,
             query_uuid=question.query_id,
             index=None,
+            options=None,
         )
 
     def get(self, page_num: int | None = None) -> AnswerResultData:
         queryset = answer_providers.get_answers_by_question_uuid(
             question_uuid=self.question_data.uuid
         )
-        extra_kwargs = {}
+        extra_kwargs = {
+            "query_name": self.question.query.name,
+            "query_urlcode": self.question.query.url_code,
+            "page_num": page_num,
+            "options": None,
+        }
         if self.question.kind == QuestionConstants.KIND_POINT:
             partial_list = queryset
             total = queryset.count()
@@ -363,14 +418,16 @@ class AnswerResultReturner(ServiceBase):
             total = paginator.count
             page = paginator.get_page(number=page_num)
             partial_list = page.object_list
-            extra_kwargs = {"num_pages": paginator.num_pages}
-        partial_list = self._build_answer_data_list(instances=partial_list)
+            extra_kwargs.update({"num_pages": paginator.num_pages})
+        partial_list = self._build_answer_data_list(
+            instances=partial_list,
+            with_response=True,
+        )
 
         return AnswerResultData(
             question=self.question_data,
             total=total,
             partial_list=partial_list,
-            page_num=page_num,
             **extra_kwargs,
         )
 

@@ -248,6 +248,18 @@ def test_get_public_query_result(ended_public_query):
 
 
 @pytest.mark.django_db
+def test_get_public_query_response_result(ended_public_query):
+    public_query_data = services.get_public_query(identifier=ended_public_query.id)
+    public_query_result = services.get_public_query_response_result(
+        public_query=public_query_data,
+        page_size=2,
+    )
+    assert public_query_result.page_num == 1
+    assert public_query_result.num_pages == 8
+    assert len(public_query_result.partial_responses) == 2
+
+
+@pytest.mark.django_db
 class TestGetAnswerResult:
     def test_with_text(self, ended_public_query):
         question = ended_public_query.questions.filter(
