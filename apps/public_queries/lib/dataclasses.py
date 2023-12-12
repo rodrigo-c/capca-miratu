@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
@@ -51,6 +52,7 @@ class AnswerData:
     point: Point = None
     uuid: UUID | None = None
     response_uuid: UUID | None = None
+    send_at: datetime | None = None
 
 
 @dataclass
@@ -81,6 +83,23 @@ class AnswerResultData:
     options: list[OptionResultData] | None = None
     page_num: int | None = None
     num_pages: int | None = None
+    query_name: str | None = None
+    query_urlcode: str | None = None
+
+    @property
+    def partial_list_json(self) -> str:
+        def _set_value(value) -> dict:
+            if value is None:
+                return
+            if isinstance(value, Point):
+                return list(reversed(list(value)))
+            return str(value)
+
+        serialized_partial_list = [
+            {field: _set_value(value=value) for field, value in answer.__dict__.items()}
+            for answer in self.partial_list
+        ]
+        return json.dumps(serialized_partial_list)
 
 
 @dataclass
@@ -90,3 +109,5 @@ class PublicQueryResultData:
     anonymous_responses: int
     partial_responses: list[ResponseData]
     answer_results: list[AnswerResultData]
+    page_num: int | None = None
+    num_pages: int | None = None
