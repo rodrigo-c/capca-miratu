@@ -1,14 +1,10 @@
-from io import BytesIO
-
 import pytest
 from django.contrib.gis.geos import Point
-from django.core.files.uploadedfile import InMemoryUploadedFile
-
-from PIL import Image
 
 from apps.public_queries.lib.constants import QuestionConstants
 from apps.public_queries.lib.dataclasses import QuestionData
 from apps.public_queries.tests import recipes
+from apps.public_queries.utils import create_fake_uploaded_image
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
 
@@ -65,19 +61,8 @@ def answer_with_option():
 
 
 @pytest.fixture
-def uploaded_image(field_name="images"):
-    image = Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
-    image_file = BytesIO()
-    image.save(image_file, "PNG")
-    image_file.seek(0)
-    return InMemoryUploadedFile(
-        image_file,
-        name="fake-image.png",
-        field_name=field_name,
-        content_type="image/png",
-        size=len(image_file.getvalue()),
-        charset=None,
-    )
+def uploaded_image(field_name="images", size=(50, 50), color=(256, 0, 0)):
+    return create_fake_uploaded_image(field_name=field_name, size=size, color=color)
 
 
 @pytest.fixture
