@@ -201,3 +201,13 @@ class TestAnswerResult:
         url = reverse(self.public_query_pattern, kwargs={"uuid": question.id})
         http_response = client.get(url)
         assert http_response.status_code == 200
+
+
+@pytest.mark.django_db
+class TestPublicQueryResponseResult:
+    public_query_pattern = "public_queries:response-result"
+
+    def test_success(self, client, ended_public_query):
+        url = reverse(self.public_query_pattern, kwargs={"uuid": ended_public_query.id})
+        http_response = client.get(f"{url}?page_num=1")
+        assert http_response.status_code == 200

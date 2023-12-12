@@ -43,7 +43,7 @@
                     {% endfor %}
                 </table>
                 <div class="link-more">
-                    <a href="">Ver más</a>
+                    <a href="{% url 'public_queries:response-result' result.query.url_code %}">Ver más</a>
                 </div>
             </div>
         </div>

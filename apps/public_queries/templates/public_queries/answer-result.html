@@ -39,7 +39,7 @@
                 <table>
                     <tbody>
                         <tr>
-                            <th>Send at</th>
+                            <th>Enviado en</th>
                             <th>Contenido</th>
                         </tr>
                         {% for answer in answer_result.partial_list %}
@@ -58,6 +58,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% if answer_result.page_num and answer_result.num_pages %}
+                    {% include "public_queries/components/pagination.html" with num_pages=answer_result.num_pages page_num=answer_result.page_num %}
+                {% endif %}
             </div>
         {% endif %}
     </div>

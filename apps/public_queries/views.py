@@ -13,6 +13,7 @@ from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
     get_answer_result,
     get_public_query,
+    get_public_query_response_result,
     get_public_query_result,
     get_response_by_uuid,
     submit_response,
@@ -38,6 +39,11 @@ class UUIDObjectURL:
 
     def get_url_service_extra_kwargs(self):
         return self.url_service_extra_kwargs or {}
+
+    def _get_page_num(self) -> int:
+        if "page_num" in self.request.GET and self.request.GET["page_num"].isdecimal():
+            return int(self.request.GET["page_num"])
+        return 1
 
 
 class PublicQuerySubmit(UUIDObjectURL, TemplateView):
@@ -153,12 +159,29 @@ class AnswerQuestionResult(UUIDObjectURL, TemplateView):
 
     def get_url_service_extra_kwargs(self):
         return {
-            "page_num": self.request.GET.get("page_num"),
+            "page_num": self._get_page_num(),
             "page_size": PublicQueryResultConstants.DEFAULT_PAGE_SIZE,
         }
 
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
         context["answer_result"] = self.object
+        context["navigation_title"] = "Resultado de Consulta Pública"
+        return context
+
+
+class PublicQueryResponseResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/response-result.html"
+    url_service = get_public_query
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        page_num = self._get_page_num()
+        response_result = get_public_query_response_result(
+            public_query=self.object,
+            page_num=page_num,
+            page_size=PublicQueryResultConstants.DEFAULT_PAGE_SIZE,
+        )
+        context["response_result"] = response_result
         context["navigation_title"] = "Resultado de Consulta Pública"
         return context
