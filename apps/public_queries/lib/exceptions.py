@@ -8,3 +8,7 @@ class PublicQueryDoesNotExist(ObjectDoesNotExist):
 
 class ResponseDoesNotExist(ObjectDoesNotExist):
     pass
+
+
+class QuestionDoesNotExist(ObjectDoesNotExist):
+    pass

@@ -6,6 +6,9 @@ class TestPublicQuery:
     def test_str(self, public_query):
         assert str(public_query) == f"{public_query.name} ({public_query.url_code})"
 
+    def test_is_active(self, inactive_public_query):
+        assert inactive_public_query.is_active is False
+
 
 @pytest.mark.django_db
 class TestQuestion:

@@ -5,10 +5,15 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import (
+    PublicQueryResultConstants,
+    QuestionConstants,
+)
 from apps.public_queries.lib.exceptions import ObjectDoesNotExist
 from apps.public_queries.services import (
+    get_answer_result,
     get_public_query,
+    get_public_query_response_result,
     get_public_query_result,
     get_response_by_uuid,
     submit_response,
@@ -22,7 +27,7 @@ class UUIDObjectURL:
     url_service_extra_kwargs = None
 
     def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
-        extra_kwargs = self.url_service_extra_kwargs or {}
+        extra_kwargs = self.get_url_service_extra_kwargs()
         try:
             object_data = self.__class__.url_service(
                 **{self.url_service_field: uuid, **extra_kwargs}
@@ -31,6 +36,14 @@ class UUIDObjectURL:
             raise Http404
         self.object = object_data
         return super().dispatch(request, uuid, *args, **kwargs)
+
+    def get_url_service_extra_kwargs(self):
+        return self.url_service_extra_kwargs or {}
+
+    def _get_page_num(self) -> int:
+        if "page_num" in self.request.GET and self.request.GET["page_num"].isdecimal():
+            return int(self.request.GET["page_num"])
+        return 1
 
 
 class PublicQuerySubmit(UUIDObjectURL, TemplateView):
@@ -135,5 +148,40 @@ class PublicQueryResult(UUIDObjectURL, TemplateView):
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
         context["result"] = get_public_query_result(public_query=self.object)
+        context["navigation_title"] = "Resultado de Consulta Pública"
+        return context
+
+
+class AnswerQuestionResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/answer-result.html"
+    url_service = get_answer_result
+    url_service_field = "question_uuid"
+
+    def get_url_service_extra_kwargs(self):
+        return {
+            "page_num": self._get_page_num(),
+            "page_size": PublicQueryResultConstants.DEFAULT_PAGE_SIZE,
+        }
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        context["answer_result"] = self.object
+        context["navigation_title"] = "Resultado de Consulta Pública"
+        return context
+
+
+class PublicQueryResponseResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/response-result.html"
+    url_service = get_public_query
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        page_num = self._get_page_num()
+        response_result = get_public_query_response_result(
+            public_query=self.object,
+            page_num=page_num,
+            page_size=PublicQueryResultConstants.DEFAULT_PAGE_SIZE,
+        )
+        context["response_result"] = response_result
         context["navigation_title"] = "Resultado de Consulta Pública"
         return context

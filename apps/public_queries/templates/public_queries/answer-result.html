@@ -1,0 +1,72 @@
+{% extends "public_queries/base.html" %}
+{% block extra_css %}
+    {% if answer_result.question.kind == "POINT" %}
+        <link rel="stylesheet"
+              href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+              crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin=""></script>
+    {% endif %}
+{% endblock extra_css %}
+{% block navbar %}
+    <a class="back-button button"
+       id="back-button"
+       href="{% url 'public_queries:query-result' answer_result.query_urlcode %}">
+        < Atras
+    </a>
+    <div class="title">{{ navigation_title }}</div>
+{% endblock navbar %}
+{% block content %}
+    <div class="question-result content-container">
+        <div class="field-data">
+            <label>Consulta:</label>
+            <span class="value-data">{{ answer_result.query_name }}</span>
+        </div>
+        <div class="field-data">
+            <label>Pregunta:</label>
+            <span class="value-data">{{ answer_result.question.name }}</span>
+        </div>
+        <div class="field-data">
+            <label>Total respuestas:</label>
+            <span class="value-data">{{ answer_result.total }}</span>
+        </div>
+        {% if answer_result.question.kind == "POINT" %}
+            <div class="map" id="map"></div>
+        {% else %}
+            <div class="partial-list">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Enviado en</th>
+                            <th>Contenido</th>
+                        </tr>
+                        {% for answer in answer_result.partial_list %}
+                            <tr>
+                                <td>{{ answer.send_at }}</td>
+                                {% if answer_result.question.kind == "TEXT" %}
+                                    <td>{{ answer.text }}</td>
+                                {% elif answer_result.question.kind == "IMAGE" %}
+                                    <td>
+                                        <a href="{{ answer.image }}" target="_blank">
+                                            <img src="{{ answer.image }}" alt="" height="" width="">
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if answer_result.page_num and answer_result.num_pages %}
+                    {% include "public_queries/components/pagination.html" with num_pages=answer_result.num_pages page_num=answer_result.page_num %}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    {% if answer_result.question.kind == "POINT" %}
+        <script type="text/javascript">var map = set_answer_result_map("map", {{answer_result.partial_list_json|safe}})</script>
+    {% endif %}
+{% endblock extra_js %}

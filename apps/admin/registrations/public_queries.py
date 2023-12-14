@@ -47,6 +47,7 @@ class PublicQueryAdmin(NestedModelAdmin):
     list_display = [
         "name",
         "view_url_code",
+        "view_result",
         "kind",
         "start_at",
         "end_at",
@@ -68,10 +69,13 @@ class PublicQueryAdmin(NestedModelAdmin):
     inlines = [QuestionInLine]
     readonly_fields = ["id", "created_at", "created_by", "updated_at"]
 
-    # @admin.display()
     def view_url_code(self, obj):
         url = reverse("public_queries:submit", kwargs={"uuid": obj.url_code})
         return format_html(f"<a href='{url}'>{obj.url_code}</a>")
+
+    def view_result(self, obj):
+        url = reverse("public_queries:query-result", kwargs={"uuid": obj.url_code})
+        return format_html(f"<a href='{url}' target='_blank'>Resultado</a>")
 
     def response_post_save_add(self, request, obj):
         obj.created_by_id = request.user.id

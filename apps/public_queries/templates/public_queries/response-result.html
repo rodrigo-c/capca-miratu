@@ -1,0 +1,58 @@
+{% extends "public_queries/base.html" %}
+{% block navbar %}
+    <a class="back-button button"
+       id="back-button"
+       href="{% url 'public_queries:query-result' response_result.query.url_code %}">
+        < Atras
+    </a>
+    <div class="title">{{ navigation_title }}</div>
+{% endblock navbar %}
+{% block content %}
+    <div class="question-result content-container">
+        <div class="field-data">
+            <label>Consulta:</label>
+            <span class="value-data">{{ response_result.query.name }}</span>
+        </div>
+        <div class="field-data">
+            <label>Participación total:</label>
+            <span class="value-data">{{ response_result.total_responses }}</span>
+        </div>
+        <div class="field-data">
+            <label>Participación anónima:</label>
+            <span class="value-data">{{ response_result.anonymous_responses }}</span>
+        </div>
+        <div class="partial-list">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Enviado en</th>
+                        <th>Email</th>
+                        <th>Rut</th>
+                        <th>Ubicación</th>
+                    </tr>
+                    {% for response in response_result.partial_responses %}
+                        <tr>
+                            <td>{{ response.send_at }}</td>
+                            {% if not response.email and not response.rut %}
+                                <td>Anónimo</td>
+                                <td></td>
+                            {% else %}
+                                <td>{{ response.email|default:"" }}</td>
+                                <td>{{ response.rut|default:"" }}</td>
+                            {% endif %}
+                            <td>{{ response.location|default:"" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if response_result.has_pagination %}
+                {% include "public_queries/components/pagination.html" with num_pages=response_result.num_pages page_num=response_result.page_num %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    {% if answer_result.question.kind == "POINT" %}
+        <script type="text/javascript">var map = set_answer_result_map("map", {{answer_result.partial_list_json|safe}})</script>
+    {% endif %}
+{% endblock extra_js %}

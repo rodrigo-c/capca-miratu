@@ -69,3 +69,17 @@ table {
     border-bottom: 1px solid $inactive;
   }
 }
+
+.map {
+  height: 70vh;
+  margin-top: 5vh;
+  width: 100%;
+}
+
+.question-result {
+  padding: 5vh 0;
+
+  img {
+    max-width: 50vh;
+  }
+}

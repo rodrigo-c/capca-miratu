@@ -22,6 +22,11 @@ class QuestionConstants:
         (KIND_SELECT, "Select"),
         (KIND_POINT, "Geo Point"),
     ]
+    RESULT_AVAILABLE_KINDS = [
+        KIND_TEXT,
+        KIND_IMAGE,
+        KIND_POINT,
+    ]
     VERBOSE_NAME = "Pregunta"
     VERBOSE_NAME_PLURAL = "Preguntas"
 
@@ -32,6 +37,7 @@ class PublicQueryResultConstants:
         QuestionConstants.KIND_TEXT,
         QuestionConstants.KIND_IMAGE,
     ]
+    DEFAULT_PAGE_SIZE = 50
 
 
 class QuestionOptionConstants:
