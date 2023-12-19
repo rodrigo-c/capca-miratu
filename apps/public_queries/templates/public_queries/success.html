@@ -1,7 +1,7 @@
 {% extends "public_queries/base.html" %}
 {% block content %}
     <div class="success content-container">
-        {% include "public_queries/components/public-query-card.html" with public_query=response_data.query_data noimage="true" %}
+        <div class="success-icon"></div>
         <div class="success-message">{{ success_message }}</div>
         <div class="success-gratitude">{{ sucess_gratitude_message }}</div>
     </div>

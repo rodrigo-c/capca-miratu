@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
 from apps.public_queries.lib.constants import (
+    ContextConstants,
     PublicQueryResultConstants,
     QuestionConstants,
 )
@@ -83,7 +84,7 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
         self, response_form: ResponseForm, answer_formset: AnswerFormSet
     ) -> HttpResponse:
         if not response_form.is_valid():
-            focus = "response"
+            focus = "identifier"
         else:
             focus = next(
                 index
@@ -105,8 +106,9 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
         focus: str | None = None,
     ) -> dict:
         context = super().get_context_data(public_query=self.public_query)
-        context["focus"] = focus if focus is not None else "detail"
+        context["focus"] = focus if focus is not None else "entry"
         context["navigation_title"] = "Consulta Pública"
+        context["app_context"] = ContextConstants
         context["response_form"] = response_form or self.get_response_form()
         if self.public_query.questions:
             context["answer_formset"] = answer_formset or self.get_answer_formset()
@@ -133,11 +135,8 @@ class SuccessSubmit(UUIDObjectURL, TemplateView):
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
         context["response_data"] = self.object
-        context["navigation_title"] = "Consulta Pública"
-        context["success_message"] = "El formulario fue enviado con éxito."
-        context[
-            "sucess_gratitude_message"
-        ] = "¡Gracias por aportar con tu visión ciudadana!"
+        context["success_message"] = ContextConstants.SUCCESS_MESSAGE
+        context["sucess_gratitude_message"] = ContextConstants.SUCCESS_GRATITUDE
         return context
 
 

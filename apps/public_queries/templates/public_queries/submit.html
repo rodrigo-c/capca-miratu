@@ -1,80 +1,83 @@
 {% extends "public_queries/base.html" %}
 {% block navbar %}
-    <div class="back-button button {% if focus == 'detail' %}hidden{% endif %}"
-         id="back-button">
-        < Atras
+    {{ block.super }}
+    <div class="top-brand" id="top-brand">
+        <div class="logo-cegir"></div>
+        <div class="logo-gs"></div>
     </div>
-    <div class="title">{{ navigation_title }}</div>
 {% endblock navbar %}
 {% block content %}
-    <div class="detail content-container {% if focus != 'detail' %}hidden{% endif %}"
-         id="detail-container">
-        <div class="section title">Consulta</div>
-        {% include "public_queries/components/public-query-card.html" %}
-        <div class="section title with-line">Detalles</div>
-        <div class="section subtitle">En qué consiste</div>
-        <div class="section text-content">{{ public_query.description|linebreaks }}</div>
-        <div class="section subtitle terciary-color">Más información</div>
-        <div class="button" id="start-button">Rellenar Formulario</div>
-    </div>
-    {% if answer_formset %}
-        <form class="response-form"
-              id="response-form"
-              action=""
-              method="post"
-              name="response-form"
-              enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ answer_formset.get_media }}
-            <div class="response content-container {% if focus != 'response' %}hidden{% endif %}"
-                 id="response-container">
-                <div class="section title">Formulario</div>
-                {% for field in response_form.hidden_fields %}{{ field }}{% endfor %}
-                {% for field in response_form.visible_fields %}
-                    <div class="form-field{% if field.errors %} error{% endif %}">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
-                    </div>
-                {% endfor %}
-                <div class="button" id="next-response-button">Siguiente</div>
+    <form class="response-form"
+          id="response-form"
+          action=""
+          method="post"
+          name="response-form"
+          enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ answer_formset.get_media }}
+        <div class="entry content-container hidden" id="entry-container">
+            <div class="head-title">{{ app_context.HEAD_TITLE }}</div>
+            <div class="main-title">{{ app_context.MAIN_TITLE|safe }}</div>
+            {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+            <div class="button" id="start-button">{{ app_context.QUERY_RESPONSE }}</div>
+        </div>
+        <div class="identifier content-container hidden%}"
+             id="identifier-container">
+            {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+            <div class="section title">{{ app_context.IDENTIFIER_LABEL }}</div>
+            {% for field in response_form.hidden_fields %}{{ field }}{% endfor %}
+            {% for field in response_form.visible_fields %}
+                <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
+            {% endfor %}
+            <div class="errors">
+                {% if response_form.errors %}
+                    {% for error in response_form.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                {% endif %}
             </div>
-            {{ answer_formset.management_form }}
-            {% for answer_form in answer_formset %}
-                <div class="content-container question {% if focus != answer_form.question_data.index %}hidden{% endif %}"
-                     id="question-container-{{ answer_form.question_data.index }}">
-                    <div class="section title">Formulario</div>
-                    {% include "public_queries/components/public-query-card.html" with noimage="true" %}
-                    <div class="question-name subtitle">{{ answer_form.question_data.name }}</div>
-                    {% if answer_form.question_data.description %}
-                        <div class="question-description text-content">{{ answer_form.question_data.description }}</div>
+        </div>
+        <div class="detail content-container hidden" id="detail-container">
+            {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+            <div class="section title">{{ app_context.DETAIL_LABEL }}</div>
+            <div class="section text-content">{{ public_query.description|linebreaks }}</div>
+        </div>
+        {{ answer_formset.management_form }}
+        {% for answer_form in answer_formset %}
+            <div class="content-container question hidden"
+                 id="question-container-{{ answer_form.question_data.index }}">
+                <div class="section title">{{ app_context.QUESTION_LABEL }} {{ forloop.counter }}</div>
+                <div class="question-name">{{ answer_form.question_data.name }}</div>
+                {% if answer_form.question_data.description %}
+                    <div class="question-description text-content">{{ answer_form.question_data.description }}</div>
+                {% endif %}
+                {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
+                {% for field in answer_form.visible_fields %}
+                    {% if not field.field.disabled %}
+                        {% if field.errors %}{{ field.errors }}{% endif %}
+                        <div class="form-field{% if field.errors %} error{% endif %}"
+                             maxlength="{{ field.field.maxlength }}"
+                             field="{{ field.name }}"
+                             {% if field.field.required %}required{% endif %}>{{ field }}</div>
                     {% endif %}
-                    {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
-                    {% for field in answer_form.visible_fields %}
-                        {% if not field.field.disabled %}
-                            {% if field.errors %}{{ field.errors }}{% endif %}
-                            <div class="form-field{% if field.errors %} error{% endif %}"
-                                 maxlength="{{ field.field.maxlength }}"
-                                 field="{{ field.name }}"
-                                 {% if field.field.required %}required{% endif %}>{{ field }}</div>
-                        {% endif %}
-                    {% endfor %}
-                    {% if forloop.last %}
-                        <input id="form-submit" class="button" type="submit" value="Enviar" />
-                    {% else %}
-                        <div class="button"
-                             id="next-question-button-{{ answer_form.question_data.index }}">Siguiente</div>
+                {% endfor %}
+                <div class="errors">
+                    {% if answer_form.errors %}
+                        {% for error in response_form.errors %}<span class="error">{{ error }}</span>{% endfor %}
                     {% endif %}
                 </div>
-            {% endfor %}
-        </form>
-    {% else %}
-        <div class="no-questions">Preguntas no disponibles</div>
-    {% endif %}
+            </div>
+        {% endfor %}
+        <div class="buttons-container-spacer"></div>
+        <div class="buttons-container">
+            <div class="back-button hidden" id="back-button">
+                <i class="back-icon"></i><span>{{ app_context.BACK_LABEL }}</span>
+            </div>
+            <input id="form-submit"
+                   class="button hidden"
+                   type="submit"
+                   value="{{ app_context.NEXT_LABEL }}" />
+        </div>
+    </form>
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript">const manager = new QuerySubmitManager(
-      {focus:'{{focus}}', {% if answer_formset.get_point_varset %}varset: {{answer_formset.get_point_varset|safe}}{% endif %} }
-    );
-    </script>
+    <script type="text/javascript" type="text">const manager = new project.QuerySubmitEngine({focus:'{{focus}}'});</script>
 {% endblock extra_js %}
