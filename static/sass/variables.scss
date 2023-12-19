@@ -4,6 +4,7 @@ $primary: #000;
 $secondary: #454546;
 $terciary: #979797;
 $inactive: #d8d8d8;
+$cegir-primary: #6f448c;
 
 $white: #fff;
 $gore-primary: #e74810;
@@ -11,4 +12,9 @@ $gore-secondary: #0d3a5c;
 $shadow: rgba(0, 0, 0, .25);
 
 $primary-hover: #1a1a1a;
-$error: #f00;
+$error: #c1368c;
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham/Gotham-Medium.otf');
+}

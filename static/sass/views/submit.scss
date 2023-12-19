@@ -1,16 +1,119 @@
+.entry.content-container {
+  padding-top: 10vh;
+
+  .head-title,
+  .main-title {
+    color: $primary;
+    text-align: center;
+    user-select: none;
+    width: 100%;
+  }
+
+  .head-title {
+    font-family: Gotham;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: .325px;
+    line-height: normal;
+  }
+
+  .main-title {
+    font-family: Roboto;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: .5px;
+    line-height: 80%;
+    padding-bottom: 5vh;
+
+    b {
+      display: block;
+    }
+  }
+
+  .card {
+    align-self: center;
+    border: 1px solid $cegir-primary;
+    margin-bottom: 3vh;
+    width: 75vw;
+  }
+}
+
+.identifier.content-container {
+
+  .section.title,
+  .errors,
+  .form-field {
+    align-self: center;
+    width: 70%;
+
+    input {
+      padding: 2vh;
+    }
+  }
+}
+
+.detail.content-container {
+  .section.title,
+  .section.text-content {
+    align-self: center;
+    width: 80%;
+  }
+}
+
+.buttons-container-spacer {
+  height: 15vh;
+}
+
+.buttons-container {
+  align-items: center;
+  background-color: $white;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 5vh 5vw;
+  position: fixed;
+  width: 80vw;
+
+  .back-button {
+    align-items: normal;
+    color: $terciary;
+    display: flex;
+    font-family: Open Sans;
+    font-size: 1rem;
+    font-weight: 600;
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  .button {
+    margin: 0;
+  }
+}
+
 .question-name {
-  font-size: 9px;
-  margin-bottom: 10px;
-  margin-top: 20px;
+  font-family: Open Sans;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  line-height: 115%;
 
   @include small {
-    font-size: .9rem;
+    font-size: 1.5rem;
   }
 }
 
 .question-description {
-  font-size: 8px;
-  margin-bottom: 10px;
+  font-family: Open Sans;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 130%;
+  margin-bottom: 2vh;
+  margin-top: 1vh;
 
   @include small {
     font-size: .8rem;
@@ -22,59 +125,83 @@
 }
 
 .form-field .image-input {
-  background: $inactive;
+  background: $white;
   background-position: center;
   background-size: cover;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 10vh 5vh 0 0;
-  text-align: center;
+  border: .5px solid $terciary;
+  border-radius: 4px;
+  margin-top: 5vh;
   width: 100%;
 
   @include small {
     font-size: 1rem;
   }
 
-  .image-icon {
-    background: $white;
-    border-radius: 100%;
-    display: inline-block;
-    height: 5vh;
-    margin-right: 5vh;
-    width: 5vh;
+  &.error {
+    border: .5px solid $error;
   }
 
-  .more-images {
-    float: right;
-    font-size: 8vh;
-    opacity: 0;
-    padding-right: 10vw;
+  .image-icon {
+    background-image: url('../images/icons/image.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-bottom: 8vh;
+    padding-right: 12vw;
+  }
+
+  .delete.closed-icon {
+    background-image: url('../images/icons/close.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-bottom: 8vh;
+    padding-right: 12vw;
+    position: fixed;
+    right: 10vw;
+
+    @include small {
+      right: 20vw;
+    }
   }
 
   label {
     align-items: center;
-    display: flex;
+    display: inline-flex;
+    height: 30vh;
     justify-content: center;
+    width: 100%;
   }
+
 }
 
 .form-field > .options-field {
   display: flex;
+  flex-direction: column;
+  font-family: Open Sans;
+  font-size: 13px;
+  font-weight: 400;
   justify-content: space-evenly;
-  margin: 5vh 0;
+  margin-top: 1vh;
   width: 100%;
 
+
+  strong {
+    text-transform: uppercase;
+  }
+
   label {
-    background: $inactive;
-    border-radius: 6px;
-    color: $white;
+    border: .5px solid $terciary;
+    border-radius: 4px;
+    color: $secondary;
     display: inline-block;
+    margin: 1vh 1vw;
     padding: 2vh 2vw;
     text-align: center;
 
     &.checked {
-      background: $secondary;
+      border: .5px solid $cegir-primary;
+      color: $cegir-primary;
     }
   }
 
@@ -87,12 +214,26 @@
   width: 100%;
 
   .clear_features a { // scss-lint:disable SelectorFormat
-    color: $secondary;
+    color: $terciary;
+    display: inline-block;
+    font-family: Open Sans;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
     text-decoration: solid;
+    width: 100%;
+
+    &.hidden {
+      display: none;
+    }
   }
 
   .dj_map { // scss-lint:disable SelectorFormat
     height: 35vh;
     width: 100%;
+  }
+
+  .ol-viewport {
+    border-radius: 6px;
   }
 }
