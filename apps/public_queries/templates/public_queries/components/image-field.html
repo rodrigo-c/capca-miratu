@@ -1,8 +1,8 @@
 <div class="image-input {% if widget.attrs.disabled %}hidden{% endif %}">
+    <div class="delete closed-icon hidden"></div>
     <label for="{{ widget.attrs.id }}">
-        <span class="image-icon"></span> Añadir fotografías
+        <span class="image-icon"></span>
     </label>
-    <span class="more-images">+</span>
     <input class="hidden"
            type="{{ widget.type }}"
            name="{{ widget.name }}"

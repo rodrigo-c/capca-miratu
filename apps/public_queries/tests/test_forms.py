@@ -17,17 +17,17 @@ class TestAnswerForm:
             initial={"question-data": question_data}, data={"text": "answer"}
         )
         assert form.is_valid()
-        answer_data_list = form.get_validated_dataclasses()
-        assert answer_data_list[0].question_uuid == question_data.uuid
+        answer_data = form.get_validated_dataclass()
+        assert answer_data.question_uuid == question_data.uuid
 
     def test_get_validated_dataclasses_with_image(self, question_data, uploaded_image):
         question_data.kind = QuestionConstants.KIND_IMAGE
         form = AnswerForm(
-            initial={"question-data": question_data}, files={"images": [uploaded_image]}
+            initial={"question-data": question_data}, files={"image": uploaded_image}
         )
         assert form.is_valid()
-        answer_data_list = form.get_validated_dataclasses()
-        assert answer_data_list[0].question_uuid == question_data.uuid
+        answer_data = form.get_validated_dataclass()
+        assert answer_data.question_uuid == question_data.uuid
 
 
 @pytest.mark.django_db
