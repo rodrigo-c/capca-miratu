@@ -82,6 +82,7 @@ class QuerySubmitEngine {
         event.preventDefault()
       } else {
         this.hide_all()
+        document.querySelector(".load.content-container").classList.remove("hidden")
       }
       if (this.focus == "identifier") {
         this.show_view("detail")
@@ -166,6 +167,7 @@ class QuerySubmitEngine {
       this.comp.containers.question_list[focus].classList.remove(this.hidden_class_name)
     } else {
       this.comp.containers[focus].classList.remove(this.hidden_class_name)
+      this.comp.buttons.submit.removeAttribute("disabled")
     }
     this.focus = focus
   }
