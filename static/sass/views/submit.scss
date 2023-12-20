@@ -1,5 +1,4 @@
 .entry.content-container {
-  padding-top: 10vh;
 
   .head-title,
   .main-title {
@@ -38,10 +37,17 @@
     border: 1px solid $cegir-primary;
     margin-bottom: 3vh;
     width: 75vw;
+
+    @include small {
+      width: 50vw;
+    }
   }
 }
 
 .identifier.content-container {
+  justify-content: start;
+  margin-bottom: 3vh;
+  padding-top: 5vh;
 
   .section.title,
   .errors,
@@ -56,15 +62,15 @@
 }
 
 .detail.content-container {
+  justify-content: start;
+  margin-bottom: 3vh;
+  padding-top: 5vh;
+
   .section.title,
   .section.text-content {
     align-self: center;
     width: 80%;
   }
-}
-
-.buttons-container-spacer {
-  height: 15vh;
 }
 
 .buttons-container {
@@ -75,7 +81,7 @@
   justify-content: space-between;
   padding: 5vh 5vw;
   position: fixed;
-  width: 80vw;
+  width: 90vw;
 
   .back-button {
     align-items: normal;
@@ -130,7 +136,7 @@
   background-size: cover;
   border: .5px solid $terciary;
   border-radius: 4px;
-  margin-top: 5vh;
+  margin-top: 3vh;
   width: 100%;
 
   @include small {

@@ -5,6 +5,14 @@
   background-size: contain;
   padding-bottom: 4vh;
   padding-right: 15vw;
+
+  @include small {
+    padding-right: 12vw;
+  }
+
+  @include medium {
+    padding-right: 8vw;
+  }
 }
 
 .logo-gs {
@@ -14,6 +22,10 @@
   background-size: contain;
   padding-bottom: 8vh;
   padding-right: 12vw;
+
+  @include small {
+    padding-bottom: 10vh;
+  }
 }
 
 .app-brand {
@@ -22,7 +34,15 @@
   background-repeat: no-repeat;
   background-size: contain;
   padding-bottom: 5vh;
-  padding-right: 30vw;
+  padding-right: 40vw;
+
+  @include small {
+    padding-right: 30vw;
+  }
+
+  @include medium {
+    padding-right: 20vw;
+  }
 }
 
 .navbar,
@@ -36,7 +56,6 @@
 .navbar {
   box-shadow: 0 -1px 0 0 $shadow inset;
   height: 7.2vh;
-  margin-bottom: 5vh;
 }
 
 .navigation {
@@ -97,7 +116,6 @@
   font-size: 11px;
   font-weight: 700;
   margin-bottom: 2vw;
-  padding-top: 4vw;
   width: 50%;
 
   @include small {
@@ -239,5 +257,49 @@
 
   &::after {
     content: url('../images/icons/back.svg');
+  }
+}
+
+.loading {
+  align-self: center;
+  display: inline-block;
+  height: 30vw;
+  padding: 10vh 10vw;
+  position: relative;
+  width: 30vw;
+
+  div {
+    animation: loading 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
+    border: 8px solid $cegir-primary;
+    border-color: $cegir-primary transparent transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: block;
+    height: 30vw;
+    margin: 8px;
+    position: absolute;
+    width: 30vw;
+  }
+
+  div:nth-child(1) {
+    animation-delay: -.45s;
+  }
+
+  div:nth-child(2) {
+    animation-delay: -.3s;
+  }
+
+  div:nth-child(3) {
+    animation-delay: -.15s;
+  }
+
+  @keyframes loading {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 }
