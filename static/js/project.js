@@ -9,7 +9,7 @@ function set_answer_result_map (id, dataset) {
   }).addTo(map);
   map.attributionControl.setPrefix("")
 
-  for (answer of dataset) {
+  for (let answer of dataset) {
     if (answer.point) {
       let marker = L.marker(answer.point).addTo(map)
       let message = `<b>Enviado en: </b> ${new Date(answer.send_at)}`
