@@ -21,8 +21,7 @@
             {% include "public_queries/components/public-query-card.html" with noimage="true" %}
             <div class="button" id="start-button">{{ app_context.QUERY_RESPONSE }}</div>
         </div>
-        <div class="identifier content-container hidden%}"
-             id="identifier-container">
+        <div class="identifier content-container hidden" id="identifier-container">
             {% include "public_queries/components/public-query-card.html" with noimage="true" %}
             <div class="section title">{{ app_context.IDENTIFIER_LABEL }}</div>
             {% for field in response_form.hidden_fields %}{{ field }}{% endfor %}
@@ -66,7 +65,6 @@
                 </div>
             </div>
         {% endfor %}
-        <div class="buttons-container-spacer"></div>
         <div class="buttons-container">
             <div class="back-button hidden" id="back-button">
                 <i class="back-icon"></i><span>{{ app_context.BACK_LABEL }}</span>
@@ -77,6 +75,11 @@
                    value="{{ app_context.NEXT_LABEL }}" />
         </div>
     </form>
+    <div class="load content-container hidden">
+        <div class="loading">
+            {% for i in '0123'|make_list %}<div class="element"></div>{% endfor %}
+        </div>
+    </div>
 {% endblock content %}
 {% block extra_js %}
     <script type="text/javascript" type="text">const manager = new project.QuerySubmitEngine({focus:'{{focus}}'});</script>
