@@ -67,6 +67,6 @@
 {% endblock content %}
 {% block extra_js %}
     {% if answer_result.question.kind == "POINT" %}
-        <script type="text/javascript">var map = set_answer_result_map("map", {{answer_result.partial_list_json|safe}})</script>
+        <script type="text/javascript">var map = project.set_answer_result_map("map", {{answer_result.partial_list_json|safe}})</script>
     {% endif %}
 {% endblock extra_js %}
