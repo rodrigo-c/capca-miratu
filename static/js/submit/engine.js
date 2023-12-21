@@ -66,6 +66,9 @@ class QuerySubmitEngine {
           let input_close_icon = input_container.querySelector(".closed-icon")
           input_close_icon.addEventListener("click", this.click_image_clear, false)
         }
+        if (input.parentElement.getAttribute("field") == "text") {
+          validator.validate_text_question(input, this.comp.containers, false)
+        }
       }
     }
   }
@@ -127,6 +130,9 @@ class QuerySubmitEngine {
     }
     if (input.classList.contains("vSerializedField")) {
       validator.validate_point_question(input, this.comp.containers, true)
+    }
+    if (input.parentElement.getAttribute("field") == "text") {
+      validator.validate_text_question(input, this.comp.containers, true)
     }
     this.set_next_button_status(input.question_index, true)
   }
@@ -190,7 +196,6 @@ class QuerySubmitEngine {
     let valid = true
     for (let input of this.comp.input_map.question_list[question_index]) {
       valid &&= input.validity.valid
-      if (!valid && report) {input.reportValidity()}
     }
     if (valid) {
       next_button.removeAttribute("disabled")
