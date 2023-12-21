@@ -109,12 +109,48 @@ function validate_point_question (input, containers, report) {
   }
 }
 
+function validate_text_question (input, containers, report) {
+  let field_container =  input.parentElement
+  let required = field_container.hasAttribute("required")
+  let maxlength = input.getAttribute("maxlength")
+  let minlength = input.getAttribute("minlength")
+  maxlength = Number.isInteger(maxlength) ? maxlength : 255
+  minlength = Number.isInteger(minlength) ? minlength : 1
+  let errors = _get_question_errors(input.question_index, containers)
+
+  field_container.classList.remove("error")
+  input.setCustomValidity("")
+  let valid = true
+  let message = null
+  if (required && !input.value) {
+    message = "*Este campo es requerido"
+    valid = false
+  }
+  else if (input.value && input.value.length > maxlength) {
+    message = `*Este campo debe tener como máximo ${maxlength} caracteres`
+    valid = false
+  }
+  else if (input.value && input.value.length < minlength) {
+    message = `*Este campo debe tener como mínimo ${minlength} caracteres`
+    valid = false
+  }
+
+  if (!valid) {
+    if (report) {
+      field_container.classList.add("error")
+      errors.textContent = message
+    }
+    input.setCustomValidity(message)
+  }
+}
+
 
 const validator = {
   validate_rut,
   validate_image_question,
   validate_options_question,
   validate_point_question,
+  validate_text_question,
 }
 
 export {validator}
