@@ -23,8 +23,12 @@
                   href="{% static 'images/favicons/favicon.ico' %}">
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap"
                   rel="stylesheet">
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/cf-gotham-fonts@1.0.0/gotham-font.min.css">
             <link href="{% static 'css/project.min.css' %}" rel="stylesheet">
         {% endblock css %}
         {% block extra_css %}
@@ -34,19 +38,12 @@
         <div class="main-container">
             <div class="navigation">
                 {% block navbar %}
-                    <div class="title">{{ navigation_title }}</div>
+                    <div class="navbar" id="navbar">
+                        <div class="logo-cegir"></div>
+                        <div class="app-brand"></div>
+                    </div>
                 {% endblock navbar %}
             </div>
-            {% if messages %}
-                <div class="base-content-messages">
-                    {% for message in messages %}
-                        <div class="ui message {% if message.tags %}{{ message.tags }}{% endif %}">
-                            <i class="close icon"></i>
-                            <div class="header">{{ message }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
             {% block content %}
             {% endblock content %}
         </div>

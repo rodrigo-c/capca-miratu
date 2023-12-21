@@ -4,8 +4,6 @@ from django.contrib.gis import forms
 from django.core.validators import MaxLengthValidator
 from django.forms import formset_factory
 
-from multiupload.fields import MultiImageField, MultiUploadMetaInput
-
 from apps.public_queries.lib.constants import QuestionConstants
 from apps.public_queries.lib.dataclasses import AnswerData, ResponseData
 
@@ -18,9 +16,9 @@ class ResponseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["email"].widget.attrs["placeholder"] = "tu@correo.cl (Opcional)"
+        self.fields["email"].widget.attrs["placeholder"] = "Correo electrónico"
         self.fields["email"].widget.attrs["autocomplete"] = "email"
-        self.fields["rut"].widget.attrs["placeholder"] = "1000000-1 (Opcional)"
+        self.fields["rut"].widget.attrs["placeholder"] = "Rut"
         self.fields["rut"].widget.attrs["autocomplete"] = "rut"
 
     def get_validated_dataclass(
@@ -35,23 +33,17 @@ class ResponseForm(forms.Form):
         )
 
 
-class MultipleImageInput(MultiUploadMetaInput):
-    template_name = "public_queries/components/image-field.html"
-    allow_multiple_selected = True
-
-
-class MultiImageField(MultiImageField):
-    def to_python(self, data):
-        return super().to_python(data=data or [])
-
-    def run_validators(self, value):
-        value = value or []
-        for image in value:
-            super().run_validators(value=image)
-
-
 class OSMWidget(forms.OSMWidget):
     template_name = "public_queries/components/point-field.html"
+
+
+class PreviewImageInput(forms.ClearableFileInput):
+    template_name = "public_queries/components/image-field.html"
+
+
+class OptionFieldInput(forms.CheckboxSelectMultiple):
+    template_name = "public_queries/components/options-field.html"
+    option_template_name = "public_queries/components/options-field-input.html"
 
 
 class AnswerForm(forms.Form):
@@ -59,10 +51,13 @@ class AnswerForm(forms.Form):
         required=False,
         widget=forms.Textarea(attrs={"placeholder": "Agregar comentarios"}),
     )
-    images = MultiImageField(required=False, widget=MultipleImageInput())
+    image = forms.ImageField(
+        required=False,
+        widget=PreviewImageInput(),
+    )
     options = forms.MultipleChoiceField(
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "options-field"}),
+        widget=OptionFieldInput(),
     )
     point = forms.PointField(required=False, widget=OSMWidget())
 
@@ -86,6 +81,12 @@ class AnswerForm(forms.Form):
         elif kind == QuestionConstants.KIND_POINT:
             self._set_point_answer()
 
+    def _hide_fields(self, exclude: list[str] | None = None) -> None:
+        for field_name in self.fields.keys():
+            if field_name not in exclude:
+                self.fields[field_name].disabled = True
+                self.fields[field_name].widget.attrs.update({"class": "hidden"})
+
     def _set_text_answer(self):
         field = self.fields["text"]
         field.required = self.question_data.required
@@ -95,12 +96,10 @@ class AnswerForm(forms.Form):
         field.widget.attrs["maxlength"] = max_length
         field.widget.attrs["required"] = self.question_data.required
         field.widget.attrs["minlength"] = 1 if field.required else None
-        self._hide_field("images")
-        self._hide_field("options")
-        self._hide_field("point")
+        self._hide_fields(exclude=["text"])
 
     def _set_image_answer(self):
-        field = self.fields["images"]
+        field = self.fields["image"]
         field.required = self.question_data.required
         field.min_num = 1 if self.question_data.required else 0
         field.max_num = self.question_data.max_answers
@@ -108,9 +107,8 @@ class AnswerForm(forms.Form):
         field.widget.attrs["maxlength"] = field.max_num
         field.widget.attrs["minlength"] = 1 if field.required else None
         field.widget.attrs["required"] = self.question_data.required
-        self._hide_field("text")
-        self._hide_field("options")
-        self._hide_field("point")
+        field.widget.attrs["capture"] = "enviroment"
+        self._hide_fields(exclude=["image"])
 
     def _set_select_answer(self):
         field = self.fields["options"]
@@ -128,38 +126,26 @@ class AnswerForm(forms.Form):
         field.validators.append(
             MaxLengthValidator(limit_value=max_length, message=message)
         )
-        self._hide_field("text")
-        self._hide_field("images")
-        self._hide_field("point")
+        self._hide_fields(exclude=["options"])
 
     def _set_point_answer(self):
         field = self.fields["point"]
         field.required = self.question_data.required
-        self._hide_field("text")
-        self._hide_field("images")
-        self._hide_field("options")
+        self._hide_fields(exclude=["point"])
 
-    def _hide_field(self, field: str) -> None:
-        self.fields[field].disabled = True
-        self.fields[field].widget.attrs.update({"class": "hidden"})
-
-    def get_validated_dataclasses(self) -> list[AnswerData]:
+    def get_validated_dataclass(self) -> AnswerData:
         if self.question_data.kind == QuestionConstants.KIND_IMAGE:
-            image_files = self.cleaned_data.get("images", []) or []
-            return [
-                AnswerData(
-                    question_uuid=self.question_data.uuid,
-                    image=image_file,
-                )
-                for image_file in image_files
-            ]
+            answer_data = AnswerData(
+                question_uuid=self.question_data.uuid,
+                image=self.cleaned_data.get("image") or None,
+            )
         elif self.question_data.kind == QuestionConstants.KIND_TEXT:
             answer_data = AnswerData(
                 question_uuid=self.question_data.uuid,
                 text=self.cleaned_data.get("text") or None,
             )
         elif self.question_data.kind == QuestionConstants.KIND_SELECT:
-            options = self.cleaned_data.get("options")
+            options = self.cleaned_data.get("options", [])
             answer_data = AnswerData(
                 question_uuid=self.question_data.uuid,
                 options=[UUID(option_uuid) for option_uuid in options],
@@ -169,13 +155,13 @@ class AnswerForm(forms.Form):
                 question_uuid=self.question_data.uuid,
                 point=self.cleaned_data.get("point") or None,
             )
-        return [answer_data]
+        return answer_data
 
 
 def get_validated_dataclasses(formset) -> list[AnswerData]:
     validated_data_list = []
     for form in formset.forms:
-        validated_data_list.extend(form.get_validated_dataclasses())
+        validated_data_list.append(form.get_validated_dataclass())
     return validated_data_list
 
 
@@ -185,15 +171,6 @@ def get_media(formset):
             return formset.media
 
 
-def get_point_varset(formset) -> list:
-    return [
-        f"geodjango_form_{index}_point"
-        for index, form in enumerate(formset)
-        if not form.fields["point"].disabled
-    ]
-
-
 AnswerFormSet = formset_factory(AnswerForm, extra=0)
 AnswerFormSet.get_validated_dataclasses = get_validated_dataclasses
 AnswerFormSet.get_media = get_media
-AnswerFormSet.get_point_varset = get_point_varset

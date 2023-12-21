@@ -141,7 +141,7 @@ class TestPublicQuerySubmit:
             "form-INITIAL_FORMS": 4,
             "query": public_query.id,
             "form-0-text": test_text,
-            "form-1-images": uploaded_image,
+            "form-1-image": uploaded_image,
             "form-2-options": [str(options[0].id)],
             "form-3-point": '{"type":"Point","coordinates":[1, 1]}',
         }

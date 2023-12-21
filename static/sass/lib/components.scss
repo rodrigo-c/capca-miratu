@@ -1,7 +1,66 @@
+.logo-cegir {
+  background-image: url('../images/logos/cegir.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 4vh;
+  padding-right: 15vw;
+
+  @include small {
+    padding-right: 12vw;
+  }
+
+  @include medium {
+    padding-right: 8vw;
+  }
+}
+
+.logo-gs {
+  background-image: url('../images/logos/gs.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 8vh;
+  padding-right: 12vw;
+
+  @include small {
+    padding-bottom: 10vh;
+  }
+}
+
+.app-brand {
+  background-image: url('../images/logos/app-ciudadana.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 5vh;
+  padding-right: 40vw;
+
+  @include small {
+    padding-right: 30vw;
+  }
+
+  @include medium {
+    padding-right: 20vw;
+  }
+}
+
+.navbar,
+.top-brand {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5vw;
+  width: 100%;
+}
+
+.navbar {
+  box-shadow: 0 -1px 0 0 $shadow inset;
+  height: 7.2vh;
+}
+
 .navigation {
   background: $white;
   border-radius: 2px;
-  box-shadow: 0 -1px 0 0 $shadow inset;
   display: flex;
 
   .title {
@@ -30,34 +89,33 @@
 
 .button {
   align-self: center;
-  background-color: $primary;
+  background-color: $cegir-primary;
   border-radius: 6px;
   color: $white;
   cursor: pointer;
-  font-size: 11px;
+  font-family: Open Sans;
+  font-size: 12px;
+  font-weight: 600;
   margin: 1rem;
-  padding: 1rem;
-  text-transform: uppercase;
+  padding: .8rem;
 
   @include small {
-    font-size: .9rem;
-  }
-
-  &:hover {
-    background-color: $primary-hover;
+    font-size: 1rem;
   }
 
   &[disabled] {
     background-color: $terciary;
     cursor: not-allowed;
+    opacity: .3;
   }
 }
 
 .section.title {
-  color: $primary;
-  font-size: 7.5px;
+  color: $secondary;
+  font-family: 'Gotham';
+  font-size: 11px;
+  font-weight: 700;
   margin-bottom: 2vw;
-  padding-top: 4vw;
   width: 50%;
 
   @include small {
@@ -76,6 +134,8 @@
 
 .section.text-content {
   font-size: 9px;
+  max-height: 45vh;
+  overflow: scroll;
 
   @include small {
     font-size: .9rem;
@@ -93,9 +153,9 @@
 
   .content {
     background-color: $white;
-    border: .3px solid $secondary;
+    // border: .3px solid $secondary;
     border-radius: 6px;
-    box-shadow: 0 2px 3px 0 $shadow;
+    box-shadow: 0 0 5.3px 0 $shadow;
     margin-top: 25vw;
     width: 100%;
 
@@ -118,6 +178,7 @@
 
 .card-times {
   display: flex;
+  justify-content: space-between;
   margin-bottom: .8rem;
   padding: 0 .8rem;
 
@@ -126,7 +187,6 @@
     font-size: 8px;
     letter-spacing: .5px;
     line-height: 1rem;
-    padding-right: 2rem;
 
     @include small {
       font-size: .8rem;
@@ -149,27 +209,97 @@
   margin-bottom: 10px;
   width: 100%;
 
-  label {
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 144%;
-
-    @include small {
-      font-size: 1rem;
-    }
+  &.error {
+    border: 1px solid $error;
+    border-radius: 6px;
   }
 
   input {
     min-width: 50%;
+    width: 100%;
+
+    &:focus-visible {
+      outline: 1px solid $cegir-primary;
+    }
+
+    &:invalid {
+      outline: 1px solid $error;
+    }
   }
 
   textarea {
-    font-size: 9px;
+    color: $cegir-primary;
+    font-family: Open Sans;
+    font-size: 12px;
+    line-height: 145%;
     width: 100%;
 
     @include small {
-      font-size: .9rem;
+      font-size: 1rem;
       padding: 1rem;
+    }
+
+    &:focus-visible {
+      outline: 1px solid $cegir-primary;
+    }
+  }
+}
+
+.errors {
+  color: $error;
+  font-family: Open Sans;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.back-icon {
+  font-size: 0;
+
+  &::after {
+    content: url('../images/icons/back.svg');
+  }
+}
+
+.loading {
+  align-self: center;
+  display: inline-block;
+  height: 30vw;
+  padding: 10vh 10vw;
+  position: relative;
+  width: 30vw;
+
+  div {
+    animation: loading 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
+    border: 8px solid $cegir-primary;
+    border-color: $cegir-primary transparent transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: block;
+    height: 30vw;
+    margin: 8px;
+    position: absolute;
+    width: 30vw;
+  }
+
+  div:nth-child(1) {
+    animation-delay: -.45s;
+  }
+
+  div:nth-child(2) {
+    animation-delay: -.3s;
+  }
+
+  div:nth-child(3) {
+    animation-delay: -.15s;
+  }
+
+  @keyframes loading {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
     }
   }
 }

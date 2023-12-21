@@ -21,6 +21,14 @@ const rename = require('gulp-rename');
 const sass = require('gulp-sass')(require('sass'));
 const spawn = require('child_process').spawn;
 const uglify = require('gulp-uglify-es').default;
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var rollup = require('@rollup/stream');
+var babel = require('@rollup/plugin-babel');
+var commonjs = require('@rollup/plugin-commonjs');
+var nodeResolve = require('@rollup/plugin-node-resolve');
+var cache;
+
 
 // Relative paths function
 function pathsConfig(appName) {
@@ -76,11 +84,20 @@ function styles() {
 
 // Javascript minification
 function scripts() {
-  return src(`${paths.js}/project.js`)
-    .pipe(plumber()) // Checks for errors
-    .pipe(uglify()) // Minifies the js
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(dest(paths.js));
+  return rollup({
+    input: "./static/js/project.js",
+    plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), nodeResolve()],
+    cache: cache,
+    output: {
+      format: "iife",
+      sourcemap: true,
+      name: "project",
+    }
+  })
+  .on("bundle", function (bundle) {cache = bundle})
+  .pipe(source('project.min.js'))
+  .pipe(buffer())
+  .pipe(dest('./static/js/'));
 }
 
 // Vendor Javascript minification

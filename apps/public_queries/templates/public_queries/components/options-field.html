@@ -1,0 +1,21 @@
+{% with id=widget.attrs.id %}
+    <div {% if id %}id="{{ id }}"{% endif %}class="options-field">
+        {% for group, options, index in widget.optgroups %}
+            {% for option in options %}
+                <div>
+                    {% if option.wrap_label %}
+                        <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}>
+                        {% endif %}
+                        {% include "django/forms/widgets/input.html" with widget=option %}
+                        {% if option.wrap_label %}
+                            <strong>
+                                {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' as prefixes %}.
+                            </strong>
+                            {{ option.label }}
+                        </label>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endwith %}

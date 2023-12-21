@@ -2,6 +2,19 @@ class AppConstants:
     VERBOSE_NAME = "App Consulta Pública"
 
 
+class ContextConstants:
+    HEAD_TITLE = "Bienvenido a"
+    MAIN_TITLE = "AppVisión <b>ciudadana</b>"
+    QUERY_RESPONSE = "Responder consulta"
+    IDENTIFIER_LABEL = "Identificación"
+    DETAIL_LABEL = "En qué consiste"
+    QUESTION_LABEL = "Pregunta"
+    NEXT_LABEL = "Siguiente"
+    BACK_LABEL = "Volver"
+    SUCCESS_MESSAGE = "Tu respuesta fue enviada con éxito"
+    SUCCESS_GRATITUDE = "¡Muchas gracias por aportar con tu visión ciudadana!"
+
+
 class PublicQueryConstants:
     KIND_OPEN = "OPEN"
     KIND_CHOICES = [
@@ -29,6 +42,12 @@ class QuestionConstants:
     ]
     VERBOSE_NAME = "Pregunta"
     VERBOSE_NAME_PLURAL = "Preguntas"
+    KIND_TO_FIELD_LABEL = {
+        KIND_TEXT: "text",
+        KIND_IMAGE: "image",
+        KIND_SELECT: "options",
+        KIND_POINT: "point",
+    }
 
 
 class PublicQueryResultConstants:
