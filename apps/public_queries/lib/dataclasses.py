@@ -116,3 +116,17 @@ class PublicQueryResultData:
     @property
     def has_pagination(self) -> bool:
         return self.page_num and self.num_pages
+
+
+@dataclass
+class PointResultData:
+    response: ResponseData
+    location: Point
+    related_label: str
+
+
+@dataclass
+class QueryMapResultData:
+    query: PublicQueryData
+    point_list: list[PointResultData]
+    fetch_at: datetime
