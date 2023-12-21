@@ -72,3 +72,7 @@ class ResponseConstants:
 class AnswerConstants:
     VERBOSE_NAME = "Respuesta a pregunta"
     VERBOSE_NAME_PLURAL = "Respuestas a preguntas"
+
+
+class QueryMapResultConstants:
+    LOCATION = "Ubicación del usuario"
