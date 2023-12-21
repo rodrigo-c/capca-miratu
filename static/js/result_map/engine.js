@@ -37,6 +37,7 @@ class QueryMapResultEngine {
       message += this._get_answers_message(point_data, question_by_uuid)
       marker.bindPopup(message)
     }
+    document.querySelector(".fetch-at").textContent = `Fecha de resultado: ${data.fetch_at}`
   }
 
   _get_question_by_uuid (data) {
