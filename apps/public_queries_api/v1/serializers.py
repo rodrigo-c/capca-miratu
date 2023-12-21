@@ -41,7 +41,7 @@ class AnswerSerializer(serializers.Serializer):
     question_uuid = serializers.UUIDField()
     text = serializers.CharField()
     image = serializers.CharField()
-    options = serializers.JSONField()
+    options = serializers.ListField(child=serializers.JSONField())
     point = PointField()
     response_uuid = serializers.UUIDField()
     send_at = serializers.DateTimeField()
