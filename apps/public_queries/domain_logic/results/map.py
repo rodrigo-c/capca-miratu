@@ -118,6 +118,6 @@ class QueryMapResultReturner(ServiceBase):
             response_uuid=instance.response_id,
             question_uuid=instance.question_id,
             image=instance.image.url if instance.image else None,
-            options=list(instance.options.values_list()),
+            options=list(instance.options.values()),
             send_at=None,
         )
