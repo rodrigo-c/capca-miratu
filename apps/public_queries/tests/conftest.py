@@ -94,7 +94,9 @@ def ended_public_query(uploaded_image):
             if index % 2 == 0
             else {"email": f"fake_{index}@email.com", "rut": f"100000{index}-1"}
         )
-        response = recipes.response_recipe.make(query_id=public_query.id, **kwargs)
+        response = recipes.response_recipe.make(
+            query_id=public_query.id, location=Point(1, 1), **kwargs
+        )
         responses.append(response)
         for question in questions:
             answer = recipes.answer_recipe.make(
