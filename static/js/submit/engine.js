@@ -112,7 +112,7 @@ class QuerySubmitEngine {
       errors.textContent = ""
       button.removeAttribute("disabled")
     } else {
-      errors.textContent = "*Error de autentificación"
+      errors.textContent = "*Error de autenticación"
       button.setAttribute("disabled", true)
     }
   }
