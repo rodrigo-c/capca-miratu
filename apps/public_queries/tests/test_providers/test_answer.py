@@ -45,6 +45,14 @@ def test_get_answers_by_question_uuid(answer):
 
 
 @pytest.mark.django_db
+def test_get_answers_by_query_uuid(answer):
+    returned_instances = answer_providers.get_answers_by_query_uuid(
+        query_uuid=answer.question.query_id
+    )
+    assert returned_instances[0].id == answer.id
+
+
+@pytest.mark.django_db
 def test_get_total_answers_by_option_uuid(answer_with_option):
     option_uuid = answer_with_option.options.first().id
     assert (
