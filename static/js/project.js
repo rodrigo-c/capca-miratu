@@ -1,4 +1,6 @@
 import {QuerySubmitEngine} from "./submit/engine.js"
+import {QueryMapResultEngine} from "./result_map/engine.js"
+
 
 // need https://leafletjs.com/
 function set_answer_result_map (id, dataset) {
@@ -19,4 +21,4 @@ function set_answer_result_map (id, dataset) {
   return map
 }
 
-export {QuerySubmitEngine, set_answer_result_map}
+export {QuerySubmitEngine, QueryMapResultEngine, set_answer_result_map}
