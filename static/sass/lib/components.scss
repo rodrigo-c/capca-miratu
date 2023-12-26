@@ -136,9 +136,24 @@
   font-size: 9px;
   max-height: 45vh;
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   @include small {
     font-size: .9rem;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:hover {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+
+    &::-webkit-scrollbar {
+      display: auto;
+    }
   }
 }
 
