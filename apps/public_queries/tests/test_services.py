@@ -12,6 +12,7 @@ from freezegun import freeze_time
 from apps.public_queries import services
 from apps.public_queries.lib.constants import (
     PublicQueryResultConstants,
+    QueryMapResultConstants,
     QuestionConstants,
 )
 from apps.public_queries.lib.dataclasses import (
@@ -314,3 +315,28 @@ class TestGetAnswerResult:
             services.get_answer_result(
                 question_uuid=uuid4(),
             )
+
+
+@pytest.mark.django_db
+class TestGetPublicQueryMapResult:
+    def test_with_point_question(self, ended_public_query):
+        public_query_result = services.get_public_query_map_result(
+            identifier=ended_public_query.id
+        )
+        point_question = ended_public_query.questions.filter(
+            kind=QuestionConstants.KIND_POINT
+        ).first()
+        assert public_query_result.query.uuid == ended_public_query.id
+        assert len(public_query_result.point_list) == 16
+        for point_data in public_query_result.point_list:
+            assert point_data.related_label == point_question.name
+
+    def test_with_location(self, ended_public_query):
+        ended_public_query.questions.filter(kind=QuestionConstants.KIND_POINT).delete()
+        public_query_result = services.get_public_query_map_result(
+            identifier=ended_public_query.id
+        )
+        assert public_query_result.query.uuid == ended_public_query.id
+        assert len(public_query_result.point_list) == 16
+        for point_data in public_query_result.point_list:
+            assert point_data.related_label == QueryMapResultConstants.LOCATION

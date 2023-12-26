@@ -184,3 +184,13 @@ class PublicQueryResponseResult(UUIDObjectURL, TemplateView):
         context["response_result"] = response_result
         context["navigation_title"] = "Resultado de Consulta Pública"
         return context
+
+
+class PublicQueryMapResult(UUIDObjectURL, TemplateView):
+    template_name = "public_queries/map-result.html"
+    url_service = get_public_query
+
+    def get_context_data(self, *args, **kwargs) -> dict:
+        context = super().get_context_data(*args, **kwargs)
+        context["public_query"] = self.object
+        return context

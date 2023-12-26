@@ -1,0 +1,41 @@
+{% extends "public_queries/base.html" %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+{% endblock extra_css %}
+{% block content %}
+    <div class="map-result">
+        <div class="field-data">
+            <label>Nombre:</label>
+            <span class="value-data">{{ public_query.name }}</span>
+        </div>
+        <div class="field-data">
+            <label>Estado:</label>
+            <span class="value-data">
+                {% if public_query.is_active %}
+                    Activa
+                {% else %}
+                    Inactiva
+                {% endif %}
+            </span>
+        </div>
+        <div class="load">
+            <div class="loading">
+                {% for i in '0123'|make_list %}<div class="element"></div>{% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="map map-result" id="map"></div>
+    <div class="fetch-at"></div>
+{% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">let manager = new project.QueryMapResultEngine(
+        {resource_url: "{% url 'public_queries_api:v1:query-map-result-detail' public_query.url_code %}"}
+    )
+    </script>
+{% endblock extra_js %}

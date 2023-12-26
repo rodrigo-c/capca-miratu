@@ -260,6 +260,10 @@
   }
 }
 
+.load {
+  text-align: center;
+}
+
 .loading {
   align-self: center;
   display: inline-block;
@@ -270,7 +274,7 @@
 
   div {
     animation: loading 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
-    border: 8px solid $cegir-primary;
+    border: 5vh solid $cegir-primary;
     border-color: $cegir-primary transparent transparent;
     border-radius: 50%;
     box-sizing: border-box;

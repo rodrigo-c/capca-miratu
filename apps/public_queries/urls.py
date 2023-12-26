@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.public_queries.views import (
     AnswerQuestionResult,
+    PublicQueryMapResult,
     PublicQueryResponseResult,
     PublicQueryResult,
     PublicQuerySubmit,
@@ -25,6 +26,11 @@ urlpatterns = [
         "query/<str:uuid>/result",
         view=PublicQueryResult.as_view(),
         name="query-result",
+    ),
+    path(
+        "query/<str:uuid>/map",
+        view=PublicQueryMapResult.as_view(),
+        name="query-map-result",
     ),
     path(
         "question/<str:uuid>/result",

@@ -16,5 +16,9 @@ def get_answers_by_question_uuid(question_uuid: UUID) -> list[Answer]:
     return Answer.objects.filter(question_id=question_uuid)
 
 
+def get_answers_by_query_uuid(query_uuid: UUID) -> list[Answer]:
+    return Answer.objects.filter(question__query_id=query_uuid)
+
+
 def get_total_answers_by_option_uuid(option_uuid: UUID) -> int:
     return Answer.objects.filter(options=option_uuid).count()
