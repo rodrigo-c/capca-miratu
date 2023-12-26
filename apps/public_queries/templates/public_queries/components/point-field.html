@@ -1,10 +1,10 @@
-{% load i18n l10n %}
+{% load i18n l10n static %}
 <div id="{{ id }}_div_map" class="dj_map_wrapper">
     <div id="{{ id }}_map" class="dj_map mapwidget"></div>
     {% if not disabled %}
-        <span class="clear_features">
+        <div class="clear_features">
             <a class="clear-features hidden" href="">Borrar punto</a>
-        </span>
+        </div>
     {% endif %}
     {% if display_raw %}
         <p>{% translate "Debugging window (serialized value)" %}</p>
@@ -16,6 +16,6 @@
               name="{{ name }}"
               {% if not display_raw %} hidden{% endif %}>{{ serialized }}</textarea>
     <div class="map-data"
-         data='{ "geom_name": "{{ geom_type }}", "id": "{{ id }}", "map_id": "{{ id }}_map", "map_srid": {{ map_srid|unlocalize }}, "name": "{{ name }}", "default_lon": {{ default_lon|unlocalize }}, "default_lat": {{ default_lat|unlocalize }}, "default_zoom": {{ default_zoom|unlocalize }} }'>
+         data='{ "geom_name": "{{ geom_type }}", "id": "{{ id }}", "map_id": "{{ id }}_map", "map_srid": {{ map_srid|unlocalize }}, "name": "{{ name }}", "default_lon": {{ default_lon|unlocalize }}, "default_lat": {{ default_lat|unlocalize }}, "default_zoom": {{ default_zoom|unlocalize }}, "point_image_url": "{% static "images/icons/point.svg" %}" }'>
     </div>
 </div>
