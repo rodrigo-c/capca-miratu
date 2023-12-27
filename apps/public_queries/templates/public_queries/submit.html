@@ -51,8 +51,7 @@
                 {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
                 {% for field in answer_form.visible_fields %}
                     {% if not field.field.disabled %}
-                        {% if field.errors %}{{ field.errors }}{% endif %}
-                        <div class="form-field{% if field.errors %} error{% endif %}"
+                        <div class="form-field{% if field.errors %} field-error{% endif %}"
                              maxlength="{{ field.field.maxlength }}"
                              field="{{ field.name }}"
                              {% if field.field.required %}required{% endif %}>{{ field }}</div>
@@ -60,7 +59,11 @@
                 {% endfor %}
                 <div class="errors">
                     {% if answer_form.errors %}
-                        {% for error in response_form.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                        {% for field, errors in answer_form.errors.items %}
+                            <span class="error">
+                                {% for error in errors %}{{ error }}{% endfor %}
+                            </span>
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>
