@@ -99,6 +99,7 @@
     font-family: Open Sans;
     font-size: 14px;
     font-weight: 600;
+    user-select: none;
 
     &.hidden {
       display: none;
@@ -153,6 +154,14 @@
 
 .hidden {
   display: none;
+}
+
+.form-field.field-error .image-input {
+  border: .5px solid $error;
+}
+
+.form-field.field-error textarea {
+  border: .5px solid $error;
 }
 
 .form-field .image-input {
