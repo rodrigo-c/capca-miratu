@@ -17,11 +17,14 @@ class ContextConstants:
 
 class PublicQueryConstants:
     KIND_OPEN = "OPEN"
+    KIND_CLOSED = "CLOSED"
     KIND_CHOICES = [
-        (KIND_OPEN, "Open"),
+        (KIND_OPEN, "Abierta"),
+        (KIND_CLOSED, "Cerrada"),
     ]
     VERBOSE_NAME = "Consulta"
     VERBOSE_NAME_PLURAL = "Consultas"
+    NOT_MAX_RESPONSES = 0
 
 
 class QuestionConstants:
@@ -48,6 +51,11 @@ class QuestionConstants:
         KIND_SELECT: "options",
         KIND_POINT: "point",
     }
+
+
+class ResponderConstants:
+    VERBOSE_NAME = "Respondedor"
+    VERBOSE_NAME_PLURAL = "Respondedores"
 
 
 class PublicQueryResultConstants:
