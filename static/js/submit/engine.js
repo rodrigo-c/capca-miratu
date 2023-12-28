@@ -85,6 +85,7 @@ class QuerySubmitEngine {
         event.preventDefault()
       } else {
         this.hide_all()
+        this.comp.navbars.main.classList.remove("hidden")
         document.querySelector(".load.content-container").classList.remove("hidden")
       }
       if (this.focus == "identifier") {

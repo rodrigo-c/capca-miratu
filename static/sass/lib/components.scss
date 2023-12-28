@@ -282,10 +282,10 @@
 .loading {
   align-self: center;
   display: inline-block;
-  height: 30vw;
+  height: 15vh;
   padding: 10vh 10vw;
   position: relative;
-  width: 30vw;
+  width: 15vh;
 
   div {
     animation: loading 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
@@ -294,10 +294,10 @@
     border-radius: 50%;
     box-sizing: border-box;
     display: block;
-    height: 30vw;
+    height: 15vh;
     margin: 8px;
     position: absolute;
-    width: 30vw;
+    width: 15vh;
   }
 
   div:nth-child(1) {
