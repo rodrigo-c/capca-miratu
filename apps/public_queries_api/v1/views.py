@@ -5,7 +5,7 @@ from rest_framework.viewsets import ViewSet
 from apps.public_queries.lib.dataclasses import QueryMapResultData
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
 from apps.public_queries.services import get_public_query_map_result
-from apps.public_queries_api.v1.serializers import QueryMapResultSerializer
+from apps.public_queries_api.v1.serializers.map_result import QueryMapResultSerializer
 
 
 class PublicQueryMapResult(ViewSet):
