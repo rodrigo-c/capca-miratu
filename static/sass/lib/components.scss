@@ -136,9 +136,24 @@
   font-size: 9px;
   max-height: 45vh;
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   @include small {
     font-size: .9rem;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:hover {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+
+    &::-webkit-scrollbar {
+      display: auto;
+    }
   }
 }
 
@@ -267,10 +282,10 @@
 .loading {
   align-self: center;
   display: inline-block;
-  height: 30vw;
+  height: 15vh;
   padding: 10vh 10vw;
   position: relative;
-  width: 30vw;
+  width: 15vh;
 
   div {
     animation: loading 1.2s cubic-bezier(.5, 0, .5, 1) infinite;
@@ -279,10 +294,10 @@
     border-radius: 50%;
     box-sizing: border-box;
     display: block;
-    height: 30vw;
+    height: 15vh;
     margin: 8px;
     position: absolute;
-    width: 30vw;
+    width: 15vh;
   }
 
   div:nth-child(1) {

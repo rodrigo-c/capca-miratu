@@ -87,17 +87,19 @@
   bottom: 0;
   display: flex;
   justify-content: space-between;
-  padding: 5vh 5vw;
+  padding: 4vh 5vw;
   position: fixed;
   width: 90vw;
 
   .back-button {
     align-items: center;
     color: $terciary;
+    cursor: pointer;
     display: flex;
     font-family: Open Sans;
     font-size: 14px;
     font-weight: 600;
+    user-select: none;
 
     &.hidden {
       display: none;
@@ -128,15 +130,38 @@
   font-weight: 400;
   line-height: 130%;
   margin-bottom: 2vh;
-  overflow: scroll;
+  -ms-overflow-style: none;
+  overflow-y: scroll;
+  scrollbar-width: none;
 
   @include small {
     font-size: .8rem;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:hover {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+
+    &::-webkit-scrollbar {
+      display: auto;
+    }
   }
 }
 
 .hidden {
   display: none;
+}
+
+.form-field.field-error .image-input {
+  border: .5px solid $error;
+}
+
+.form-field.field-error textarea {
+  border: .5px solid $error;
 }
 
 .form-field .image-input {
@@ -227,6 +252,9 @@
 }
 
 .dj_map_wrapper { // scss-lint:disable SelectorFormat
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
   width: 100%;
 
   .clear_features a { // scss-lint:disable SelectorFormat
