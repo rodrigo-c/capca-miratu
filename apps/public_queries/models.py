@@ -70,6 +70,18 @@ class PublicQuery(BaseModel):
     allowed_responders = models.ManyToManyField(
         "Responder", through="AllowedResponder", through_fields=("query", "responder")
     )
+    auth_rut = models.CharField(
+        choices=PublicQueryConstants.AUTH_CHOICES,
+        default=PublicQueryConstants.AUTH_OPTIONAL,
+        blank=False,
+        null=False,
+    )
+    auth_email = models.CharField(
+        choices=PublicQueryConstants.AUTH_CHOICES,
+        default=PublicQueryConstants.AUTH_OPTIONAL,
+        blank=False,
+        null=False,
+    )
 
     class Meta:
         ordering = ["start_at"]

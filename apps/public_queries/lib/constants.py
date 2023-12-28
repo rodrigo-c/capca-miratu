@@ -22,6 +22,14 @@ class PublicQueryConstants:
         (KIND_OPEN, "Abierta"),
         (KIND_CLOSED, "Cerrada"),
     ]
+    AUTH_REQUIRED = "REQUIRED"
+    AUTH_OPTIONAL = "OPTIONAL"
+    AUTH_DISABLE = "DISABLE"
+    AUTH_CHOICES = [
+        (AUTH_REQUIRED, "Requerido"),
+        (AUTH_OPTIONAL, "Opcional"),
+        (AUTH_DISABLE, "Deshabilitado"),
+    ]
     VERBOSE_NAME = "Consulta"
     VERBOSE_NAME_PLURAL = "Consultas"
     NOT_MAX_RESPONSES = 0
