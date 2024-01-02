@@ -1,5 +1,6 @@
 import pytest
 
+from apps.public_queries.lib.constants import PublicQueryConstants
 from apps.public_queries.lib.dataclasses import QuestionData
 from apps.public_queries.tests import recipes
 from apps.public_queries.utils import create_fake_uploaded_image
@@ -66,3 +67,11 @@ def uploaded_image(field_name="images", size=(50, 50), color=(256, 0, 0)):
 @pytest.fixture
 def ended_public_query(uploaded_image):
     return recipes.make_ended_public_query(uploaded_image=uploaded_image)
+
+
+@pytest.fixture
+def closed_public_query():
+    public_query = recipes.public_query_recipe.make(
+        kind=PublicQueryConstants.KIND_CLOSED,
+    )
+    return public_query
