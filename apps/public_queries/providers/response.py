@@ -34,3 +34,11 @@ def get_anonymous_responses_by_query_uuid(query_uuid: UUID) -> int:
 
 def get_responses_by_query_uuid(query_uuid: UUID) -> list[Response]:
     return Response.objects.filter(query_id=query_uuid)
+
+
+def count_responses_by_query_and_rut(query_uuid: UUID, rut: str) -> int:
+    return Response.objects.filter(query_id=query_uuid, rut=rut).count()
+
+
+def count_responses_by_query_and_email(query_uuid: UUID, email: str) -> int:
+    return Response.objects.filter(query_id=query_uuid, email=email).count()

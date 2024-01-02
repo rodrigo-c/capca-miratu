@@ -48,3 +48,23 @@ def test_get_responses_by_query_uuid(response):
         query_uuid=response.query_id
     )
     assert response.id == returned_instances[0].id
+
+
+@pytest.mark.django_db
+def test_count_responses_by_query_and_rut(response):
+    assert (
+        response_providers.count_responses_by_query_and_rut(
+            query_uuid=response.query_id, rut=response.rut
+        )
+        == 1
+    )
+
+
+@pytest.mark.django_db
+def test_count_responses_by_query_and_email(response):
+    assert (
+        response_providers.count_responses_by_query_and_email(
+            query_uuid=response.query_id, email=response.email
+        )
+        == 1
+    )
