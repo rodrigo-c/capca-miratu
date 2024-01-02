@@ -15,6 +15,7 @@ from apps.public_queries.models import Answer, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
+from apps.utils.rut import format_rut
 
 
 class SubmitResponseEngine(ServiceBase):
@@ -60,7 +61,7 @@ class SubmitResponseEngine(ServiceBase):
             query_uuid=self.public_query.uuid,
             send_at=now,
             email=self.response.email,
-            rut=self.response.rut,
+            rut=format_rut(self.response.rut) if self.response.rut else None,
             location=self.response.location,
         )
 
