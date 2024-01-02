@@ -35,6 +35,16 @@ class PublicQueryConstants:
     NOT_MAX_RESPONSES = 0
 
 
+class AuthConstants:
+    RUT_REQUIRED = "El RUT es requerido"
+    EMAIL_REQUIRED = "El correo es requerido"
+    RUT_INVALID = "El RUT es inválido"
+    EMAIL_INVALID = "El correo es inválido"
+    RUT_MAX_RESPONSES = "El RUT ya emitió el máximo de respuestas"
+    EMAIL_MAX_RESPONSES = "El correo ya emitió el máximo de respuestas"
+    EMAIL_NOT_ALLOWED = "El correo no está habilitado"
+
+
 class QuestionConstants:
     KIND_TEXT = "TEXT"
     KIND_IMAGE = "IMAGE"
