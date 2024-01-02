@@ -9,3 +9,9 @@ def get_public_query_by_uuid(uuid: UUID, **kwargs) -> PublicQuery:
 
 def get_public_query_by_url_code(url_code: str, **kwargs) -> PublicQuery:
     return PublicQuery.objects.get(url_code=url_code, **kwargs)
+
+
+def email_is_allowed_to_public_query(public_query_uuid: UUID, email: str) -> bool:
+    return PublicQuery.objects.filter(
+        id=public_query_uuid, allowed_responders__email=email
+    ).exists()
