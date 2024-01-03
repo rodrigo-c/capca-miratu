@@ -1,4 +1,5 @@
 import uuid
+from functools import partial
 
 from django.contrib.gis.db import models
 from django.utils import timezone
@@ -63,6 +64,24 @@ class PublicQuery(BaseModel):
         unique=True,
         default=get_random_url_code,
     )
+    max_responses = models.PositiveIntegerField(
+        null=False, blank=False, default=PublicQueryConstants.NOT_MAX_RESPONSES
+    )
+    allowed_responders = models.ManyToManyField(
+        "Responder", through="AllowedResponder", through_fields=("query", "responder")
+    )
+    auth_rut = models.CharField(
+        choices=PublicQueryConstants.AUTH_CHOICES,
+        default=PublicQueryConstants.AUTH_OPTIONAL,
+        blank=False,
+        null=False,
+    )
+    auth_email = models.CharField(
+        choices=PublicQueryConstants.AUTH_CHOICES,
+        default=PublicQueryConstants.AUTH_OPTIONAL,
+        blank=False,
+        null=False,
+    )
 
     class Meta:
         ordering = ["start_at"]
@@ -109,6 +128,7 @@ class Question(BaseModel):
     required = models.BooleanField(default=True)
     text_max_length = models.IntegerField(default=255)
     max_answers = models.IntegerField(null=False, blank=False, default=1)
+    min_answers = models.PositiveIntegerField(null=False, blank=False, default=1)
 
     class Meta:
         ordering = ["order"]
@@ -145,6 +165,25 @@ class QuestionOption(BaseModel):
         return f"{self.name} [{self.id}]"
 
 
+class Responder(BaseModel):
+    email = models.EmailField(null=False, blank=False)
+
+    class Meta:
+        ordering = ["email"]
+        verbose_name = QuestionConstants.VERBOSE_NAME
+        verbose_name_plural = QuestionConstants.VERBOSE_NAME_PLURAL
+
+
+class AllowedResponder(BaseModel):
+    query = models.ForeignKey(PublicQuery, on_delete=models.CASCADE)
+    responder = models.ForeignKey(Responder, on_delete=models.CASCADE)
+    email_code = models.CharField(
+        max_length=15,
+        unique=True,
+        default=partial(get_random_url_code, size=15),
+    )
+
+
 class Response(BaseModel):
     query = models.ForeignKey(
         PublicQuery,
@@ -156,6 +195,9 @@ class Response(BaseModel):
     location = models.PointField(null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     rut = models.CharField(max_length=10, null=True, blank=True)
+    allowed_responder = models.ForeignKey(
+        AllowedResponder, on_delete=models.SET_NULL, null=True
+    )
 
     class Meta:
         ordering = ["send_at"]

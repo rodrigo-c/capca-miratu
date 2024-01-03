@@ -42,6 +42,9 @@ class PublicQueryData:
     image: str | None = None
     questions: list[QuestionData] | None = None
     url_code: str | None = None
+    auth_email: str | None = None
+    auth_rut: str | None = None
+    max_responses: int | None = None
 
 
 @dataclass

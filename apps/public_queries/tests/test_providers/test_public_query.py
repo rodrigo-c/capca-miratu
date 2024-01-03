@@ -19,3 +19,25 @@ class TestGetPublicQueryByUrlCode:
             url_code=public_query.url_code
         )
         assert called_public_query.id == public_query.id
+
+
+@pytest.mark.django_db
+class TestEmailIsAllowedToPublicQuery:
+    def test_is_allowed(self, closed_public_query):
+        allowed_email = "allowed@email"
+        closed_public_query.allowed_responders.create(email=allowed_email)
+
+        assert (
+            public_query_providers.email_is_allowed_to_public_query(
+                public_query_uuid=closed_public_query.id, email=allowed_email
+            )
+            is True
+        )
+
+    def test_is_not_allowed(self, closed_public_query):
+        assert (
+            public_query_providers.email_is_allowed_to_public_query(
+                public_query_uuid=closed_public_query.id, email="not.allowed@email"
+            )
+            is False
+        )

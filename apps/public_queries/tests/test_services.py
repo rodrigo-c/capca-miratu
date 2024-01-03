@@ -11,6 +11,8 @@ from freezegun import freeze_time
 
 from apps.public_queries import services
 from apps.public_queries.lib.constants import (
+    AuthConstants,
+    PublicQueryConstants,
     PublicQueryResultConstants,
     QueryMapResultConstants,
     QuestionConstants,
@@ -22,6 +24,7 @@ from apps.public_queries.lib.dataclasses import (
     ResponseData,
 )
 from apps.public_queries.lib.exceptions import (
+    CantSubmitPublicQueryError,
     PublicQueryDoesNotExist,
     QuestionDoesNotExist,
 )
@@ -29,6 +32,7 @@ from apps.public_queries.tests.recipes import (
     public_query_recipe,
     question_option_recipe,
     question_recipe,
+    response_recipe,
 )
 
 
@@ -340,3 +344,92 @@ class TestGetPublicQueryMapResult:
         assert len(public_query_result.point_list) == 16
         for point_data in public_query_result.point_list:
             assert point_data.related_label == QueryMapResultConstants.LOCATION
+
+
+@pytest.mark.django_db
+class TestCanSubmitPublicQuery:
+    def test_email_required(self):
+        public_query = public_query_recipe.make(
+            auth_email=PublicQueryConstants.AUTH_REQUIRED
+        )
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id,
+            )
+        assert error.value.data["email"] == AuthConstants.EMAIL_REQUIRED
+
+    def test_rut_required(self):
+        public_query = public_query_recipe.make(
+            auth_rut=PublicQueryConstants.AUTH_REQUIRED
+        )
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id,
+            )
+        assert error.value.data["rut"] == AuthConstants.RUT_REQUIRED
+
+    def test_with_invalid_email(self):
+        public_query = public_query_recipe.make(
+            auth_email=PublicQueryConstants.AUTH_REQUIRED
+        )
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, email="invalid.email"
+            )
+        assert error.value.data["email"] == AuthConstants.EMAIL_INVALID
+
+    def test_with_not_allowed_email(self):
+        public_query = public_query_recipe.make(kind=PublicQueryConstants.KIND_CLOSED)
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, email="not.allowed@email.com"
+            )
+        assert error.value.data["email"] == AuthConstants.EMAIL_NOT_ALLOWED
+
+    def test_with_email_max_responses(self):
+        public_query = public_query_recipe.make(
+            max_responses=1,
+            auth_email=PublicQueryConstants.AUTH_REQUIRED,
+        )
+        repeated_email = "reapeated@email.com"
+        response_recipe.make(query_id=public_query.id, email=repeated_email)
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, email=repeated_email
+            )
+        assert error.value.data["email"] == AuthConstants.EMAIL_MAX_RESPONSES
+
+    def test_with_invalid_rut(self):
+        public_query = public_query_recipe.make(
+            auth_rut=PublicQueryConstants.AUTH_REQUIRED
+        )
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, rut="10.000.000-1"
+            )
+        assert error.value.data["rut"] == AuthConstants.RUT_INVALID
+
+    def test_with_rut_max_responses(self):
+        public_query = public_query_recipe.make(
+            max_responses=1, auth_rut=PublicQueryConstants.AUTH_REQUIRED
+        )
+        repeated_rut = "10000000-8"
+        response_recipe.make(query_id=public_query.id, rut=repeated_rut)
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, rut=repeated_rut
+            )
+        assert error.value.data["rut"] == AuthConstants.RUT_MAX_RESPONSES
+
+    def test_success(self):
+        public_query = public_query_recipe.make(
+            max_responses=2, auth_rut=PublicQueryConstants.AUTH_REQUIRED
+        )
+        repeated_rut = "10000000-8"
+        response_recipe.make(query_id=public_query.id, rut=repeated_rut)
+        assert (
+            services.can_submit_public_query(
+                query_identifier=public_query.id, rut=repeated_rut
+            )
+            is None
+        )

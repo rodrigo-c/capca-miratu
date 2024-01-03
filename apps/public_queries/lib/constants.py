@@ -17,11 +17,32 @@ class ContextConstants:
 
 class PublicQueryConstants:
     KIND_OPEN = "OPEN"
+    KIND_CLOSED = "CLOSED"
     KIND_CHOICES = [
-        (KIND_OPEN, "Open"),
+        (KIND_OPEN, "Abierta"),
+        (KIND_CLOSED, "Cerrada"),
+    ]
+    AUTH_REQUIRED = "REQUIRED"
+    AUTH_OPTIONAL = "OPTIONAL"
+    AUTH_DISABLE = "DISABLE"
+    AUTH_CHOICES = [
+        (AUTH_REQUIRED, "Requerido"),
+        (AUTH_OPTIONAL, "Opcional"),
+        (AUTH_DISABLE, "Deshabilitado"),
     ]
     VERBOSE_NAME = "Consulta"
     VERBOSE_NAME_PLURAL = "Consultas"
+    NOT_MAX_RESPONSES = 0
+
+
+class AuthConstants:
+    RUT_REQUIRED = "El RUT es requerido"
+    EMAIL_REQUIRED = "El correo es requerido"
+    RUT_INVALID = "El RUT es inválido"
+    EMAIL_INVALID = "El correo es inválido"
+    RUT_MAX_RESPONSES = "El RUT ya emitió el máximo de respuestas"
+    EMAIL_MAX_RESPONSES = "El correo ya emitió el máximo de respuestas"
+    EMAIL_NOT_ALLOWED = "El correo no está habilitado"
 
 
 class QuestionConstants:
@@ -48,6 +69,11 @@ class QuestionConstants:
         KIND_SELECT: "options",
         KIND_POINT: "point",
     }
+
+
+class ResponderConstants:
+    VERBOSE_NAME = "Respondedor"
+    VERBOSE_NAME_PLURAL = "Respondedores"
 
 
 class PublicQueryResultConstants:

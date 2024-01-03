@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from apps.public_queries.domain_logic.auth import CanSubmitPublicQuery
 from apps.public_queries.domain_logic.results import (
     AnswerResultReturner,
     PublicQueryResultReturner,
@@ -86,3 +87,15 @@ def get_public_query_map_result(identifier: UUID | str) -> QueryMapResultData:
         identifier=identifier,
     )
     return returner.get()
+
+
+def can_submit_public_query(
+    query_identifier: UUID | str,
+    email: str | None = None,
+    rut: str | None = None,
+) -> None:
+    return CanSubmitPublicQuery(
+        query_identifier=query_identifier,
+        responder_email=email,
+        responder_rut=rut,
+    ).validate()
