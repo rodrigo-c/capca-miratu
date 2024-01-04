@@ -59,9 +59,8 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
         self.public_query = self.object
-        response_form = ResponseForm(
+        response_form = self.get_response_form(
             data=request.POST,
-            initial={"query": self.public_query.uuid},
         )
         answer_formset = self.get_answer_formset(data=request.POST, files=request.FILES)
         if not (response_form.is_valid() & answer_formset.is_valid()):
@@ -107,15 +106,24 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
     ) -> dict:
         context = super().get_context_data(public_query=self.public_query)
         context["focus"] = focus if focus is not None else "entry"
-        context["navigation_title"] = "Consulta Pública"
+        context["auth_url"] = self.get_auth_url()
         context["app_context"] = ContextConstants
         context["response_form"] = response_form or self.get_response_form()
         if self.public_query.questions:
             context["answer_formset"] = answer_formset or self.get_answer_formset()
         return context
 
+    def get_auth_url(self) -> str:
+        return reverse(
+            "public_queries_api:v1:auth-can-submit",
+            kwargs={"pk": self.public_query.url_code},
+        )
+
     def get_response_form(self, **kwargs) -> ResponseForm:
-        return ResponseForm(initial={"query": self.public_query.uuid}, **kwargs)
+        return ResponseForm(
+            initial={"query": self.public_query.uuid, "query-data": self.public_query},
+            **kwargs
+        )
 
     def get_answer_formset(self, **kwargs) -> AnswerFormSet:
         initial = [
