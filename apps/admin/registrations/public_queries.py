@@ -13,6 +13,7 @@ from nested_inline.admin import (
 )
 
 from apps.public_queries.models import (
+    AllowedResponder,
     Answer,
     PublicQuery,
     Question,
@@ -43,6 +44,12 @@ class QuestionInLine(NestedStackedInline):
     }
 
 
+class AllowedResponderInLine(NestedStackedInline):
+    model = AllowedResponder
+    extra = 0
+    ordering = ["responder__email"]
+
+
 class PublicQueryAdmin(NestedModelAdmin):
     list_display = [
         "name",
@@ -65,8 +72,9 @@ class PublicQueryAdmin(NestedModelAdmin):
         ("Basic", {"fields": ["kind", "name", "description"]}),
         ("Activation", {"fields": ["active", "start_at", "end_at"]}),
         ("Visualization", {"fields": ["image"]}),
+        ("Identification", {"fields": ["auth_email", "auth_rut", "max_responses"]}),
     ]
-    inlines = [QuestionInLine]
+    inlines = [AllowedResponderInLine, QuestionInLine]
     readonly_fields = ["id", "created_at", "created_by", "updated_at"]
 
     def view_url_code(self, obj):

@@ -31,8 +31,13 @@ class TestPublicQueryAdmin:
             data={
                 "kind": PublicQueryConstants.KIND_OPEN,
                 "name": fake_name,
+                "max_responses": 0,
+                "auth_email": PublicQueryConstants.AUTH_OPTIONAL,
+                "auth_rut": PublicQueryConstants.AUTH_OPTIONAL,
                 "questions-TOTAL_FORMS": 0,
                 "questions-INITIAL_FORMS": 0,
+                "allowedresponder_set-TOTAL_FORMS": 0,
+                "allowedresponder_set-INITIAL_FORMS": 0,
                 "url_code": "Xkjsd,",
             },
         )
