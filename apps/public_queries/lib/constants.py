@@ -4,7 +4,7 @@ class AppConstants:
 
 class ContextConstants:
     HEAD_TITLE = "Bienvenido a"
-    MAIN_TITLE = "AppVisión <b>ciudadana</b>"
+    MAIN_TITLE = "Visión <b>ciudadana</b>"
     QUERY_RESPONSE = "Responder consulta"
     IDENTIFIER_LABEL = "Identificación"
     DETAIL_LABEL = "En qué consiste"
