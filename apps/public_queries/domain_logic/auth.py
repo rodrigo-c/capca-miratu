@@ -28,7 +28,7 @@ class CanSubmitPublicQuery(ServiceBase):
     def validate(self) -> None:
         self._validate_is_required()
         if self.responder["email"] and (
-            self.public_query.auth_rut != PublicQueryConstants.AUTH_DISABLE
+            self.public_query.auth_email != PublicQueryConstants.AUTH_DISABLE
             or self.public_query.kind == PublicQueryConstants.KIND_CLOSED
         ):
             self._validate_email()
@@ -75,7 +75,7 @@ class CanSubmitPublicQuery(ServiceBase):
                 query_uuid=self.public_query.uuid,
                 email=self.responder["email"],
             )
-            if current_responses == self.public_query.max_responses:
+            if current_responses >= self.public_query.max_responses:
                 error = AuthConstants.EMAIL_MAX_RESPONSES
         if error:
             self._raise_validation(errors={"email": error})
