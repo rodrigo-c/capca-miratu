@@ -15,8 +15,12 @@ class QuerySubmitEngine {
   constructor (
     {
       focus = "entry",
+      auth_url = "",
+      csrf_token = "",
     }
   ) {
+    this.auth_url = auth_url
+    this.csrf_token = csrf_token
     this.hidden_class_name = "hidden";
     this.comp = get_components()
     this._set_focus (focus)
@@ -77,6 +81,41 @@ class QuerySubmitEngine {
     this.show_view("identifier")
   }
 
+  set_loading () {
+    this.hide_all()
+    this.comp.navbars.main.classList.remove("hidden")
+    document.querySelector(".load.content-container").classList.remove("hidden")
+  }
+
+  identify() {
+    let identifier_data = {}
+    for (let input of this.comp.input_map.identifier) {
+      let field = input.getAttribute("name")
+      if (field == "rut") {
+        identifier_data.rut = input.value
+      } else if (field == "email") {
+        identifier_data.email = input.value
+      }
+    }
+    fetch(this.auth_url, {
+      method: "POST",
+      body: JSON.stringify(identifier_data),
+      headers: {"Content-Type": "application/json",  "X-CSRFToken": this.csrf_token},
+    })
+    .then((response) => {
+      if (response.status == 200) {
+        this.show_view("detail")
+      } else {
+        response.json().then((data)=> {
+          let errors = this.comp.containers.identifier.querySelector(".errors")
+          if (data.email) {errors.textContent = data.email}
+          if (data.rut) {errors.textContent = data.rut}
+          this.show_view("identifier")
+        })
+      }
+    })
+  }
+
   click_next_button (event) {
     let total_questions = this.comp.containers.question_list.length
     let valid = event.currentTarget.getAttribute("disabled") != "true"
@@ -84,12 +123,11 @@ class QuerySubmitEngine {
       if (this.focus != total_questions - 1) {
         event.preventDefault()
       } else {
-        this.hide_all()
-        this.comp.navbars.main.classList.remove("hidden")
-        document.querySelector(".load.content-container").classList.remove("hidden")
+        this.set_loading()
       }
       if (this.focus == "identifier") {
-        this.show_view("detail")
+        this.set_loading()
+        this.identify()
       } else if (this.focus == "detail") {
         this.show_view(0)
       }
@@ -114,11 +152,12 @@ class QuerySubmitEngine {
     }
     if (valid) {
       errors.textContent = ""
-      button.removeAttribute("disabled")
+      // button.removeAttribute("disabled")
     } else {
       errors.textContent = "*Error de autenticación"
-      button.setAttribute("disabled", true)
+      // button.setAttribute("disabled", true)
     }
+    this.set_next_button_status2("identifier", true)
   }
 
   change_question_input (event) {
@@ -176,6 +215,9 @@ class QuerySubmitEngine {
       this.comp.containers[focus].classList.remove(this.hidden_class_name)
       this.comp.buttons.submit.removeAttribute("disabled")
     }
+    if (focus == "identifier") {
+      this.set_next_button_status2(focus)
+    }
     this.focus = focus
   }
 
@@ -189,6 +231,20 @@ class QuerySubmitEngine {
     else if (!isNaN(this.focus)) {
         if (this.focus == 0) {this.show_view("detail")}
         else {this.show_view(this.focus - 1)}
+    }
+  }
+
+  set_next_button_status2(focus, report) {
+    let next_button = this.comp.buttons.submit
+    let valid = true
+    let input_list = !isNaN(this.focus)? this.comp.input_map.question_list[focus]: this.comp.input_map.identifier
+    for (let input of input_list) {
+      valid &&= input.validity.valid
+    }
+    if (valid) {
+      next_button.removeAttribute("disabled")
+    } else {
+      next_button.setAttribute("disabled", true)
     }
   }
 
