@@ -32,6 +32,7 @@ class PublicQuery(BaseModel):
         choices=PublicQueryConstants.KIND_CHOICES,
         blank=False,
         null=False,
+        max_length=200,
     )
     name = models.CharField(
         max_length=255,
@@ -75,12 +76,14 @@ class PublicQuery(BaseModel):
         default=PublicQueryConstants.AUTH_OPTIONAL,
         blank=False,
         null=False,
+        max_length=200,
     )
     auth_email = models.CharField(
         choices=PublicQueryConstants.AUTH_CHOICES,
         default=PublicQueryConstants.AUTH_OPTIONAL,
         blank=False,
         null=False,
+        max_length=200,
     )
 
     class Meta:
@@ -114,6 +117,7 @@ class Question(BaseModel):
         choices=QuestionConstants.KIND_CHOICES,
         blank=False,
         null=False,
+        max_length=200,
     )
     name = models.CharField(
         max_length=255,
