@@ -152,10 +152,8 @@ class QuerySubmitEngine {
     }
     if (valid) {
       errors.textContent = ""
-      // button.removeAttribute("disabled")
     } else {
       errors.textContent = "*Error de autenticación"
-      // button.setAttribute("disabled", true)
     }
     this.set_next_button_status2("identifier", true)
   }
@@ -196,7 +194,7 @@ class QuerySubmitEngine {
     }
     this.comp.buttons.submit.classList.add(this.hidden_class_name)
     this.comp.buttons.back.classList.add(this.hidden_class_name)
-
+    document.querySelector(".load.content-container").classList.add(this.hidden_class_name)
   }
 
   show_view(focus) {
