@@ -92,6 +92,7 @@ MIDDLEWARE = [
 # Static
 
 STATIC_URL = "static/"
+STATIC_ROOT = str(ROOT_DIR / "staticfiles")
 STATICFILES_DIRS = [str(ROOT_DIR / "static")]
 
 # Media

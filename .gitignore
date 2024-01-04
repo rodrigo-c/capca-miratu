@@ -22,3 +22,4 @@ vendors.js
 *.min.js
 *.min.js.map
 media/
+staticfiles/
