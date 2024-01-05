@@ -14,7 +14,6 @@
           name="response-form"
           enctype="multipart/form-data">
         {% csrf_token %}
-        {{ answer_formset.get_media }}
         <div class="entry content-container hidden" id="entry-container">
             <div class="head-title">{{ app_context.HEAD_TITLE }}</div>
             <div class="main-title">{{ app_context.MAIN_TITLE|safe }}</div>

@@ -107,7 +107,6 @@ class AnswerForm(forms.Form):
         field.widget.attrs["maxlength"] = field.max_num
         field.widget.attrs["minlength"] = 1 if field.required else None
         field.widget.attrs["required"] = self.question_data.required
-        field.widget.attrs["capture"] = "enviroment"
         self._hide_fields(exclude=["image"])
 
     def _set_select_answer(self):
@@ -165,12 +164,5 @@ def get_validated_dataclasses(formset) -> list[AnswerData]:
     return validated_data_list
 
 
-def get_media(formset):
-    for form in formset.forms:
-        if "point" in form.fields:
-            return formset.media
-
-
 AnswerFormSet = formset_factory(AnswerForm, extra=0)
 AnswerFormSet.get_validated_dataclasses = get_validated_dataclasses
-AnswerFormSet.get_media = get_media
