@@ -24,9 +24,24 @@
   padding-right: 12vw;
 
   @include small {
-    padding-bottom: 10vh;
+    padding-bottom: 4vh;
+    padding-right: 6vw;
   }
 }
+
+.logo-gs-cegir {
+  background-image: url('../images/logos/gs-cegir.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 15vh;
+  padding-right: 70vw;
+
+  @include small {
+    padding-bottom: 25vh;
+  }
+}
+
 
 .app-brand {
   background-image: url('../images/logos/app-ciudadana.svg');
@@ -48,7 +63,7 @@
 .navbar,
 .top-brand {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 5vw;
   width: 100%;
 }
@@ -56,6 +71,7 @@
 .navbar {
   box-shadow: 0 -1px 0 0 $shadow inset;
   height: 7.2vh;
+  justify-content: space-between;
 }
 
 .navigation {
