@@ -24,18 +24,21 @@ class QueryMapResultEngine {
     let question_by_uuid = this._get_question_by_uuid(data)
 
     for (let point_data of data.point_list) {
-      let marker = L.marker(
-        [point_data.location.latitude, point_data.location.longitude]
-      ).addTo(map)
-      let message = this._set_html_message("Enviado en", new Date(point_data.response.send_at))
-      if (point_data.response.email) {
-        message += this._set_html_message("Email", point_data.response.email)
+      if (point_data.location) {
+        let marker = L.marker(
+          [point_data.location.latitude, point_data.location.longitude]
+        ).addTo(map)
+        let message = this._set_html_message("Enviado en", new Date(point_data.response.send_at))
+        if (point_data.response.email) {
+          message += this._set_html_message("Email", point_data.response.email)
+        }
+        if (point_data.response.rut) {
+          message += this._set_html_message("Rut", point_data.response.rut)
+        }
+        message += this._get_answers_message(point_data, question_by_uuid)
+        marker.bindPopup(message)
       }
-      if (point_data.response.rut) {
-        message += this._set_html_message("Rut", point_data.response.rut)
-      }
-      message += this._get_answers_message(point_data, question_by_uuid)
-      marker.bindPopup(message)
+
     }
     document.querySelector(".fetch-at").textContent = `Fecha de resultado: ${data.fetch_at}`
   }
