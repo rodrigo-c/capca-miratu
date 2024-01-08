@@ -26,9 +26,15 @@ class CanSubmitPublicQuery(ServiceBase):
         self.public_query = PublicQueryReturner(
             identifier=query_identifier, active=True
         ).get()
-        self.responder = {"rut": responder_rut, "email": responder_email}
-        if secret_key and self.public_query.kind == PublicQueryConstants.KIND_CLOSED:
-            self.responder["secret_key"] = secret_key
+        self.responder = {
+            "rut": responder_rut,
+            "email": responder_email,
+            "secret_key": (
+                secret_key
+                if self.public_query.kind == PublicQueryConstants.KIND_CLOSED
+                else None
+            ),
+        }
         self._is_valid = None
         self._errors = None
 
