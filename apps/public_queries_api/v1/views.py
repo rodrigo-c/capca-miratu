@@ -38,6 +38,7 @@ class PublicQueryAuth(ViewSet):
                 query_identifier=pk,
                 email=request.data.get("email"),
                 rut=request.data.get("rut"),
+                secret_key=request.data.get("sk"),
             )
         except PublicQueryDoesNotExist:
             raise Http404
