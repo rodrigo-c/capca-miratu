@@ -4,7 +4,7 @@ from django.contrib.gis import forms
 from django.core.validators import MaxLengthValidator
 from django.forms import formset_factory
 
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
 from apps.public_queries.lib.dataclasses import AnswerData, ResponseData
 
 
@@ -16,10 +16,26 @@ class ResponseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        initial = kwargs.get("initial", {})
+        public_query = initial.get("query-data")
+        if public_query:
+            self.set_auth(public_query=public_query)
         self.fields["email"].widget.attrs["placeholder"] = "Correo electrónico"
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["rut"].widget.attrs["placeholder"] = "Rut"
         self.fields["rut"].widget.attrs["autocomplete"] = "rut"
+
+    def set_auth(self, public_query) -> None:
+        if public_query.auth_email == PublicQueryConstants.AUTH_DISABLE:
+            self.fields["email"].disabled = True
+        elif public_query.auth_email == PublicQueryConstants.AUTH_REQUIRED:
+            self.fields["email"].widget.attrs["required"] = True
+            self.fields["email"].required = True
+        if public_query.auth_rut == PublicQueryConstants.AUTH_DISABLE:
+            self.fields["rut"].disabled = True
+        elif public_query.auth_rut == PublicQueryConstants.AUTH_REQUIRED:
+            self.fields["rut"].widget.attrs["required"] = True
+            self.fields["rut"].required = True
 
     def get_validated_dataclass(
         self, query_uuid: UUID, answers: list[AnswerData]

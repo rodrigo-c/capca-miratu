@@ -36,8 +36,9 @@ class PublicQueryAuth(ViewSet):
         try:
             can_submit_public_query(
                 query_identifier=pk,
-                email=request.POST.get("email"),
-                rut=request.POST.get("rut"),
+                email=request.data.get("email"),
+                rut=request.data.get("rut"),
+                secret_key=request.data.get("sk"),
             )
         except PublicQueryDoesNotExist:
             raise Http404

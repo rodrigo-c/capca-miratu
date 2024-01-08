@@ -1,7 +1,7 @@
 import pytest
 
 from apps.public_queries.forms import AnswerForm, ResponseForm
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
 
 
 @pytest.mark.django_db
@@ -39,3 +39,19 @@ class TestResponseForm:
             query_uuid=public_query.id, answers=[]
         )
         assert response_data.query_uuid == public_query.id
+
+    def test_with_auth_disabled(self, public_query):
+        public_query.auth_email = PublicQueryConstants.AUTH_DISABLE
+        public_query.auth_rut = PublicQueryConstants.AUTH_DISABLE
+        form = ResponseForm(
+            data={"query": public_query.id}, initial={"query-data": public_query}
+        )
+        assert form.is_valid()
+
+    def test_with_auth_required(self, public_query):
+        public_query.auth_email = PublicQueryConstants.AUTH_REQUIRED
+        public_query.auth_rut = PublicQueryConstants.AUTH_REQUIRED
+        form = ResponseForm(
+            data={"query": public_query.id}, initial={"query-data": public_query}
+        )
+        assert not form.is_valid()

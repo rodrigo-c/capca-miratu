@@ -75,3 +75,17 @@ def closed_public_query():
         kind=PublicQueryConstants.KIND_CLOSED,
     )
     return public_query
+
+
+@pytest.fixture
+def make_closed_public_query():
+    def _make_closed_public_query(emails):
+        public_query = recipes.public_query_recipe.make(
+            kind=PublicQueryConstants.KIND_CLOSED,
+        )
+        for email in emails:
+            responder = recipes.responder_recipe.make(email=email)
+            public_query.allowed_responders.add(responder.id)
+        return public_query
+
+    return _make_closed_public_query

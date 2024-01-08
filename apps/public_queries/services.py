@@ -8,7 +8,10 @@ from apps.public_queries.domain_logic.results import (
 )
 from apps.public_queries.domain_logic.returners import PublicQueryReturner
 from apps.public_queries.domain_logic.submit import SubmitResponseEngine
-from apps.public_queries.lib.constants import PublicQueryResultConstants
+from apps.public_queries.lib.constants import (
+    PublicQueryConstants,
+    PublicQueryResultConstants,
+)
 from apps.public_queries.lib.dataclasses import (
     AnswerData,
     PublicQueryData,
@@ -16,7 +19,10 @@ from apps.public_queries.lib.dataclasses import (
     QueryMapResultData,
     ResponseData,
 )
-from apps.public_queries.lib.exceptions import ResponseDoesNotExist
+from apps.public_queries.lib.exceptions import (
+    PublicQueryDoesNotExist,
+    ResponseDoesNotExist,
+)
 from apps.public_queries.models import Response
 from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
@@ -27,6 +33,27 @@ def get_public_query(
 ) -> PublicQueryData:
     returner = PublicQueryReturner(identifier=identifier, active=active)
     return returner.get()
+
+
+def get_submit_public_query(
+    identifier: UUID | str,
+    email: str | None = None,
+    secret_key: str | None = None,
+) -> PublicQueryData:
+    public_query = PublicQueryReturner(identifier=identifier, active=True).get()
+    if public_query.kind == PublicQueryConstants.KIND_OPEN:
+        return public_query
+    if (
+        public_query.kind == PublicQueryConstants.KIND_CLOSED
+        and (email and secret_key)
+        and CanSubmitPublicQuery(
+            query_identifier=identifier,
+            responder_email=email,
+            secret_key=secret_key,
+        ).is_valid()
+    ):
+        return public_query
+    raise PublicQueryDoesNotExist
 
 
 def get_response_by_uuid(uuid: UUID) -> ResponseData:
@@ -93,9 +120,11 @@ def can_submit_public_query(
     query_identifier: UUID | str,
     email: str | None = None,
     rut: str | None = None,
+    secret_key: str | None = None,
 ) -> None:
     return CanSubmitPublicQuery(
         query_identifier=query_identifier,
         responder_email=email,
         responder_rut=rut,
+        secret_key=secret_key,
     ).validate()

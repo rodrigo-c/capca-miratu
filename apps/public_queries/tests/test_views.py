@@ -31,6 +31,32 @@ class TestPublicQuerySubmit:
         response = client.get(url)
         assert response.status_code == 200
 
+    def test_get_success_with_closed(self, client, make_closed_public_query):
+        valid_email = "valid@ema.il"
+        public_query = make_closed_public_query(emails=[valid_email])
+        secret_key = public_query.allowedresponder_set.first().email_code
+        url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.url_code})
+        url += f"?e={valid_email}&k={secret_key}"
+        response = client.get(url)
+        assert response.status_code == 200
+
+    def test_get_not_authorized_with_closed(self, client, make_closed_public_query):
+        valid_email = "valid@ema.il"
+        public_query = make_closed_public_query(emails=[valid_email])
+        secret_key = public_query.allowedresponder_set.first().email_code[:-2]
+        url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.url_code})
+        url += f"?e={valid_email}&k={secret_key}"
+        response = client.get(url)
+        assert response.status_code == 404
+
+    def test_get_with_closed_and_without_auth_params(
+        self, client, make_closed_public_query
+    ):
+        public_query = make_closed_public_query(emails=[])
+        url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})
+        response = client.get(url)
+        assert response.status_code == 404
+
     def test_get_not_active(self, client):
         public_query = public_query_recipe.make(active=False)
         url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})

@@ -1,56 +1,37 @@
 from uuid import UUID
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
 from apps.public_queries.lib.constants import (
     ContextConstants,
+    PublicQueryConstants,
     PublicQueryResultConstants,
     QuestionConstants,
 )
-from apps.public_queries.lib.exceptions import ObjectDoesNotExist
+from apps.public_queries.mixins import UUIDObjectURL
 from apps.public_queries.services import (
     get_answer_result,
     get_public_query,
     get_public_query_response_result,
     get_public_query_result,
     get_response_by_uuid,
+    get_submit_public_query,
     submit_response,
 )
 
 
-class UUIDObjectURL:
-    url_active_status = None
-    url_service = None
-    url_service_field = "identifier"
-    url_service_extra_kwargs = None
-
-    def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
-        extra_kwargs = self.get_url_service_extra_kwargs()
-        try:
-            object_data = self.__class__.url_service(
-                **{self.url_service_field: uuid, **extra_kwargs}
-            )
-        except ObjectDoesNotExist:
-            raise Http404
-        self.object = object_data
-        return super().dispatch(request, uuid, *args, **kwargs)
-
-    def get_url_service_extra_kwargs(self):
-        return self.url_service_extra_kwargs or {}
-
-    def _get_page_num(self) -> int:
-        if "page_num" in self.request.GET and self.request.GET["page_num"].isdecimal():
-            return int(self.request.GET["page_num"])
-        return 1
-
-
 class PublicQuerySubmit(UUIDObjectURL, TemplateView):
     template_name = "public_queries/submit.html"
-    url_service = get_public_query
-    url_service_extra_kwargs = {"active": True}
+    url_service = get_submit_public_query
+
+    def get_url_service_extra_kwargs(self):
+        return {
+            "email": self.request.GET.get("e"),
+            "secret_key": self.request.GET.get("k"),
+        }
 
     def get(self, request, uuid) -> HttpResponse:
         self.public_query = self.object
@@ -59,9 +40,8 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
         self.public_query = self.object
-        response_form = ResponseForm(
+        response_form = self.get_response_form(
             data=request.POST,
-            initial={"query": self.public_query.uuid},
         )
         answer_formset = self.get_answer_formset(data=request.POST, files=request.FILES)
         if not (response_form.is_valid() & answer_formset.is_valid()):
@@ -107,15 +87,24 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
     ) -> dict:
         context = super().get_context_data(public_query=self.public_query)
         context["focus"] = focus if focus is not None else "entry"
-        context["navigation_title"] = "Consulta Pública"
+        context["auth_url"] = self.get_auth_url()
         context["app_context"] = ContextConstants
         context["response_form"] = response_form or self.get_response_form()
         if self.public_query.questions:
             context["answer_formset"] = answer_formset or self.get_answer_formset()
         return context
 
+    def get_auth_url(self) -> str:
+        return reverse(
+            "public_queries_api:v1:auth-can-submit",
+            kwargs={"pk": self.public_query.url_code},
+        )
+
     def get_response_form(self, **kwargs) -> ResponseForm:
-        return ResponseForm(initial={"query": self.public_query.uuid}, **kwargs)
+        initial = {"query": self.public_query.uuid, "query-data": self.public_query}
+        if self.public_query.kind == PublicQueryConstants.KIND_CLOSED:
+            initial["email"] = self.request.GET.get("e")
+        return ResponseForm(initial=initial, **kwargs)
 
     def get_answer_formset(self, **kwargs) -> AnswerFormSet:
         initial = [

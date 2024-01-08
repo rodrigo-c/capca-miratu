@@ -9,6 +9,7 @@ from apps.public_queries.lib.constants import (
     PublicQueryConstants,
     QuestionConstants,
     QuestionOptionConstants,
+    ResponderConstants,
     ResponseConstants,
 )
 from apps.utils.random import get_random_url_code
@@ -174,8 +175,8 @@ class Responder(BaseModel):
 
     class Meta:
         ordering = ["email"]
-        verbose_name = QuestionConstants.VERBOSE_NAME
-        verbose_name_plural = QuestionConstants.VERBOSE_NAME_PLURAL
+        verbose_name = ResponderConstants.VERBOSE_NAME
+        verbose_name_plural = ResponderConstants.VERBOSE_NAME_PLURAL
 
 
 class AllowedResponder(BaseModel):
