@@ -73,8 +73,8 @@ class QuestionConstants:
 
 
 class ResponderConstants:
-    VERBOSE_NAME = "Respondedor"
-    VERBOSE_NAME_PLURAL = "Respondedores"
+    VERBOSE_NAME = "Consultado"
+    VERBOSE_NAME_PLURAL = "Consultados"
 
 
 class PublicQueryResultConstants:
