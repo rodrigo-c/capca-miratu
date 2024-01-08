@@ -3,6 +3,7 @@ function set_image_preview (input) {
   let files = input.files
   let input_container = input.parentElement
   let input_add_icon = input_container.querySelector(".image-icon")
+  let input_add_icon_desc = input_container.querySelector(".image-icon-description")
   let input_close_icon = input_container.querySelector(".closed-icon")
   let payload = ""
   for (var i = files.length - 1; i >= 0; i--) {
@@ -18,10 +19,12 @@ function set_image_preview (input) {
 
   if (files.length > 0) {
     input_add_icon.classList.add("hidden")
+    input_add_icon_desc.classList.add("hidden")
     input_close_icon.classList.remove("hidden")
 
   } else {
     input_add_icon.classList.remove("hidden")
+    input_add_icon_desc.classList.remove("hidden")
     input_close_icon.classList.add("hidden")
   }
 }
