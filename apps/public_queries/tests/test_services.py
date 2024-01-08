@@ -100,6 +100,32 @@ class TestGetPublicQuery:
 
 
 @pytest.mark.django_db
+class TestGetSubmitPublicQuery:
+    def test_success_with_open(self):
+        public_query = public_query_recipe.make(active=True)
+        public_query_data = services.get_submit_public_query(identifier=public_query.id)
+        assert public_query_data.uuid == public_query.id
+
+    def test_success_with_closed(self, make_closed_public_query):
+        valid_email = "valid@ema.il"
+        public_query = make_closed_public_query(emails=[valid_email])
+        secret_key = public_query.allowedresponder_set.first().email_code
+        public_query_data = services.get_submit_public_query(
+            identifier=public_query.id, email=valid_email, secret_key=secret_key
+        )
+        assert public_query_data.uuid == public_query.id
+
+    def test_not_found_with_closed(self, make_closed_public_query):
+        invalid_email = "invalid@ema.il"
+        public_query = make_closed_public_query(emails=[invalid_email])
+        secret_key = public_query.allowedresponder_set.first().email_code[:-2]
+        with pytest.raises(PublicQueryDoesNotExist):
+            services.get_submit_public_query(
+                identifier=public_query.id, email=invalid_email, secret_key=secret_key
+            )
+
+
+@pytest.mark.django_db
 def test_get_response_by_uuid(response):
     response_data = services.get_response_by_uuid(uuid=response.id)
     assert response_data.uuid == response.id
