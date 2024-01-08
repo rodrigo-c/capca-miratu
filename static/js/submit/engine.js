@@ -21,6 +21,8 @@ class QuerySubmitEngine {
   ) {
     this.auth_url = auth_url
     this.csrf_token = csrf_token
+    this.closed_sk = new URLSearchParams(window.location.search).get("k")
+    this.closed_email = new URLSearchParams(window.location.search).get("e")
     this.hidden_class_name = "hidden";
     this.comp = get_components()
     this._set_focus (focus)
@@ -48,6 +50,10 @@ class QuerySubmitEngine {
   _set_identifier_inputs () {
     this.change_identifier_input = this.change_identifier_input.bind(this)
     for (let input of this.comp.input_map.identifier) {
+      if (this.closed_email && input.getAttribute("name") == "email") {
+        input.value = this.closed_email
+        input.setAttribute("disabled", true)
+      }
       input.addEventListener("input", this.change_identifier_input, false)
     }
   }
@@ -97,6 +103,9 @@ class QuerySubmitEngine {
         identifier_data.email = input.value
       }
     }
+    if (this.closed_sk) {
+      identifier_data.sk = this.closed_sk
+    }
     fetch(this.auth_url, {
       method: "POST",
       body: JSON.stringify(identifier_data),
@@ -123,6 +132,11 @@ class QuerySubmitEngine {
       if (this.focus != total_questions - 1) {
         event.preventDefault()
       } else {
+        for (let input of this.comp.input_map.identifier) {
+          if (this.closed_email && input.getAttribute("name") == "email") {
+            input.removeAttribute("disabled")
+          }
+        }
         this.set_loading()
       }
       if (this.focus == "identifier") {
@@ -155,7 +169,7 @@ class QuerySubmitEngine {
     } else {
       errors.textContent = "*Error de autenticación"
     }
-    this.set_next_button_status2("identifier", true)
+    this.set_next_button_status("identifier", true)
   }
 
   change_question_input (event) {
@@ -214,7 +228,7 @@ class QuerySubmitEngine {
       this.comp.buttons.submit.removeAttribute("disabled")
     }
     if (focus == "identifier") {
-      this.set_next_button_status2(focus)
+      this.set_next_button_status(focus)
     }
     this.focus = focus
   }
@@ -232,24 +246,11 @@ class QuerySubmitEngine {
     }
   }
 
-  set_next_button_status2(focus, report) {
+  set_next_button_status(focus, report) {
     let next_button = this.comp.buttons.submit
     let valid = true
     let input_list = !isNaN(this.focus)? this.comp.input_map.question_list[focus]: this.comp.input_map.identifier
     for (let input of input_list) {
-      valid &&= input.validity.valid
-    }
-    if (valid) {
-      next_button.removeAttribute("disabled")
-    } else {
-      next_button.setAttribute("disabled", true)
-    }
-  }
-
-  set_next_button_status(question_index, report) {
-    let next_button = this.comp.buttons.submit
-    let valid = true
-    for (let input of this.comp.input_map.question_list[question_index]) {
       valid &&= input.validity.valid
     }
     if (valid) {
