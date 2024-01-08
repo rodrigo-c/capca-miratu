@@ -35,6 +35,8 @@ answer_recipe = Recipe(
     response=foreign_key(response_recipe),
 )
 
+responder_recipe = Recipe("public_queries.Responder")
+
 
 def make_ended_public_query(uploaded_image=None):
     uploaded_image = uploaded_image or create_fake_uploaded_image()
