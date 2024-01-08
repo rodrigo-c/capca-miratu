@@ -43,6 +43,7 @@ class AuthConstants:
     RUT_MAX_RESPONSES = "El RUT ya emitió el máximo de respuestas"
     EMAIL_MAX_RESPONSES = "El correo ya emitió el máximo de respuestas"
     EMAIL_NOT_ALLOWED = "El correo no está habilitado"
+    FORBIDDEN = "No está autorizado"
 
 
 class QuestionConstants:

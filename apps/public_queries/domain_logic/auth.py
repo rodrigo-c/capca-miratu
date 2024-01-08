@@ -7,6 +7,9 @@ from apps.public_queries.domain_logic.base import ServiceBase
 from apps.public_queries.domain_logic.returners import PublicQueryReturner
 from apps.public_queries.lib.constants import AuthConstants, PublicQueryConstants
 from apps.public_queries.lib.exceptions import CantSubmitPublicQueryError
+from apps.public_queries.providers import (
+    allowed_responder as allowed_responder_providers,
+)
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import response as response_providers
 from apps.utils.rut import format_rut, is_valid_rut
@@ -18,12 +21,28 @@ class CanSubmitPublicQuery(ServiceBase):
         query_identifier: UUID | str,
         responder_rut: str | None = None,
         responder_email: str | None = None,
+        secret_key: str | None = None,
     ):
         self.public_query = PublicQueryReturner(
             identifier=query_identifier, active=True
         ).get()
         self.responder = {"rut": responder_rut, "email": responder_email}
+        if secret_key and self.public_query.kind == PublicQueryConstants.KIND_CLOSED:
+            self.responder["secret_key"] = secret_key
         self._is_valid = None
+        self._errors = None
+
+    def is_valid(self) -> bool:
+        if self._is_valid is not None:
+            return self._is_valid
+        try:
+            self.validate()
+        except CantSubmitPublicQueryError as error:
+            self._is_valid = False
+            self._errors = error.data
+        else:
+            self._is_valid = True
+        return self._is_valid
 
     def validate(self) -> None:
         self._validate_is_required()
@@ -32,6 +51,7 @@ class CanSubmitPublicQuery(ServiceBase):
             or self.public_query.kind == PublicQueryConstants.KIND_CLOSED
         ):
             self._validate_email()
+            self._validate_secret_key()
         if (
             self.responder["rut"]
             and self.public_query.auth_rut != PublicQueryConstants.AUTH_DISABLE
@@ -79,6 +99,14 @@ class CanSubmitPublicQuery(ServiceBase):
                 error = AuthConstants.EMAIL_MAX_RESPONSES
         if error:
             self._raise_validation(errors={"email": error})
+
+    def _validate_secret_key(self) -> None:
+        if not allowed_responder_providers.allowed_responder_exists(
+            query_uuid=self.public_query.uuid,
+            email=self.responder["email"],
+            email_code=self.responder["secret_key"],
+        ):
+            self._raise_validation(errors={"email": AuthConstants.FORBIDDEN})
 
     def _validate_rut(self) -> None:
         error = None
