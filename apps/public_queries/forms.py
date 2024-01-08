@@ -30,10 +30,12 @@ class ResponseForm(forms.Form):
             self.fields["email"].disabled = True
         elif public_query.auth_email == PublicQueryConstants.AUTH_REQUIRED:
             self.fields["email"].widget.attrs["required"] = True
+            self.fields["email"].required = True
         if public_query.auth_rut == PublicQueryConstants.AUTH_DISABLE:
             self.fields["rut"].disabled = True
         elif public_query.auth_rut == PublicQueryConstants.AUTH_REQUIRED:
             self.fields["rut"].widget.attrs["required"] = True
+            self.fields["rut"].required = True
 
     def get_validated_dataclass(
         self, query_uuid: UUID, answers: list[AnswerData]
