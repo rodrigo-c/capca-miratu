@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
@@ -10,47 +10,27 @@ from apps.public_queries.lib.constants import (
     PublicQueryResultConstants,
     QuestionConstants,
 )
-from apps.public_queries.lib.exceptions import ObjectDoesNotExist
+from apps.public_queries.mixins import UUIDObjectURL
 from apps.public_queries.services import (
     get_answer_result,
     get_public_query,
     get_public_query_response_result,
     get_public_query_result,
     get_response_by_uuid,
+    get_submit_public_query,
     submit_response,
 )
 
 
-class UUIDObjectURL:
-    url_active_status = None
-    url_service = None
-    url_service_field = "identifier"
-    url_service_extra_kwargs = None
-
-    def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
-        extra_kwargs = self.get_url_service_extra_kwargs()
-        try:
-            object_data = self.__class__.url_service(
-                **{self.url_service_field: uuid, **extra_kwargs}
-            )
-        except ObjectDoesNotExist:
-            raise Http404
-        self.object = object_data
-        return super().dispatch(request, uuid, *args, **kwargs)
-
-    def get_url_service_extra_kwargs(self):
-        return self.url_service_extra_kwargs or {}
-
-    def _get_page_num(self) -> int:
-        if "page_num" in self.request.GET and self.request.GET["page_num"].isdecimal():
-            return int(self.request.GET["page_num"])
-        return 1
-
-
 class PublicQuerySubmit(UUIDObjectURL, TemplateView):
     template_name = "public_queries/submit.html"
-    url_service = get_public_query
-    url_service_extra_kwargs = {"active": True}
+    url_service = get_submit_public_query
+
+    def get_url_service_extra_kwargs(self):
+        return {
+            "email": self.request.GET.get("e"),
+            "secret_key": self.request.GET.get("k"),
+        }
 
     def get(self, request, uuid) -> HttpResponse:
         self.public_query = self.object
