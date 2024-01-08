@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from apps.public_queries.forms import AnswerFormSet, ResponseForm
 from apps.public_queries.lib.constants import (
     ContextConstants,
+    PublicQueryConstants,
     PublicQueryResultConstants,
     QuestionConstants,
 )
@@ -100,10 +101,10 @@ class PublicQuerySubmit(UUIDObjectURL, TemplateView):
         )
 
     def get_response_form(self, **kwargs) -> ResponseForm:
-        return ResponseForm(
-            initial={"query": self.public_query.uuid, "query-data": self.public_query},
-            **kwargs
-        )
+        initial = {"query": self.public_query.uuid, "query-data": self.public_query}
+        if self.public_query.kind == PublicQueryConstants.KIND_CLOSED:
+            initial["email"] = self.request.GET.get("e")
+        return ResponseForm(initial=initial, **kwargs)
 
     def get_answer_formset(self, **kwargs) -> AnswerFormSet:
         initial = [
