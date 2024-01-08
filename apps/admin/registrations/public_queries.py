@@ -18,6 +18,7 @@ from apps.public_queries.models import (
     PublicQuery,
     Question,
     QuestionOption,
+    Responder,
     Response,
 )
 
@@ -48,6 +49,17 @@ class AllowedResponderInLine(NestedStackedInline):
     model = AllowedResponder
     extra = 0
     ordering = ["responder__email"]
+
+
+class ResponderAdmin(NestedModelAdmin):
+    list_display = [
+        "email",
+        "created_at",
+        "updated_at",
+    ]
+    search_fields = ["email"]
+    inlines = [AllowedResponderInLine]
+    readonly_fields = ["id", "created_at", "updated_at"]
 
 
 class PublicQueryAdmin(NestedModelAdmin):
@@ -154,5 +166,6 @@ class ResponseAdmin(admin.ModelAdmin):
 
 public_queries_tuple_models = [
     (PublicQuery, PublicQueryAdmin),
+    (Responder, ResponderAdmin),
     (Response, ResponseAdmin),
 ]
