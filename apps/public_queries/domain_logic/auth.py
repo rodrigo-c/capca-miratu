@@ -57,7 +57,8 @@ class CanSubmitPublicQuery(ServiceBase):
             or self.public_query.kind == PublicQueryConstants.KIND_CLOSED
         ):
             self._validate_email()
-            self._validate_secret_key()
+            if self.public_query.kind == PublicQueryConstants.KIND_CLOSED:
+                self._validate_secret_key()
         if (
             self.responder["rut"]
             and self.public_query.auth_rut != PublicQueryConstants.AUTH_DISABLE
