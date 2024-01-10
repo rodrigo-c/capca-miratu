@@ -41,3 +41,9 @@ class TestEmailIsAllowedToPublicQuery:
             )
             is False
         )
+
+
+@pytest.mark.django_db
+def test_get_public_query_list(public_query):
+    result = public_query_providers.get_public_query_list()
+    assert result[0].id == public_query.id
