@@ -35,6 +35,11 @@ def get_public_query(
     return returner.get()
 
 
+def get_public_query_list() -> list[PublicQueryData]:
+    returner = PublicQueryReturner(identifier="__all__")
+    return returner.get()
+
+
 def get_submit_public_query(
     identifier: UUID | str,
     email: str | None = None,

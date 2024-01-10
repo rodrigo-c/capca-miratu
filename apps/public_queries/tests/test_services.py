@@ -251,6 +251,12 @@ class TestSubmitResponse:
 
 
 @pytest.mark.django_db
+def test_get_public_query_list(public_query):
+    result = services.get_public_query_list()
+    assert result[0].uuid == public_query.id
+
+
+@pytest.mark.django_db
 def test_get_public_query_result(ended_public_query):
     public_query_data = services.get_public_query(identifier=ended_public_query.id)
     result_data = services.get_public_query_result(public_query=public_query_data)
