@@ -6,9 +6,9 @@ from apps.public_queries.tests import recipes as public_query_recipes
 
 
 class TestPublicQueryAdmin:
-    change_list_pattern = "admin:public_queries_publicquery_changelist"
-    add_pattern = "admin:public_queries_publicquery_add"
-    change_pattern = "admin:public_queries_publicquery_change"
+    change_list_pattern = "django_admin:public_queries_publicquery_changelist"
+    add_pattern = "django_admin:public_queries_publicquery_add"
+    change_pattern = "django_admin:public_queries_publicquery_change"
 
     def test_changelist(self, admin_client):
         public_query_recipes.public_query_recipe.make()
@@ -52,9 +52,9 @@ class TestPublicQueryAdmin:
 
 
 class TestResponseAdmin:
-    change_list_pattern = "admin:public_queries_response_changelist"
-    add_pattern = "admin:public_queries_response_add"
-    change_pattern = "admin:public_queries_response_change"
+    change_list_pattern = "django_admin:public_queries_response_changelist"
+    add_pattern = "django_admin:public_queries_response_add"
+    change_pattern = "django_admin:public_queries_response_change"
 
     def test_changelist(self, admin_client):
         public_query_recipes.response_recipe.make()
