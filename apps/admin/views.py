@@ -1,4 +1,7 @@
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
+from django.views.generic import TemplateView
 
 from apps.public_queries.lib.constants import ContextConstants
 
@@ -18,3 +21,13 @@ class UserLoginView(auth_views.LoginView):
         form.fields["username"].widget.attrs["placeholder"] = "Correo electrónico"
         form.fields["password"].widget.attrs["placeholder"] = "Contraseña"
         return form
+
+
+class AdminEntryPoint(LoginRequiredMixin, TemplateView):
+    template_name = "admin/entry-point.html"
+    login_url = "/admin/login/"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["url_base"] = reverse("admin_api:v1:public-query-list")
+        return context

@@ -20,3 +20,13 @@ class TestUserLoginView:
             self.url, data={"username": "u@ser.email", "password": "1"}
         )
         assert response.status_code == 200
+
+
+@pytest.mark.django_db
+class TestAdminEntryPoint:
+    url = reverse("admin:entry-point")
+
+    def test_get(self, client, user):
+        client.force_login(user)
+        response = client.get(self.url)
+        assert response.status_code == 200
