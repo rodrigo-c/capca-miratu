@@ -4,14 +4,10 @@
   background-repeat: no-repeat;
   background-size: contain;
   padding-bottom: 4vh;
-  padding-right: 15vw;
+  padding-right: 12vh;
 
   @include small {
-    padding-right: 12vw;
-  }
-
-  @include medium {
-    padding-right: 8vw;
+    padding-right: 15vh;
   }
 }
 
@@ -21,11 +17,11 @@
   background-repeat: no-repeat;
   background-size: contain;
   padding-bottom: 8vh;
-  padding-right: 12vw;
+  padding-right: 8vh;
 
   @include small {
     padding-bottom: 4vh;
-    padding-right: 6vw;
+    padding-right: 9vh;
   }
 }
 
