@@ -174,19 +174,23 @@ class QuerySubmitEngine {
 
   change_question_input (event) {
     let input = event.currentTarget
+    this.validate_input(input, true)
+    this.set_next_button_status(input.question_index, true)
+  }
+
+  validate_input (input, report) {
     if (input.type == "file") {
       validator.validate_image_question(input)
     }
     if (input.type == "checkbox") {
-      validator.validate_options_question(input, this.comp.containers, true)
+      validator.validate_options_question(input, this.comp.containers, report)
     }
     if (input.classList.contains("vSerializedField")) {
-      validator.validate_point_question(input, this.comp.containers, true)
+      validator.validate_point_question(input, this.comp.containers, report)
     }
     if (input.parentElement.getAttribute("field") == "text") {
-      validator.validate_text_question(input, this.comp.containers, true)
+      validator.validate_text_question(input, this.comp.containers, report)
     }
-    this.set_next_button_status(input.question_index, true)
   }
 
   click_image_clear(event) {
@@ -213,6 +217,7 @@ class QuerySubmitEngine {
 
   show_view(focus) {
     this.hide_all()
+    this.focus = focus
     if (focus != "entry") {
       this.comp.buttons.back.classList.remove(this.hidden_class_name)
       this.comp.buttons.submit.classList.remove(this.hidden_class_name)
@@ -221,6 +226,9 @@ class QuerySubmitEngine {
       this.comp.navbars.brand.classList.remove(this.hidden_class_name)
     }
     if (Number.isInteger(focus)) {
+      for (let input of this.comp.input_map.question_list[focus]) {
+        this.validate_input(input)
+      }
       this.set_next_button_status(focus)
       this.comp.containers.question_list[focus].classList.remove(this.hidden_class_name)
     } else {
@@ -230,7 +238,6 @@ class QuerySubmitEngine {
     if (focus == "identifier") {
       this.set_next_button_status(focus)
     }
-    this.focus = focus
   }
 
   show_back_form () {

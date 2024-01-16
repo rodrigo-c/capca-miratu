@@ -1,0 +1,24 @@
+{% extends "public_queries/base.html" %}
+{% block extra_css %}
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css"
+          rel="stylesheet"
+          type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
+            type="text/javascript"></script>
+{% endblock extra_css %}
+{% block content %}
+    <div class="data-result-container">
+        <div class="data-table" id="data-table"></div>
+    </div>
+    <div class="load">
+        <div class="loading">
+            {% for i in '0123'|make_list %}<div class="element"></div>{% endfor %}
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script type="text/javascript">let manager = new project.QueryDataResultEngine(
+    {resource_url: "{% url 'public_queries_api:v1:query-data-result-detail' public_query.url_code %}"}
+  )
+    </script>
+{% endblock extra_js %}

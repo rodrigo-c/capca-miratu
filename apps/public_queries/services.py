@@ -97,6 +97,10 @@ def get_public_query_response_result(
     return returner.get_responses(page_num=page_num)
 
 
+def get_public_query_responses_data(identifier: str | UUID) -> dict:
+    return PublicQueryReturner(identifier=identifier, active=True).get_responses_data()
+
+
 def get_answer_result(
     question_uuid: UUID,
     page_num: int | None = None,

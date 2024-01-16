@@ -134,6 +134,16 @@ def test_get_response_by_uuid(response):
 
 
 @pytest.mark.django_db
+def test_get_public_query_responses_data(ended_public_query):
+    question_recipe.make(query_id=ended_public_query.id, required=False)
+    responses_data = services.get_public_query_responses_data(
+        identifier=ended_public_query.url_code
+    )
+    assert responses_data["query"]["uuid"] == str(ended_public_query.id)
+    assert len(responses_data["dataset"]) == 16
+
+
+@pytest.mark.django_db
 class TestSubmitResponse:
     def test_success(self):
         public_query = public_query_recipe.make(active=True)
