@@ -90,6 +90,11 @@ class PublicQueryDataResult(ViewSet):
                 "headings": fields.values(),
                 "data": [],
             },
+            "labels": {
+                "placeholder": "Buscar...",
+                "info": "Mostrando {start} a {end} de {rows} respuestas",
+                "perPage": "Consultas por página",
+            },
         }
 
 
