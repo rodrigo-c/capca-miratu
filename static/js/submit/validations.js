@@ -35,7 +35,7 @@ function _get_question_errors(question_index, containers) {
 }
 
 
-function validate_image_question(input) {
+function validate_image_question(input, report) {
   let required = input.hasAttribute("required")
   let question_container = input.parentElement.parentElement.parentElement
   let errors = question_container.querySelector(".errors")
@@ -46,8 +46,10 @@ function validate_image_question(input) {
   input.setCustomValidity("")
   if (required && input.files.length == 0) {
     let message = "*Este campo es obligatorio"
-    errors.textContent = message
-    image_input_container.classList.add("error")
+    if (report) {
+      errors.textContent = message
+      image_input_container.classList.add("error")
+    }
     input.value = ""
     input.setCustomValidity(message)
   }

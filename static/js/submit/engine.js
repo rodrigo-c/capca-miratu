@@ -180,7 +180,7 @@ class QuerySubmitEngine {
 
   validate_input (input, report) {
     if (input.type == "file") {
-      validator.validate_image_question(input)
+      validator.validate_image_question(input, report)
     }
     if (input.type == "checkbox") {
       validator.validate_options_question(input, this.comp.containers, report)
@@ -197,7 +197,7 @@ class QuerySubmitEngine {
     let input_container = event.currentTarget.parentElement
     let input = input_container.querySelector("input")
     input.value = ""
-    validator.validate_image_question(input)
+    validator.validate_image_question(input, true)
     this.set_next_button_status(input.question_index, true)
   }
 
@@ -227,7 +227,7 @@ class QuerySubmitEngine {
     }
     if (Number.isInteger(focus)) {
       for (let input of this.comp.input_map.question_list[focus]) {
-        this.validate_input(input)
+        this.validate_input(input, false)
       }
       this.set_next_button_status(focus)
       this.comp.containers.question_list[focus].classList.remove(this.hidden_class_name)
