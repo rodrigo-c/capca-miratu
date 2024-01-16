@@ -1,0 +1,58 @@
+.data-result-container {
+  font-size: 2vh;
+
+  .cell-tooltip {
+    position: relative;
+
+  }
+
+  .datatable-container {
+    max-height: 75vh;
+    overflow: scroll;
+    width: 100vw;
+
+    th {
+      text-wrap: nowrap;
+    }
+
+    .cell.rut {
+      text-wrap: nowrap;
+    }
+  }
+}
+
+.cell-tooltip {
+  .tooltip {
+    background-color: $white;
+    border: solid .5px $secondary;
+    border-radius: 3px;
+    display: none;
+    opacity: 0;
+    padding: 1vh 1vw;
+    position: absolute;
+    transition: opacity .3s;
+    visibility: hidden;
+    width: 150%;
+    z-index: 1;
+
+    &::after {
+      content: '';
+      position: absolute;
+    }
+  }
+
+  &:hover .tooltip {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.value-select ul {
+    margin: 0;
+    padding-inline-start: 1vw;
+  }
+
+  .tooltip-image {
+    width: 100%;
+  }
+}
