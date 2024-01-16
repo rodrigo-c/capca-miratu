@@ -10,7 +10,7 @@ from apps.public_queries.lib.dataclasses import (
     QuestionOptionData,
 )
 from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
-from apps.public_queries.models import Answer, PublicQuery, Question
+from apps.public_queries.models import Answer, PublicQuery, Question, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
@@ -82,14 +82,15 @@ class PublicQueryReturner:
         responses_data = []
         questions = self.public_query.questions.all()
         questions_by_field = {
-            f"pregunta_{index}": question for index, question in enumerate(questions)
+            f"pregunta_{index + 1}": question
+            for index, question in enumerate(questions)
         }
         instance_fields = ["send_at", "email", "rut", "location"]
-        fields = set(instance_fields + list(questions_by_field))
+        fields = instance_fields + sorted(list(questions_by_field))
         for response_id, response in responses_map.items():
-            response_data = {
-                field: getattr(response, field) for field in instance_fields
-            }
+            response_data = self._get_response_data(
+                response=response, fields=instance_fields
+            )
             answers = answers_map[response_id]
             response_data.update(
                 {
@@ -100,11 +101,44 @@ class PublicQueryReturner:
                 }
             )
             responses_data.append(response_data)
+        query = self._get_query_data()
         return {
-            "query": self.get().__dict__,
+            "query": query,
             "fields": list(fields),
             "dataset": responses_data,
         }
+
+    def _get_query_data(self) -> dict:
+        query = self.get().__dict__
+        query["uuid"] = str(query["uuid"])
+        query["questions"] = [
+            {
+                **question.__dict__,
+                "uuid": str(question.uuid),
+                "options": (
+                    [opt.name for opt in question.options] if question.options else None
+                ),
+            }
+            for question in query["questions"]
+        ]
+        return query
+
+    def _get_response_data(self, response: Response, fields: list[str]) -> dict:
+        response_data = {}
+        for field in fields:
+            if field == "location":
+                response_data[field] = (
+                    {
+                        "longitude": response.location[0],
+                        "latitude": response.location[1],
+                    }
+                    if response.location
+                    else None
+                )
+            else:
+                value = getattr(response, field)
+                response_data[field] = str(value) if value else None
+        return response_data
 
     def _get_answer_data_value(self, question: Question, answers: list[Answer]) -> str:
         answers_by_question = {
@@ -120,7 +154,7 @@ class PublicQueryReturner:
         if question.kind == QuestionConstants.KIND_IMAGE:
             return answer.image.url if answer.image else ""
         if question.kind == QuestionConstants.KIND_SELECT:
-            return "".join([option.name for option in answer.options.all()])
+            return list([option.name for option in answer.options.all()])
         if question.kind == QuestionConstants.KIND_POINT:
             return {"longitude": answer.point[0], "latitude": answer.point[1]}
 
