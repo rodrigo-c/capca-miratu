@@ -90,6 +90,7 @@ class PublicQueryDataResult(ViewSet):
                 "headings": fields.values(),
                 "data": [],
             },
+            "fixedColumns": True,
             "labels": {
                 "placeholder": "Buscar...",
                 "info": "Mostrando {start} a {end} de {rows} respuestas",

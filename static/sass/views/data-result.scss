@@ -19,6 +19,13 @@
       text-wrap: nowrap;
     }
   }
+
+  .datatable-sorter {
+    &::before,
+    &::after {
+      right: -1vw;
+    }
+  }
 }
 
 .cell-tooltip {
