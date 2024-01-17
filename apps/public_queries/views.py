@@ -181,6 +181,11 @@ class PublicQueryMapResult(UUIDObjectURL, TemplateView):
 
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
+        context["focus"] = self.request.GET.get("f")
+        context["resource_url"] = reverse(
+            "public_queries_api:v1:query-map-result-detail",
+            kwargs={"pk": self.object.url_code},
+        )
         context["public_query"] = self.object
         return context
 
@@ -191,5 +196,12 @@ class PublicQueryDataResult(UUIDObjectURL, TemplateView):
 
     def get_context_data(self, *args, **kwargs) -> dict:
         context = super().get_context_data(*args, **kwargs)
+        context["resource_url"] = reverse(
+            "public_queries_api:v1:query-data-result-detail",
+            kwargs={"pk": self.object.url_code},
+        )
+        context["map_url"] = reverse(
+            "public_queries:query-map-result", kwargs={"uuid": self.object.url_code}
+        )
         context["public_query"] = self.object
         return context
