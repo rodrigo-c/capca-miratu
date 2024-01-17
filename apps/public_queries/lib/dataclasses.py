@@ -133,3 +133,4 @@ class QueryMapResultData:
     query: PublicQueryData
     point_list: list[PointResultData]
     fetch_at: datetime
+    response_range: tuple[datetime] = None
