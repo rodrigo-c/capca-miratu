@@ -21,6 +21,7 @@ class QuestionSerializer(serializers.Serializer):
     text_max_length = serializers.IntegerField()
     description = serializers.CharField()
     options = serializers.ListField(child=QuestionOptionSerializer())
+    index = serializers.IntegerField()
 
 
 class PublicQuerySerializer(serializers.Serializer):
