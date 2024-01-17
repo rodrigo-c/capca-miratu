@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 from uuid import UUID
 
 from django.utils import timezone
@@ -23,10 +24,15 @@ class QueryMapResultReturner(ServiceBase):
         self.public_query = PublicQueryReturner(identifier=identifier).get()
 
     def get(self) -> QueryMapResultData:
+        point_list = self._get_point_list()
+        response_range = (
+            self._get_response_range(point_list=point_list) if point_list else None
+        )
         return QueryMapResultData(
             query=self.public_query,
-            point_list=self._get_point_list(),
+            point_list=point_list,
             fetch_at=timezone.now(),
+            response_range=response_range,
         )
 
     def _get_point_list(self) -> list[PointResultData]:
@@ -103,6 +109,7 @@ class QueryMapResultReturner(ServiceBase):
             self._to_answer_dataclass(instance=answer) for answer in answers
         ]
         return ResponseData(
+            uuid=instance.id,
             query_uuid=instance.query_id,
             send_at=instance.send_at,
             email=instance.email,
@@ -121,3 +128,7 @@ class QueryMapResultReturner(ServiceBase):
             options=list(instance.options.values()),
             send_at=None,
         )
+
+    def _get_response_range(self, point_list: list[PointResultData]) -> tuple[datetime]:
+        point_list.sort(key=lambda point: point.response.send_at)
+        return (point_list[0].response.send_at, point_list[-1].response.send_at)

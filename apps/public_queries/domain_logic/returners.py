@@ -91,6 +91,7 @@ class PublicQueryReturner:
             response_data = self._get_response_data(
                 response=response, fields=instance_fields
             )
+            response_data["uuid"] = response_id
             answers = answers_map[response_id]
             response_data.update(
                 {

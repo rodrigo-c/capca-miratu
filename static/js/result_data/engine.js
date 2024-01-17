@@ -1,7 +1,8 @@
 class QueryDataResultEngine {
-  constructor ({resource_url = ""}) {
+  constructor ({resource_url = "", map_url = ""}) {
     this.ready = this.ready.bind(this)
     this.resource_url = resource_url
+    this.map_url = map_url
     document.addEventListener("DOMContentLoaded", this.ready)
   }
 
@@ -35,7 +36,7 @@ class QueryDataResultEngine {
           value = `${lat}${long}`
         }
         if (field.includes("pregunta_")) {
-          value = this._get_question_value(data.query.questions, field, value)
+          value = this._get_question_value(data.query.questions, field, value, item.uuid)
         }
         if (value == null) {
           value = ""
@@ -49,7 +50,7 @@ class QueryDataResultEngine {
     this.data_table = new simpleDatatables.DataTable("#data-table", config)
   }
 
-  _get_question_value(questions, field, value) {
+  _get_question_value(questions, field, value, response_uuid) {
     let num = parseInt(field.match(/\d+/)[0])
     let index = num - 1
     let question = questions[index]
@@ -63,6 +64,7 @@ class QueryDataResultEngine {
       let lat = `<div class="latitude"><span class="label">Latitud: </span><span class="value">${value.latitude}</span></div>`
       let long = `<div class="latitude"><span class="label">Longitud: </span><span class="value">${value.longitude}</span></div>`
       final_value = `${lat}${long}`
+      tooltip_content += `<div class="link-tabs"><a class="link-tab" href="${this.map_url}?f=${response_uuid}">Ver en mapa</a></div>`
     } else if (question.kind == "SELECT" && value) {
       final_value = "<ul>"
       for (let opt of value) {
