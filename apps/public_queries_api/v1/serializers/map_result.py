@@ -18,3 +18,6 @@ class QueryMapResultSerializer(serializers.Serializer):
     query = PublicQuerySerializer()
     point_list = PointResultSerializer(many=True)
     fetch_at = serializers.DateTimeField()
+    response_range = serializers.ListField(
+        child=serializers.DateTimeField(), required=False
+    )
