@@ -1,5 +1,5 @@
 .data-result-container {
-  font-size: 2vh;
+  font-size: 1.8vh;
 
   .cell-tooltip {
     position: relative;
@@ -7,7 +7,7 @@
   }
 
   .datatable-container {
-    max-height: 75vh;
+    max-height: 68vh;
     overflow: scroll;
     width: 100vw;
 
@@ -24,6 +24,30 @@
     &::before,
     &::after {
       right: -1vw;
+    }
+  }
+
+  .datatable-input {
+    font-family: Open Sans;
+    font-size: 2vh;
+    min-width: 35vw;
+    padding-block: 2px; // scss-lint:disable PropertySpelling
+  }
+
+  .datatable-selector {
+    font-family: Open Sans;
+    font-size: 2vh;
+    padding: 0;
+  }
+
+  .datatable-top {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 1vh 3vw;
+
+    &::after {
+      content: none;
     }
   }
 }
