@@ -2,6 +2,7 @@
   font-family: Open Sans;
   font-size: 10px;
   margin-bottom: 0;
+  width: 100vw;
 
   .header {
     display: flex;
@@ -10,6 +11,12 @@
     .fields {
       padding-left: 3vw;
     }
+  }
+
+  .load {
+    position: absolute;
+    right: 35%;
+    z-index: 1000;
   }
 }
 
@@ -21,19 +28,18 @@
   min-width: 20vw;
 
   .link-tab {
+    color: $secondary;
     font-size: 2vh;
     font-weight: 600;
+    opacity: .6;
     padding: 1vh 1vw;
+    text-decoration: none;
     user-select: none;
   }
 
-  a.link-tab {  // scss-lint:disable QualifyingElement
+  .active.link-tab {  // scss-lint:disable QualifyingElement
     color: $cegir-primary;
-    text-decoration: none;
-  }
-
-  div.link-tab { // scss-lint:disable QualifyingElement
-    opacity: .6;
+    opacity: 1;
   }
 }
 

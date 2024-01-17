@@ -12,6 +12,7 @@ class QueryMapResultEngine {
       .then((data) =>{
         this.set_map(data)
         document.querySelector(".load").classList.add("hidden")
+        document.querySelector(".map.map-result").classList.remove("hidden")
       });
   }
 
@@ -74,7 +75,6 @@ class QueryMapResultEngine {
     let message = "<div class='responses-title'>Respuestas</div><div class='responses-list'>"
     for (let answer of point_data.response.answers) {
       let question = question_by_uuid[answer.question_uuid]
-      console.log(question)
       message += this._set_html_message(`Pregunta ${question.index + 1}`, question.name)
       if (question.kind == "TEXT") {
         message += this._set_html_message("- Texto", answer.text)
