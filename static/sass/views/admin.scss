@@ -1,11 +1,153 @@
 .admin-content {
+  display: flex;
+  justify-content: space-between;
+  max-height: 90vh;
+  overflow: hidden;
 
   .admin-sidebar {
-    width: 30vw;
+    align-items: flex-start;
+    box-shadow: 0 1px 1px 1px $shadow;
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    padding: 5vh 3vw;
+    width: 20vw;
+  }
+
+  .sidebar-button {
+    background-color: $cegir-primary;
+    border-radius: 6px;
+    box-shadow: 0 0 2px 0 $shadow;
+    color: $white;
+    cursor: pointer;
+    font-family: Gotham;
+    font-size: 2vh;
+    font-weight: 600;
+    padding: 1vh 1vw;
+    user-select: none;
+
+    &:hover {
+      opacity: .7;
+      transition: opacity .3s;
+    }
   }
 
   .views {
     padding: 5vh 5vw;
   }
+
+  .main-label {
+    font-family: Gotham;
+    font-size: 2vh;
+    font-weight: 500;
+    padding-bottom: 2vh;
+  }
+
+  .query-item-list {
+    max-height: 80vh;
+    max-width: 600;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: $inactive;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: $secondary;
+      border: 3px solid $secondary;
+      border-radius: 20;
+    }
+  }
+
+  .query-item {
+    background-color: $white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px 0 $shadow-ligth, 0 0 5.3px 0 $shadow;
+    font-family: Open Sans;
+    margin: 2vh 1vw;
+    padding: 2vh 2vw;
+
+    .name {
+      font-size: 2.5vh;
+      font-weight: 700;
+      line-height: 140%;
+      margin-bottom: 2vh;
+    }
+
+    .content {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .times {
+      display: flex;
+      font-size: 2vh;
+      margin-bottom: 1vh;
+    }
+
+    .start-at {
+      margin-right: 2vw;
+    }
+
+    .status {
+      align-items: center;
+      display: flex;
+    }
+
+    .status-label {
+      font-size: 2vh;
+      margin-right: 3vw;
+    }
+
+    .actions {
+      align-self: end;
+    }
+  }
+
+  .action-button {
+    background-color: $secondary;
+    border-radius: 6px;
+    box-shadow: 0 0 2px 0 $shadow;
+    color: $white;
+    cursor: pointer;
+    font-family: Open Sans;
+    font-size: 2vh;
+    font-weight: 600;
+    padding: .7vh 1vw;
+    user-select: none;
+
+    &:hover {
+      opacity: .7;
+      transition: opacity .3s;
+    }
+  }
+
+  .status-value {
+    border-radius: 6px;
+    box-shadow: 0 0 2px 0 $shadow;
+    font-size: 1.7vh;
+    font-weight: 600;
+    padding: .2vh 1.5vw;
+
+    &.active {
+      border: 2px solid $cegir-primary;
+      color: $cegir-primary;
+    }
+
+    &.finished {
+      border: 2px solid $error;
+      color: $error;
+    }
+
+    &.draft {
+      border: 2px solid $secondary;
+      color: $secondary;
+    }
+  }
+
 
 }
