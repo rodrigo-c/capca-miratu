@@ -65,9 +65,14 @@
 }
 
 .navbar {
+  align-items: center;
   box-shadow: 0 -1px 0 0 $shadow inset;
   height: 7.2vh;
   justify-content: space-between;
+
+  .nav-brand {
+    font-size: 2.5vh;
+  }
 }
 
 .navigation {
