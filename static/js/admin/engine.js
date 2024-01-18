@@ -62,33 +62,44 @@ class AdminEngine {
   }
 
   _set_query_list_in_view() {
-    let template = document.querySelector("#query-item-template").cloneNode(true)
-    template.classList.remove("hidden")
-
-    let list_container = this.views.query_list.querySelector(".query-item-list")
+    let query_list = this.views.query_list.querySelector(".query-item-list")
     for (let item of this.storage.query_list) {
-      let container = template.cloneNode(true)
-      container.querySelector(".name").textContent = item.name
-      if (!item.start_at && !item.end_at) {
-        container.querySelector(".times").remove()
-      } else if (item.start_at) {
-        container.querySelector(".start-at").textContent = item.start_at
-      } else if (item.end_at) {
-        container.querySelector(".end-at").textContent = item.end_at
-      }
-
-      let status_value = container.querySelector(".status > .value")
-      if (!item.active) {
-        status_value.textContent = "Borrador"
-      } else if (item.active && !item.is_active) {
-        status_value.textContent = "Finalizada"
-      } else if (item.active && item.is_active) {
-        status_value.textContent = "Activa"
-      }
-      list_container.appendChild(container)
+      let query_item = this._create_query_item(item)
+      query_list.appendChild(query_item)
     }
     this._hide_all_views()
     this.views.query_list.classList.remove("hidden")
+  }
+
+  _create_query_item(item) {
+    let template = document.querySelector("#query-item-template").cloneNode(true)
+    template.classList.remove("hidden")
+    let query_item = template.cloneNode(true)
+    query_item.querySelector(".name").textContent = item.name
+    if (!item.start_at && !item.end_at) {
+      query_item.querySelector(".times").remove()
+    } else {
+      if (item.start_at) {
+        let start_at = new Date(item.start_at).toLocaleString().split(",")[0]
+        query_item.querySelector(".start-at").textContent = `Desde: ${start_at}`
+      }
+      if (item.end_at) {
+        let end_at = new Date(item.end_at).toLocaleString().split(",")[0]
+        query_item.querySelector(".end-at").textContent = `Hasta: ${end_at}`
+      }
+    }
+    let status_value = query_item.querySelector(".status > .status-value")
+    if (!item.active) {
+      status_value.textContent = "Borrador"
+      status_value.classList.add("draft")
+    } else if (item.active && !item.is_active) {
+      status_value.textContent = "Finalizada"
+      status_value.classList.add("finished")
+    } else if (item.active && item.is_active) {
+      status_value.textContent = "Activa"
+      status_value.classList.add("active")
+    }
+    return query_item
   }
 }
 
