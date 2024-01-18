@@ -13,7 +13,12 @@
 {% endblock navbar %}
 {% block content %}
     <div class="admin-content">
-        <div class="admin-sidebar"></div>
+        <div class="admin-sidebar">
+            <div class="main-label">Consultas públicas</div>
+            <div class="sidebar-button">
+                <i class="icon plus"></i> Crear consulta
+            </div>
+        </div>
         <div class="views">
             <div class="view load" id="loading">
                 <div class="loading">
@@ -21,16 +26,23 @@
                 </div>
             </div>
             <div class="view query-list hidden" id="query-list">
-                <div class="subtitle">Todas las consultas</div>
+                <div class="main-label">Todas las consultas</div>
                 <div class="query-item hidden" id="query-item-template">
                     <div class="name"></div>
-                    <div class="times">
-                        <div class="start-at"></div>
-                        <div class="end-at"></div>
-                    </div>
-                    <div class="status">
-                        <div class="label">Estado actual:</div>
-                        <div class="value"></div>
+                    <div class="content">
+                        <div class="attributes">
+                            <div class="times">
+                                <div class="start-at"></div>
+                                <div class="end-at"></div>
+                            </div>
+                            <div class="status">
+                                <div class="status-label">Estado actual:</div>
+                                <div class="status-value"></div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <div class="action-button">Ver detalles</div>
+                        </div>
                     </div>
                 </div>
                 <div class="query-item-list"></div>
