@@ -34,6 +34,7 @@
 
   .views {
     padding: 5vh 5vw;
+    width: 80vw;
   }
 
   .main-label {
@@ -45,7 +46,7 @@
 
   .query-item-list {
     max-height: 80vh;
-    max-width: 600;
+    max-width: 600px;
     overflow-y: scroll;
 
     &::-webkit-scrollbar {
