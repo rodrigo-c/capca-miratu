@@ -89,7 +89,7 @@ class PublicQueryResultReturner(ServiceBase):
 
     def _get_answer_results(self) -> list[AnswerResultData]:
         answers_result_data_list = []
-        for question in self.public_query.questions:
+        for question in self.public_query.questions or []:
             result = AnswerResultData(
                 question=question,
                 total=answer_providers.get_total_answers_by_question_uuid(
