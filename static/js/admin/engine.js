@@ -1,3 +1,8 @@
+import {
+  get_chart
+} from "./charts.js"
+
+
 class AdminEngine {
   constructor (
     { url_base = "" }
@@ -8,6 +13,9 @@ class AdminEngine {
     this._set_admin_sidebar()
     this._set_views()
     this.show_view("query-list")
+    this.charts = {
+      summary: null
+    }
   }
 
   _set_admin_sidebar() {
@@ -26,6 +34,15 @@ class AdminEngine {
     this.click_query_detail = this.click_query_detail.bind(this)
     query_detail.querySelector("#link-to-query-list").addEventListener(
       "click", this.click_query_list, false
+    )
+
+    this.click_detail_summary = this.click_detail_summary.bind(this)
+    this.click_detail_questions = this.click_detail_questions.bind(this)
+    query_detail.querySelector("#summary-link").addEventListener(
+      "click", this.click_detail_summary, false
+    )
+    query_detail.querySelector("#questions-link").addEventListener(
+      "click", this.click_detail_questions, false
     )
   }
 
@@ -111,8 +128,78 @@ class AdminEngine {
   _set_query_detail_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this._create_query_item(this.storage.query_detail.query, query_item)
+    this._clean_query_detail()
+    this._set_detail_summary()
+    this._set_detail_questions()
     this._hide_all_views()
     this.views.query_detail.classList.remove("hidden")
+  }
+
+  _set_detail_summary () {
+    document.querySelector(
+      "#query-detail .responses-total .total-value"
+    ).textContent = this.storage.query_detail.total_responses
+    let summary_answer = this._get_first_select_result()
+    if (summary_answer) {
+      document.querySelector("#summary-chart").classList.remove("hidden")
+      let answer_labels = summary_answer.options.map((x)=> x.option_name)
+      let answer_values = summary_answer.options.map((x)=> x.total)
+      let options = {indexAxis: "x"}
+      let chart = get_chart({
+        id: "summary-chart",
+        type: "bar",
+        labels: answer_labels,
+        values: answer_values,
+        options
+      })
+    }
+
+  }
+
+  _set_detail_questions() {
+    let questions_container = document.querySelector("#query-detail-questions")
+    let content = questions_container.querySelector(".content")
+    for (let answer_result of this.storage.query_detail.answer_results) {
+      let template = questions_container.querySelector("#question-template").cloneNode(true)
+      template.removeAttribute("id")
+      let index = answer_result.question.index
+      template.querySelector(".question-number .value").textContent = index
+      template.querySelector(".question-name").textContent = answer_result.question.name
+      template.querySelector(".responses-total .total-value").textContent = answer_result.total
+      content.appendChild(template)
+      if (answer_result.question.kind == "SELECT") {
+        let id = `question-chart-${index}`
+        let canvas = template.querySelector(".question-chart")
+        canvas.setAttribute("id", id)
+        let labels = template.querySelector(".chart-labels")
+        labels.setAttribute("id", `${id}-labels`)
+        let answer_labels = answer_result.options.map((x)=> x.option_name)
+        let answer_values = answer_result.options.map((x)=> x.total)
+        let chart = get_chart({
+          id,
+          type: "bar",
+          labels: answer_labels,
+          values: answer_values,
+          options: {indexAxis: "y"},
+        })
+        this.charts.summary = chart
+        canvas.classList.remove("hidden")
+        labels.classList.remove("hidden")
+      }
+      template.classList.remove("hidden")
+    }
+
+  }
+
+  _get_first_select_result () {
+    let result = null
+    for (let answer_result of this.storage.query_detail.answer_results) {
+      if (answer_result.question.kind == "SELECT") {
+        result = answer_result
+        break
+      }
+    }
+    return result
   }
 
   _create_query_item(item, query_item) {
@@ -145,6 +232,17 @@ class AdminEngine {
     return query_item
   }
 
+  _clean_query_detail () {
+    let view = document.querySelector("#query-detail")
+    view.querySelector(".responses-total .total-value").textContent = ""
+    view.querySelector("#query-detail-summary .content").innerHTML = ""
+    view.querySelector("#query-detail-questions .content").innerHTML = ""
+    document.querySelector("#summary-chart").classList.add("hidden")
+    if (this.charts.summary) {
+      this.charts.summary.destroy()
+    }
+  }
+
   click_query_detail (event) {
     this.query_detail_uuid = event.currentTarget.query_uuid
     this.show_view("query-detail")
@@ -153,6 +251,21 @@ class AdminEngine {
   click_query_list (event) {
     this.show_view("query-list")
   }
+
+  click_detail_summary (event) {
+    document.querySelector("#query-detail #query-detail-summary").classList.remove("hidden")
+    document.querySelector("#query-detail #query-detail-questions").classList.add("hidden")
+    document.querySelector("#query-detail #summary-link").classList.add("active")
+    document.querySelector("#query-detail #questions-link").classList.remove("active")
+  }
+
+  click_detail_questions (event) {
+    document.querySelector("#query-detail #query-detail-summary").classList.add("hidden")
+    document.querySelector("#query-detail #query-detail-questions").classList.remove("hidden")
+    document.querySelector("#query-detail #summary-link").classList.remove("active")
+    document.querySelector("#query-detail #questions-link").classList.add("active")
+  }
+
 }
 
 export {AdminEngine}
