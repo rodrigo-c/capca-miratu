@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from rest_framework import serializers
 
 from apps.public_queries_api.v1.serializers.generic import (
@@ -11,10 +9,10 @@ from apps.public_queries_api.v1.serializers.generic import (
 
 
 class OptionResultSerializer(serializers.Serializer):
-    option_uuid: UUID
-    option_name: str
-    total: int
-    percent: float
+    option_uuid = serializers.UUIDField()
+    option_name = serializers.CharField()
+    total = serializers.IntegerField()
+    percent = serializers.FloatField()
 
 
 class AnswerResultSerializer(serializers.Serializer):
