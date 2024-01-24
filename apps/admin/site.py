@@ -7,5 +7,5 @@ class AdminSite(admin.AdminSite):
     pass
 
 
-admin_site = AdminSite(name="admin")
+admin_site = AdminSite(name="django_admin")
 register_models(site=admin_site)

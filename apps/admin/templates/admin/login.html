@@ -1,0 +1,20 @@
+{% extends "public_queries/base.html" %}
+{% block content %}
+    <div class="entry content-container">
+        <div class="main-title">{{ app_context.MAIN_TITLE|safe }}</div>
+        <form method="post" id="login-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="form-field">{{ form.username }}</div>
+            <div class="form-field">{{ form.password }}</div>
+            <div class="errors">
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                {% endif %}
+                {% if form.username.errors %}{{ form.username.errors }}{% endif %}
+                {% if form.password.errors %}{{ form.password.errors }}{% endif %}
+            </div>
+            <input class="login-submit" type="submit" value="Ingresar">
+        </form>
+    </div>
+{% endblock content %}

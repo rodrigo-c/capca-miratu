@@ -19,6 +19,13 @@ from apps.utils.dataclasses import build_dataclass_from_model_instance
 
 class PublicQueryReturner:
     def __init__(self, identifier: UUID | str, active: bool | None = None):
+        self.identifier = identifier
+        if identifier == "__all__":
+            self.public_queries = public_query_providers.get_public_query_list()
+        else:
+            self._set_obj(identifier=identifier, active=active)
+
+    def _set_obj(self, identifier: UUID | str, active: bool) -> None:
         kwargs = {} if active is None else {"active": active}
 
         if len(str(identifier)) <= getattr(settings, "MAXIMUM_URL_CHARS", 5):
@@ -48,26 +55,37 @@ class PublicQueryReturner:
             raise PublicQueryDoesNotExist
         return public_query
 
-    def get(self) -> PublicQueryData:
-        question_queryset = question_providers.get_questions_by_public_query_uuid(
-            uuid=self.public_query.id
-        )
-        questions = [
-            build_dataclass_from_model_instance(
-                klass=QuestionData,
-                instance=question,
-                uuid=question.id,
-                query_uuid=self.public_query.id,
-                index=index,
-                options=self._get_options_data(question=question),
+    def get(self) -> PublicQueryData | list[PublicQueryData]:
+        if self.identifier == "__all__":
+            return [
+                self._to_dataclass(instance=instance, with_questions=False)
+                for instance in self.public_queries
+            ]
+        else:
+            return self._to_dataclass(instance=self.public_query)
+
+    def _to_dataclass(self, instance, with_questions: bool = True) -> PublicQueryData:
+        questions = None
+        if with_questions:
+            question_queryset = question_providers.get_questions_by_public_query_uuid(
+                uuid=instance.id
             )
-            for index, question in enumerate(question_queryset)
-        ]
+            questions = [
+                build_dataclass_from_model_instance(
+                    klass=QuestionData,
+                    instance=question,
+                    uuid=question.id,
+                    query_uuid=instance.id,
+                    index=index,
+                    options=self._get_options_data(question=question),
+                )
+                for index, question in enumerate(question_queryset)
+            ]
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
-            instance=self.public_query,
-            uuid=self.public_query.id,
-            image=self.public_query.image.url if self.public_query.image else None,
+            instance=instance,
+            uuid=instance.id,
+            image=instance.image.url if instance.image else None,
             questions=questions or None,
         )
 

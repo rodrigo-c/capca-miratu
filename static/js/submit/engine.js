@@ -110,6 +110,7 @@ class QuerySubmitEngine {
       method: "POST",
       body: JSON.stringify(identifier_data),
       headers: {"Content-Type": "application/json",  "X-CSRFToken": this.csrf_token},
+      credentials: "same-origin"
     })
     .then((response) => {
       if (response.status == 200) {

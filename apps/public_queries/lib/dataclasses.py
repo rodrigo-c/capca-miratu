@@ -115,6 +115,7 @@ class PublicQueryResultData:
     answer_results: list[AnswerResultData]
     page_num: int | None = None
     num_pages: int | None = None
+    links: dict | None = None
 
     @property
     def has_pagination(self) -> bool:

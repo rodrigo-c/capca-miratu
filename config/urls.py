@@ -7,10 +7,15 @@ from django.views import defaults as default_views
 from apps.admin.site import admin_site
 
 urlpatterns = [
-    path("admin/", admin_site.urls),
+    path("django-admin/", admin_site.urls),
+    path("admin/", include("apps.admin.urls", namespace="admin")),
     path(
         "api/queries/",
         include("apps.public_queries_api.urls", namespace="public_queries_api"),
+    ),
+    path(
+        "api/admin/",
+        include("apps.admin_api.urls", namespace="admin_api"),
     ),
     path("", include("apps.public_queries.urls", namespace="public_queries")),
 ]

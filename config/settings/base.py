@@ -53,6 +53,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Authentication
 
+LOGIN_URL = "/admin/login/"
 AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 # https://docs.djangoproject.com/en/4.2/topics/auth/passwords/#using-argon2-with-django
@@ -105,7 +106,7 @@ MEDIA_ROOT = str(ROOT_DIR / "media")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["apps/admin/templates"],  # TODO: disable django admin
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -149,7 +150,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
@@ -157,13 +158,13 @@ LOGGING = {
     "loggers": {
         "werkzeug": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         "django": {
             "handlers": ["console"],
             "propagate": True,
-            "level": "DEBUG",
+            "level": "INFO",
         },
         "django.template": {
             "handlers": ["console"],
@@ -172,4 +173,10 @@ LOGGING = {
         },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ]
 }
