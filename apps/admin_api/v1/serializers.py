@@ -28,3 +28,4 @@ class PublicQueryResultSerializer(serializers.Serializer):
     anonymous_responses = serializers.IntegerField()
     partial_responses = serializers.ListField(child=ResponseSerializer())
     answer_results = serializers.ListField(child=AnswerResultSerializer())
+    links = serializers.DictField(child=serializers.CharField(), allow_empty=True)
