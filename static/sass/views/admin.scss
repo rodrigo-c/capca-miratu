@@ -42,6 +42,16 @@
     font-size: 2vh;
     font-weight: 500;
     padding-bottom: 2vh;
+
+    &.link {
+      color: $inactive;
+      cursor: pointer;
+    }
+
+    &.link:hover {
+      color: $secondary;
+      transition: color .3s;
+    }
   }
 
   .query-item-list {
@@ -123,6 +133,7 @@
     font-size: 2vh;
     font-weight: 600;
     padding: .7vh 1vw;
+    text-decoration: none;
     user-select: none;
 
     &:hover {
@@ -211,6 +222,10 @@
     }
   }
 
+  .chart-container {
+    max-height: 20vh;
+  }
+
   .chart-labels {
     padding: 1vh 1vw;
   }
@@ -220,6 +235,7 @@
     display: flex;
     font-family: OpenSans;
     font-size: 2vh;
+    margin-bottom: .5vh;
 
     .chart-label-color {
       height: 2vh;
