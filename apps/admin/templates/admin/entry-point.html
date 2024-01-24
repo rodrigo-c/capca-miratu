@@ -66,6 +66,11 @@
                                 <div class="status-value"></div>
                             </div>
                         </div>
+                        <div class="actions">
+                            <a class="action-button" id="detail-action-submit" target="_blank">Responder</a>
+                            <a class="action-button" id="detail-action-map" target="_blank">Mapa</a>
+                            <a class="action-button" id="detail-action-data" target="_blank">Datos</a>
+                        </div>
                     </div>
                 </div>
                 <div class="tabs" id="query-detail-tabs">
@@ -106,7 +111,10 @@
     </div>
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript" type="text">const manager = new project.AdminEngine(
-      {url_base: '{{url_base}}'});
+    <script type="text/javascript" type="text">const manager = new project.AdminEngine({
+      url_base: '{{url_base}}',
+      focus: {% if cursor.focus %}'{{cursor.focus}}'{% else %}null{% endif %},
+      key: {% if cursor.key %}'{{cursor.key}}'{% else %}null{% endif %},
+    });
     </script>
 {% endblock extra_js %}
