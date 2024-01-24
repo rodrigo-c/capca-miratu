@@ -5,17 +5,28 @@ import {
 
 class AdminEngine {
   constructor (
-    { url_base = "" }
+    { url_base = "" , focus = null, key = null}
   ) {
     this.url_base = url_base
-    this.query_detail_uuid = null
+    this.query_detail_uuid = key
     this.storage = {}
+    this.cursor = {focus: focus?focus:"query-list", key}
+    this._onpopstate = this._onpopstate.bind(this)
+    window.addEventListener("popstate", this._onpopstate, false)
+
     this._set_admin_sidebar()
     this._set_views()
-    this.show_view("query-list")
+
+    this.show_view(this.cursor.focus, true)
     this.charts = {
       summary: null
     }
+  }
+
+  _onpopstate (event) {
+    let query_params = new URLSearchParams(window.location.search)
+    this.cursor = event.state
+    this.show_view(this.cursor.focus, false)
   }
 
   _set_admin_sidebar() {
@@ -58,17 +69,34 @@ class AdminEngine {
     this.views.loading.classList.remove("hidden")
   }
 
-  show_view(name) {
+  show_view(name, on_history) {
     this._set_loading()
     if (name == "query-list") {
-      this._show_query_list_view()
+      this._show_query_list_view(on_history)
     }
     if (name == "query-detail") {
-      this._show_query_detail_view()
+      this._show_query_detail_view(on_history)
+    }
+    else {
+      this._show_query_list_view(on_history)
     }
   }
 
-  _show_query_list_view() {
+  _set_url_params(focus, key) {
+    let query_params = new URLSearchParams(window.location.search)
+    query_params.set("f", focus)
+    this.cursor.focus = focus
+    if (key) {
+      query_params.set("k", key)
+      this.cursor.key = key
+    } else {
+      query_params.delete("k")
+      this.cursor.key = null
+    }
+    history.pushState(this.cursor, null, "?" + query_params.toString())
+  }
+
+  _show_query_list_view(on_history) {
     fetch (this.url_base, {
       method: "GET",
       headers: {"Content-Type": "application/json"},
@@ -80,6 +108,9 @@ class AdminEngine {
         .then((data)=> {
           this.storage.query_list = data.list
           this._set_query_list_in_view()
+          if (on_history) {
+            this._set_url_params("query-list", null)
+          }
         })
       } else {
         console.log(response)
@@ -87,8 +118,8 @@ class AdminEngine {
     })
   }
 
-  _show_query_detail_view() {
-    fetch (`${this.url_base}${this.query_detail_uuid}`, {
+  _show_query_detail_view(on_history) {
+    fetch (`${this.url_base}${this.cursor.key}`, {
       method: "GET",
       headers: {"Content-Type": "application/json"},
       credentials: "same-origin"
@@ -99,9 +130,13 @@ class AdminEngine {
         .then((data)=> {
           this.storage.query_detail = data
           this._set_query_detail_in_view()
+          if (on_history) {
+            this._set_url_params("query-detail", data.query.url_code)
+          }
         })
       } else {
         console.log(response)
+        this._set_query_list_in_view(on_history)
       }
     })
   }
@@ -128,6 +163,9 @@ class AdminEngine {
   _set_query_detail_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this._create_query_item(this.storage.query_detail.query, query_item)
+    document.querySelector("#detail-action-submit").setAttribute("href", this.storage.query_detail.links.submit)
+    document.querySelector("#detail-action-map").setAttribute("href", this.storage.query_detail.links.map)
+    document.querySelector("#detail-action-data").setAttribute("href", this.storage.query_detail.links.data)
     this._clean_query_detail()
     this._set_detail_summary()
     this._set_detail_questions()
@@ -152,6 +190,7 @@ class AdminEngine {
         values: answer_values,
         options
       })
+      this.charts.summary = chart
     }
 
   }
@@ -182,7 +221,6 @@ class AdminEngine {
           values: answer_values,
           options: {indexAxis: "y"},
         })
-        this.charts.summary = chart
         canvas.classList.remove("hidden")
         labels.classList.remove("hidden")
       }
@@ -244,12 +282,12 @@ class AdminEngine {
   }
 
   click_query_detail (event) {
-    this.query_detail_uuid = event.currentTarget.query_uuid
-    this.show_view("query-detail")
+    this.cursor.key = event.currentTarget.query_uuid
+    this.show_view("query-detail", true)
   }
 
   click_query_list (event) {
-    this.show_view("query-list")
+    this.show_view("query-list", true)
   }
 
   click_detail_summary (event) {
