@@ -30,4 +30,8 @@ class AdminEntryPoint(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["url_base"] = reverse("admin_api:v1:public-query-list")
+        context["cursor"] = {
+            "focus": self.request.GET.get("f"),
+            "key": self.request.GET.get("k"),
+        }
         return context
