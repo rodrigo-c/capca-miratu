@@ -1,6 +1,7 @@
 import pytest
 
 from apps.public_queries.providers import public_query as public_query_providers
+from apps.public_queries.tests.recipes import public_query_recipe
 
 
 @pytest.mark.django_db
@@ -19,6 +20,29 @@ class TestGetPublicQueryByUrlCode:
             url_code=public_query.url_code
         )
         assert called_public_query.id == public_query.id
+
+
+@pytest.mark.django_db
+class TestCreatePublicQuery:
+    def test_success(self, public_query_data):
+        kwargs = {
+            **public_query_data.__dict__,
+            "user_id": None,
+        }
+        created_query = public_query_providers.create_public_query(**kwargs)
+        assert created_query.id is not None
+
+    def test_with_repeat_url_code(self, public_query_data):
+        other_query = public_query_recipe.make()
+        kwargs = {
+            **public_query_data.__dict__,
+            "url_code": other_query.url_code,
+            "user_id": None,
+        }
+        created_query = public_query_providers.create_public_query(**kwargs)
+        assert created_query.id is not None
+        assert other_query.id != created_query.id
+        assert other_query.url_code != created_query.url_code
 
 
 @pytest.mark.django_db
