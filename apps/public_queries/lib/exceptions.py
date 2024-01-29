@@ -18,3 +18,7 @@ class CantSubmitPublicQueryError(Exception):
     def __init__(self, data, *args, **kwargs):
         self.data = data
         super().__init__(*args, **kwargs)
+
+
+class PublicQueryCreateError(Exception):
+    pass
