@@ -103,7 +103,7 @@ def get_public_query_response_result(
 
 
 def get_public_query_responses_data(identifier: str | UUID) -> dict:
-    return PublicQueryReturner(identifier=identifier, active=True).get_responses_data()
+    return PublicQueryReturner(identifier=identifier).get_responses_data()
 
 
 def get_answer_result(
