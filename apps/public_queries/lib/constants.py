@@ -103,3 +103,7 @@ class AnswerConstants:
 
 class QueryMapResultConstants:
     LOCATION = "Ubicación del usuario"
+
+
+class CreatePublicQueryConstants:
+    INVALID_START_END_AT = "La fecha de inicio debe ser menor que la de término"
