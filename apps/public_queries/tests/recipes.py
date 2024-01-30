@@ -3,7 +3,13 @@ from django.contrib.gis.geos import Point
 from model_bakery.recipe import Recipe, foreign_key
 
 from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
+from apps.public_queries.lib.dataclasses import (
+    PublicQueryData,
+    QuestionData,
+    QuestionOptionData,
+)
 from apps.public_queries.utils import create_fake_uploaded_image
+from apps.utils.random import get_random_url_code
 
 public_query_recipe = Recipe(
     "public_queries.PublicQuery",
@@ -95,3 +101,43 @@ def make_ended_public_query(uploaded_image=None):
             if question.kind == QuestionConstants.KIND_SELECT:
                 answer.options.add(options[1 if index % 2 == 0 else 2].id)
     return public_query
+
+
+def make_public_query_data() -> PublicQueryData:
+    questions = []
+    for i, kind in enumerate(dict(QuestionConstants.KIND_CHOICES)):
+        question = QuestionData(
+            uuid=None,
+            query_uuid=None,
+            kind=kind,
+            name=get_random_url_code(),
+            description=get_random_url_code(),
+            order=i,
+            required=True,
+            text_max_length=200,
+            max_answers=2,
+        )
+        if kind == QuestionConstants.KIND_SELECT:
+            question.options = [
+                QuestionOptionData(
+                    uuid=None,
+                    question_uuid=None,
+                    name=get_random_url_code(),
+                    order=index,
+                )
+                for index in range(4)
+            ]
+        questions.append(question)
+    query_kwargs = {
+        "uuid": None,
+        "name": get_random_url_code(),
+        "kind": PublicQueryConstants.KIND_OPEN,
+        "description": get_random_url_code(),
+        "start_at": None,
+        "end_at": None,
+        "active": True,
+        "max_responses": 0,
+        "auth_rut": PublicQueryConstants.AUTH_OPTIONAL,
+        "auth_email": PublicQueryConstants.AUTH_OPTIONAL,
+    }
+    return PublicQueryData(**query_kwargs, questions=questions)
