@@ -1,8 +1,17 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
+from apps.public_queries.lib.constants import CreatePublicQueryConstants
+from apps.public_queries.lib.dataclasses import (
+    PublicQueryData,
+    QuestionData,
+    QuestionOptionData,
+)
 from apps.public_queries_api.v1.serializers.generic import (
     AnswerSerializer,
     PublicQuerySerializer,
+    QuestionOptionSerializer,
     QuestionSerializer,
     ResponseSerializer,
 )
@@ -29,3 +38,60 @@ class PublicQueryResultSerializer(serializers.Serializer):
     partial_responses = serializers.ListField(child=ResponseSerializer())
     answer_results = serializers.ListField(child=AnswerResultSerializer())
     links = serializers.DictField(child=serializers.CharField(), allow_empty=True)
+
+
+class CreateQuestionOptionSerializer(QuestionOptionSerializer):
+    uuid = None
+    question_uuid = None
+    order = serializers.IntegerField(default=0)
+
+
+class CreateQuestionSerializer(QuestionSerializer):
+    uuid = None
+    index = None
+    query_uuid = None
+    max_answers = serializers.IntegerField(default=1, min_value=1)
+    text_max_length = serializers.IntegerField(default=255, min_value=1)
+    order = serializers.IntegerField(default=0)
+    options = serializers.ListField(
+        child=CreateQuestionOptionSerializer(),
+        allow_empty=True,
+    )
+
+
+class CreatePublicQuerySerializer(PublicQuerySerializer):
+    uuid = None
+    is_active = None
+    url_code = None
+    questions = serializers.ListField(child=CreateQuestionSerializer(), min_length=1)
+
+    def validate(self, data) -> dict:
+        if (
+            all(
+                isinstance(data.get(field), datetime)
+                for field in ["start_at", "end_at"]
+            )
+            and data["start_at"] >= data["end_at"]
+        ):
+            raise serializers.ValidationError(
+                CreatePublicQueryConstants.INVALID_START_END_AT
+            )
+        return data
+
+    def get_dataclass(self) -> PublicQueryData:
+        questions = [
+            QuestionData(
+                uuid=None,
+                query_uuid=None,
+                **{**question, "options": self._get_options(question)}
+            )
+            for question in self.data["questions"]
+        ]
+        return PublicQueryData(uuid=None, **{**self.data, "questions": questions})
+
+    def _get_options(self, question: dict) -> list[QuestionOptionData]:
+        if question["options"]:
+            return [
+                QuestionOptionData(uuid=None, question_uuid=None, **option)
+                for option in question["options"]
+            ]
