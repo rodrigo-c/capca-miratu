@@ -22,6 +22,7 @@ from apps.utils.dataclasses import build_dataclass_from_model_instance
 class QueryMapResultReturner(ServiceBase):
     def __init__(self, identifier: UUID | str):
         self.public_query = PublicQueryReturner(identifier=identifier).get()
+        self.public_query.questions = self.public_query.questions or []
 
     def get(self) -> QueryMapResultData:
         point_list = self._get_point_list()
