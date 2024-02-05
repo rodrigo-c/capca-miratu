@@ -1,0 +1,70 @@
+<div class="view query-create hidden" id="query-create">
+    <div class="main-label link" id="link-to-query-list">Todas las consultas</div>
+    <div class="query-create-content">
+        <div class="query-draft">
+            <div class="query-item create" id="query-create-item">
+                <input class="name"
+                       type="text"
+                       placeholder="Escribe un título para la consulta..."
+                       id="query-create-name">
+            </input>
+            <div class="content">
+                <div class="attributes">
+                    <div class="times">
+                        <div class="start-at"></div>
+                        <div class="end-at"></div>
+                    </div>
+                    <div class="status">
+                        <div class="status-label">Estado actual:</div>
+                        <select class="status-value" id="query-create-active">
+                            <option value="false">Borrador</option>
+                            <option value="true">Activa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="action-more-attributes-button"
+                         id="query-create-more-attrs-button">+ Opciones</div>
+                </div>
+            </div>
+            <div class="more-attributes hidden" id="query-create-more-attrs">
+                <div class="attribute">
+                    <textarea id="query-create-description"
+                              class="attribute-textarea"
+                              placeholder="Agrega una descripción..."></textarea>
+                </div>
+                <div class="attribute with-label">
+                    <div class="attribute-label">Solicitar correo</div>
+                    <select id="query-create-auth-email" class="status-value">
+                        <option value="OPTIONAL">Opcional</option>
+                        <option value="REQUIRED">Requerido</option>
+                        <option value="DISABLED">Deshabilitado</option>
+                    </select>
+                </div>
+                <div class="attribute with-label">
+                    <div class="attribute-label">Solicitar RUT</div>
+                    <select id="query-create-auth-rut" class="status-value">
+                        <option value="OPTIONAL">Opcional</option>
+                        <option value="REQUIRED">Requerido</option>
+                        <option value="DISABLED">Deshabilitado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="rightbar">
+            <div class="sidebar-button" id="create-query-button">Publicar consulta</div>
+        </div>
+    </div>
+    <div class="query-components">
+        <div class="tabs" id="query-create-tabs">
+            <div class="tab-links">
+                <div class="tab-link active">Preguntas</div>
+            </div>
+            <div class="create-questions-tab" id="create-questions-tab"></div>
+        </div>
+        <div class="rightbar">
+            <div class="sidebar-button" id="create-question-button">Añadir pregunta</div>
+        </div>
+    </div>
+</div>
+</div>
