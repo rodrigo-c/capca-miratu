@@ -164,6 +164,11 @@
       border: 2px solid $secondary;
       color: $secondary;
     }
+
+    &.input {
+      background: none;
+      user-select: none;
+    }
   }
 
   .tab-links {
@@ -259,6 +264,93 @@
 
   .questions .question {
     margin-bottom: 4vh;
+  }
+
+
+  .name.input {
+    border: 0;
+    padding: none;
+    width: 100%;
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &:invalid {
+      outline: 1px solid $error;
+    }
+
+    &::placeholder {
+      color: $inactive;
+    }
+  }
+
+  .action-more-attributes-button {
+    color: $inactive;
+    cursor: pointer;
+    font-size: 2vh;
+
+    &.active {
+      color: $secondary;
+    }
+
+    &:hover {
+      color: $secondary;
+    }
+
+  }
+
+  .more-attributes {
+    padding: 1vh 1vw;
+  }
+
+  .attribute {
+    font-size: 2vh;
+    padding: 1vh 1vw;
+    width: 80%;
+
+    &.with-label {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .attribute-textarea {
+    font-size: 2vh;
+    width: 100%;
+
+    &:focus-visible {
+      color: $cegir-primary;
+      outline: 1px solid $cegir-primary;
+    }
+  }
+
+  .query-draft {
+    display: flex;
+
+    .query-item.create {
+      flex-basis: 70%;
+    }
+  }
+
+  .query-components {
+    display: flex;
+
+    .tabs {
+      flex-basis: 70%;
+    }
+  }
+
+  .rightbar {
+    align-items: flex-end;
+    display: flex;
+    flex-basis: 30%;
+    flex-direction: column;
+    padding: 2vh 1vw;
+
+    .sidebar-button {
+      width: fit-content;
+    }
   }
 
 }
