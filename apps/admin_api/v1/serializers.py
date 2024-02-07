@@ -2,7 +2,11 @@ from datetime import datetime
 
 from rest_framework import serializers
 
-from apps.public_queries.lib.constants import CreatePublicQueryConstants
+from apps.public_queries.lib.constants import (
+    CreatePublicQueryConstants,
+    PublicQueryConstants,
+    QuestionConstants,
+)
 from apps.public_queries.lib.dataclasses import (
     PublicQueryData,
     QuestionData,
@@ -50,12 +54,14 @@ class CreateQuestionSerializer(QuestionSerializer):
     uuid = None
     index = None
     query_uuid = None
+    kind = serializers.ChoiceField(choices=QuestionConstants.KIND_CHOICES)
     max_answers = serializers.IntegerField(default=1, min_value=1)
     text_max_length = serializers.IntegerField(default=255, min_value=1)
     order = serializers.IntegerField(default=0)
     options = serializers.ListField(
         child=CreateQuestionOptionSerializer(),
         allow_empty=True,
+        required=False,
     )
 
 
@@ -64,6 +70,10 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
     is_active = None
     url_code = None
     questions = serializers.ListField(child=CreateQuestionSerializer(), min_length=1)
+    kind = serializers.ChoiceField(
+        choices=PublicQueryConstants.KIND_CHOICES,
+        default=PublicQueryConstants.KIND_OPEN,
+    )
 
     def validate(self, data) -> dict:
         if (
@@ -90,7 +100,7 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
         return PublicQueryData(uuid=None, **{**self.data, "questions": questions})
 
     def _get_options(self, question: dict) -> list[QuestionOptionData]:
-        if question["options"]:
+        if question.get("options") is not None:
             return [
                 QuestionOptionData(uuid=None, question_uuid=None, **option)
                 for option in question["options"]
