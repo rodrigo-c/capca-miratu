@@ -348,3 +348,21 @@
   background-size: contain;
   padding-right: 2vw;
 }
+
+.icon.close {
+  background-image: url('../images/icons/close.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 8vh;
+  padding-right: 12vw;
+}
+
+.icon.move {
+  background-image: url('../images/icons/move.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 3vh;
+  padding-right: 2vw;
+}
