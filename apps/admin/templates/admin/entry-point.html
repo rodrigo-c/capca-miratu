@@ -38,6 +38,7 @@
 {% block extra_js %}
     <script type="text/javascript" type="text">const manager = new project.AdminEngine({
       url_base: '{{url_base}}',
+      csrf_token: '{{ csrf_token }}',
       focus: {% if cursor.focus %}'{{cursor.focus}}'{% else %}null{% endif %},
       key: {% if cursor.key %}'{{cursor.key}}'{% else %}null{% endif %},
     });
