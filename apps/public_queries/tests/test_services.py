@@ -25,6 +25,7 @@ from apps.public_queries.lib.dataclasses import (
 )
 from apps.public_queries.lib.exceptions import (
     CantSubmitPublicQueryError,
+    PublicQueryCreateError,
     PublicQueryDoesNotExist,
     QuestionDoesNotExist,
 )
@@ -141,6 +142,23 @@ def test_get_public_query_responses_data(ended_public_query):
     )
     assert responses_data["query"]["uuid"] == str(ended_public_query.id)
     assert len(responses_data["dataset"]) == 16
+
+
+@pytest.mark.django_db
+class TestCreatePublicQuery:
+    def test_success(self, public_query_data):
+        created_query = services.create_public_query(query_data=public_query_data)
+        assert created_query.uuid is not None
+        assert all(question.uuid is not None for question in created_query.questions)
+        assert created_query.questions[2].kind == QuestionConstants.KIND_SELECT
+        assert all(
+            option.uuid is not None for option in created_query.questions[2].options
+        )
+
+    def test_error(self):
+        with pytest.raises(PublicQueryCreateError) as error:
+            services.create_public_query(query_data={})
+        assert error.value.__class__ == PublicQueryCreateError
 
 
 @pytest.mark.django_db

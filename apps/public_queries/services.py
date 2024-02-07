@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from apps.public_queries.domain_logic.auth import CanSubmitPublicQuery
+from apps.public_queries.domain_logic.factories import PublicQueryFactory
 from apps.public_queries.domain_logic.results import (
     AnswerResultReturner,
     PublicQueryResultReturner,
@@ -20,6 +21,7 @@ from apps.public_queries.lib.dataclasses import (
     ResponseData,
 )
 from apps.public_queries.lib.exceptions import (
+    PublicQueryCreateError,
     PublicQueryDoesNotExist,
     ResponseDoesNotExist,
 )
@@ -38,6 +40,14 @@ def get_public_query(
 def get_public_query_list() -> list[PublicQueryData]:
     returner = PublicQueryReturner(identifier="__all__")
     return returner.get()
+
+
+def create_public_query(query_data: PublicQueryData) -> PublicQueryData:
+    try:
+        created_query = PublicQueryFactory(data=query_data).create()
+    except Exception as error:
+        raise PublicQueryCreateError(error)
+    return created_query
 
 
 def get_submit_public_query(

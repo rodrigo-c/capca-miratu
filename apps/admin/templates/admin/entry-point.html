@@ -19,7 +19,7 @@
     <div class="admin-content">
         <div class="admin-sidebar">
             <div class="main-label">Consultas públicas</div>
-            <div class="sidebar-button">
+            <div class="sidebar-button" id="query-create-link">
                 <i class="icon plus"></i> Crear consulta
             </div>
         </div>
@@ -29,90 +29,16 @@
                     {% for i in '0123'|make_list %}<div class="element"></div>{% endfor %}
                 </div>
             </div>
-            <div class="view query-list hidden" id="query-list">
-                <div class="main-label">Todas las consultas</div>
-                <div class="query-item hidden" id="query-item-template">
-                    <div class="name"></div>
-                    <div class="content">
-                        <div class="attributes">
-                            <div class="times">
-                                <div class="start-at"></div>
-                                <div class="end-at"></div>
-                            </div>
-                            <div class="status">
-                                <div class="status-label">Estado actual:</div>
-                                <div class="status-value"></div>
-                            </div>
-                        </div>
-                        <div class="actions">
-                            <div class="action-button">Ver detalles</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="query-item-list"></div>
-            </div>
-            <div class="view query-detail hidden" id="query-detail">
-                <div class="main-label link" id="link-to-query-list">Todas las consultas</div>
-                <div class="query-item" id="query-detail-item">
-                    <div class="name"></div>
-                    <div class="content">
-                        <div class="attributes">
-                            <div class="times">
-                                <div class="start-at"></div>
-                                <div class="end-at"></div>
-                            </div>
-                            <div class="status">
-                                <div class="status-label">Estado actual:</div>
-                                <div class="status-value"></div>
-                            </div>
-                        </div>
-                        <div class="actions">
-                            <a class="action-button" id="detail-action-submit" target="_blank">Responder</a>
-                            <a class="action-button" id="detail-action-map" target="_blank">Mapa</a>
-                            <a class="action-button" id="detail-action-data" target="_blank">Datos</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="tabs" id="query-detail-tabs">
-                    <div class="tab-links">
-                        <div class="tab-link active" id="summary-link">Resumen</div>
-                        <div class="tab-link" id="questions-link">Preguntas</div>
-                    </div>
-                    <div class="summary tab" id="query-detail-summary">
-                        <div class="responses-total">
-                            <div class="total-label">Total respuestas:</div>
-                            <div class="total-value"></div>
-                        </div>
-                        <canvas class="summary-chart hidden" id="summary-chart"></canvas>
-                        <div class="chart-labels hidden" id="summary-chart-labels"></div>
-                        <div class="content"></div>
-                    </div>
-                    <div class="questions tab hidden" id="query-detail-questions">
-                        <div class="question hidden" id="question-template">
-                            <div class="question-number">
-                                Pregunta <span class="value"></span>
-                            </div>
-                            <div class="question-name"></div>
-                            <div class="responses-total">
-                                <div class="total-label">Total respuestas:</div>
-                                <div class="total-value"></div>
-                            </div>
-                            <div class="chart-container">
-                                <canvas class="question-chart hidden"></canvas>
-                            </div>
-                            <div class="chart-labels hidden"></div>
-                        </div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="view query-create hidden" id="query-create"></div>
+            {% include "admin/views/query-list.html" %}
+            {% include "admin/views/query-detail.html" %}
+            {% include "admin/views/query-create.html" %}
         </div>
     </div>
 {% endblock content %}
 {% block extra_js %}
     <script type="text/javascript" type="text">const manager = new project.AdminEngine({
       url_base: '{{url_base}}',
+      csrf_token: '{{ csrf_token }}',
       focus: {% if cursor.focus %}'{{cursor.focus}}'{% else %}null{% endif %},
       key: {% if cursor.key %}'{{cursor.key}}'{% else %}null{% endif %},
     });

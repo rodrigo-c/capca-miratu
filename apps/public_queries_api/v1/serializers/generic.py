@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from drf_extra_fields.geo_fields import PointField
 
+from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
+
 
 class QuestionOptionSerializer(serializers.Serializer):
     uuid = serializers.UUIDField()
@@ -13,26 +15,28 @@ class QuestionOptionSerializer(serializers.Serializer):
 class QuestionSerializer(serializers.Serializer):
     uuid = serializers.UUIDField()
     query_uuid = serializers.UUIDField()
-    kind = serializers.CharField()
+    kind = serializers.ChoiceField(choices=QuestionConstants.KIND_CHOICES)
     name = serializers.CharField()
     order = serializers.IntegerField()
     required = serializers.BooleanField()
     max_answers = serializers.IntegerField()
     text_max_length = serializers.IntegerField()
-    description = serializers.CharField()
+    description = serializers.CharField(required=False, allow_blank=True)
     options = serializers.ListField(child=QuestionOptionSerializer())
     index = serializers.IntegerField()
 
 
 class PublicQuerySerializer(serializers.Serializer):
     uuid = serializers.UUIDField()
-    kind = serializers.CharField()
+    kind = serializers.ChoiceField(choices=PublicQueryConstants.KIND_CHOICES)
     name = serializers.CharField()
     active = serializers.BooleanField()
     is_active = serializers.BooleanField()
-    description = serializers.CharField(required=False)
-    start_at = serializers.DateTimeField()
-    end_at = serializers.DateTimeField()
+    description = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True
+    )
+    start_at = serializers.DateTimeField(required=False, allow_null=True)
+    end_at = serializers.DateTimeField(required=False, allow_null=True)
     image = serializers.CharField(required=False)
     questions = serializers.ListField(child=QuestionSerializer())
     url_code = serializers.CharField()

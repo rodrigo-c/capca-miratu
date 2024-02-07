@@ -4,12 +4,19 @@ from django.http import Http404
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
 
-from apps.admin_api.v1.serializers import PublicQueryResultSerializer
+from apps.admin_api.v1.serializers import (
+    CreatePublicQuerySerializer,
+    PublicQueryResultSerializer,
+)
 from apps.public_queries import services as public_queries_services
 from apps.public_queries.lib.dataclasses import PublicQueryData
-from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
+from apps.public_queries.lib.exceptions import (
+    PublicQueryCreateError,
+    PublicQueryDoesNotExist,
+)
 from apps.public_queries_api.v1.serializers.generic import PublicQuerySerializer
 
 
@@ -33,6 +40,19 @@ class PublicQueryManager(ViewSet):
             "data": reverse("public_queries:query-data", kwargs=kwargs),
         }
         serializer = PublicQueryResultSerializer(instance=result)
+        return Response(serializer.data)
+
+    def create(self, request) -> Response:
+        serializer = CreatePublicQuerySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        public_query_data = serializer.get_dataclass()
+        try:
+            returned_data = public_queries_services.create_public_query(
+                query_data=public_query_data
+            )
+        except PublicQueryCreateError:
+            raise ValidationError("Unknown error")
+        serializer = PublicQuerySerializer(instance=returned_data)
         return Response(serializer.data)
 
     def get_public_query(self, identifier: str | UUID) -> PublicQueryData:

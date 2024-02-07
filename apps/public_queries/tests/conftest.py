@@ -70,6 +70,11 @@ def ended_public_query(uploaded_image):
 
 
 @pytest.fixture
+def public_query_data():
+    return recipes.make_public_query_data()
+
+
+@pytest.fixture
 def closed_public_query():
     public_query = recipes.public_query_recipe.make(
         kind=PublicQueryConstants.KIND_CLOSED,
