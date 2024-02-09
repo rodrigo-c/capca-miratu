@@ -15,16 +15,37 @@ class QueryCreateManager {
     this.can_publish = false
     this.buttons = {}
     this.query_inputs = {}
+
+    //bind event methods
+    this._click_more_attributes = this._click_more_attributes.bind(this)
+    this._click_publish = this._click_publish.bind(this)
+
+    this._dropdown_create_question = this._dropdown_create_question.bind(this)
+    this._click_create_question = this._click_create_question.bind(this)
+    this._move_question_ondragstart = this._move_question_ondragstart.bind(this)
+    this._move_question_ondragend = this._move_question_ondragend.bind(this)
+    this._move_question_ondrop = this._move_question_ondrop.bind(this)
+    this._click_question_add_option = this._click_question_add_option.bind(this)
+    this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
+    this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
+    this._click_remove_question = this._click_remove_question.bind(this)
+    this._click_question_remove_option = this._click_question_remove_option.bind(this)
     this._set_more_attrs()
     this._set_publish_button()
     this._set_create_question_button()
     this._set_query_inputs()
+  }
 
-    this._click_question_option_delete = this._click_question_option_delete.bind(this)
+  show_view(on_history) {
+    this.manager.engine._hide_all_views()
+    this._clean_data()
+    this.manager.engine.views.query_create.classList.remove("hidden")
+    if (on_history) {
+      this.manager.engine._set_url_params("query-create", null)
+    }
   }
 
   _set_more_attrs() {
-    this._click_more_attributes = this._click_more_attributes.bind(this)
     let button = document.querySelector("#query-create-more-attrs-button")
     button.addEventListener("click", this._click_more_attributes, false)
   }
@@ -46,7 +67,6 @@ class QueryCreateManager {
     let new_question = document.querySelector("#create-question-button")
     publish.disabled = true
     publish.classList.add("disabled")
-    this._click_publish = this._click_publish.bind(this)
     publish.addEventListener("click", this._click_publish, false)
     this.buttons.publish = publish
   }
@@ -88,279 +108,7 @@ class QueryCreateManager {
       active: false,
       questions: [],
     }
-    for (let field in this.query_inputs) {
-      this.query_inputs[field].value = ""
-    }
-    document.querySelector("#create-questions-tab").innerText = ""
-  }
-
-  _set_create_question_button() {
-    this._dropdown_create_question = this._dropdown_create_question.bind(this)
-    this._click_create_question = this._click_create_question.bind(this)
-    let button = document.querySelector("#create-question-button")
-    button.addEventListener("click", this._dropdown_create_question, false)
-    button.disabled = false
-    this.buttons.new_question = button
-    let kinds = Array.from(document.querySelectorAll("#create-question-options .dropdown-item"))
-    for (let kind of kinds) {
-      kind.kind = kind.getAttribute("kind")
-      kind.addEventListener("click", this._click_create_question, false)
-    }
-  }
-
-  _dropdown_create_question(event) {
-    let dropdown = document.querySelector("#create-question-options")
-    if (!event.target.disabled) {
-      if (dropdown.classList.contains("hidden")) {
-        dropdown.classList.remove("hidden")
-      } else {
-        dropdown.classList.add("hidden")
-      }
-    }
-  }
-
-  _click_create_question (event) {
-    let questions_container = document.querySelector("#create-questions-tab")
-    let index = questions_container.childElementCount
-    let question = this._create_empty_question(event.target.kind, event.target.getAttribute("type"), index)
-    this.data.questions.push(this._get_question_data(question))
-    questions_container.appendChild(question)
-    this.validate_inputs()
-    event.target.parentElement.classList.add("hidden")
-  }
-
-  _create_empty_question (kind, type, index) {
-    let container = document.createElement("div")
-    container.index = index
-    container.classList.add("question-item")
-    let question_id = `question-item-${index}`
-    container.setAttribute("id", question_id)
-    container.kind = kind
-    container.innerHTML = `
-      <div class="question-item-move">
-        <i class="icon move"></i>
-      </div>
-      <div class="question-item-content">
-        <input class="question-item-name"
-               id="${question_id}-name-input"
-               field="name"
-               type="text"
-               question="true"
-               placeholder="Escribe tu pregunta aquí">
-        </input>
-        <input class="question-item-description"
-               id="${question_id}-description-input"
-               field="description"
-               type="text"
-               question="true"
-               placeholder="Agrega una descripción para esta pregunta (opcional)">
-        </input>
-      </div>
-      <div class="question-item-actions">
-        <div class="action-delete"><i class="icon trash"></i></div>
-        <div class="action-required">
-          <label class="action-checkbox">
-            <div class="action-label">Obligatorio</div>
-            <input type="checkbox"
-                   id="${question_id}-required-input"
-                   class="action-checkbox-input"
-                   field="required"
-                   question="true">
-            </input>
-            <span class="action-checkbox-checkmarker"></span>
-          </label>
-        </div>
-      </div>
-    `
-    this._set_change_question_input(container,)
-    this._click_delete_question = this._click_delete_question.bind(this)
-    let delete_button = container.querySelector(".action-delete")
-    delete_button.querySelector(".icon.trash").index = index
-    delete_button.index = index
-    delete_button.addEventListener("click", this._click_delete_question, false)
-    if (kind === "TEXT") {
-      this._set_text_question(container, type)
-    } else if (kind == "SELECT") {
-      this._set_select_question(container)
-    } else if (kind == "IMAGE") {
-      this._set_image_question(container)
-    } else if (kind == "POINT") {
-      this._set_point_question(container)
-    }
-
-    return container
-  }
-
-  _set_text_question(question, type) {
-    let question_content = question.querySelector(".question-item-content")
-    let text_input = document.createElement("input")
-    text_input.classList.add("kind-text")
-    text_input.setAttribute("type", "text")
-    text_input.setAttribute("disabled", "true")
-    if (type === "large") {
-      text_input.setAttribute("placeholder", "Respuesta de texto largo (400 caracteres)")
-      question.maxlength = 400
-    } else {
-      text_input.setAttribute("placeholder", "Respuesta de texto corto (150 caracteres)")
-      question.maxlength = 150
-    }
-    question_content.appendChild(text_input)
-  }
-
-  _set_image_question (question) {
-    let question_content = question.querySelector(".question-item-content")
-    let text_input = document.createElement("input")
-    text_input.classList.add("kind-text")
-    text_input.setAttribute("type", "text")
-    text_input.setAttribute("disabled", "true")
-    text_input.setAttribute("placeholder", "Imagen o foto")
-    question_content.appendChild(text_input)
-  }
-
-  _set_point_question (question) {
-    let question_content = question.querySelector(".question-item-content")
-    let text_input = document.createElement("input")
-    text_input.classList.add("kind-text")
-    text_input.setAttribute("type", "text")
-    text_input.setAttribute("disabled", "true")
-    text_input.setAttribute("placeholder", "Ubicación")
-    question_content.appendChild(text_input)
-  }
-
-  _set_select_question(question) {
-    let question_content = question.querySelector(".question-item-content")
-    let options_container = document.createElement("div")
-    options_container.classList.add(".question-options-container")
-    options_container.innerHTML = `
-      <div class="question-option-list"></div>
-      <div class="question-option-add">+ Agregar opción</div>
-    `
-    this._click_question_option_add = this._click_question_option_add.bind(this)
-    let question_add_button = options_container.querySelector(".question-option-add")
-    question_add_button.index = question.index
-    question_add_button.addEventListener("click", this._click_question_option_add, false)
-    question_content.appendChild(options_container)
-  }
-
-  _click_question_option_add(event) {
-    let question_index = event.target.index
-    let question_id = `question-item-${question_index}`
-    let option_list = document.querySelector(`#${question_id} .question-option-list`)
-    let index = option_list.childElementCount
-    let option = document.createElement("div")
-    let option_id = `question-option-${question_index}-${index}`
-    option.classList.add("question-option")
-    option.setAttribute("id", option_id)
-    option.innerHTML = `
-      <div class="question-option-label">${this.letters[index]}.</div>
-      <input type="text" class="question-option-input" placeholder="Opción ${index + 1}" question="true">
-      <div class="question-option-delete">X</div>
-    `
-    let input = option.querySelector(".question-option-input")
-    input.field = "question-option"
-    input.index = question_index
-    input.option_index = index
-    input.addEventListener("input", this._change_input, false)
-    let delete_button = option.querySelector(".question-option-delete")
-    delete_button.index = question_index
-    delete_button.option_index = index
-    delete_button.addEventListener("click", this._click_question_option_delete, false)
-    let option_data = {
-      name: null, order: index,
-    }
-    if (!this.data.questions[question_index].options) {
-      this.data.questions[question_index].options = []
-    }
-    this.data.questions[question_index].options.push(option_data)
-    //max answers
-
-    option_list.appendChild(option)
-  }
-
-  _click_question_option_delete (event) {
-    let question_index = event.target.index
-    let option_index = event.target.option_index
-    let option_id = `question-option-${question_index}-${option_index}`
-    let option = document.querySelector(`#${option_id}`)
-    this.data.questions[question_index].options.splice(option_index, 1)
-    let option_list = option.parentElement
-    option.remove()
-    let index = 0
-    for (let option of option_list.children) {
-      let option_id = `question-option-${question_index}-${index}`
-      option.setAttribute("id", option_id)
-      let input = option.querySelector(".question-option-input")
-      input.index = question_index
-      input.option_index = index
-      input.setAttribute("placeholder", `Opción ${index+1}`)
-      this.data.questions[question_index].options[index].order = index
-      let delete_button = option.querySelector(".question-option-delete")
-      delete_button.index = question_index
-      delete_button.option_index = index
-      option.querySelector(".question-option-label").innerText = `${this.letters[index]}.`
-      index += 1
-    }
-  }
-
-  _set_change_question_input (question) {
-    let name = question.querySelector(".question-item-name")
-    let description = question.querySelector(".question-item-description")
-    let required = question.querySelector(".action-checkbox-input[field='required']")
-    for (let input of [name, description, required]) {
-      input.field = input.getAttribute("field")
-      input.index = question.index
-      input.addEventListener("input", this._change_input, false)
-    }
-  }
-
-  _click_delete_question (event) {
-    let index = event.target.index
-    let question_id = `question-item-${index}`
-    let question = document.querySelector(`#${question_id}`)
-    this.data.questions.splice(index, 1)
-    question.remove()
-    this._set_questions_order()
-    this.validate_inputs()
-  }
-
-  _set_questions_order() {
-    let questions_container = document.querySelector("#create-questions-tab")
-    let counter = 0
-    for (let question of questions_container.children) {
-      this.data.questions[counter].order = counter
-      question.index = counter
-      let question_id = `question-item-${counter}`
-      question.setAttribute("id", question_id)
-      let name = question.querySelector(".question-item-name")
-      let description = question.querySelector(".question-item-description")
-      let required = question.querySelector(".action-checkbox-input[field='required']")
-      let delete_button = question.querySelector(".action-delete")
-      delete_button.index = counter
-      for (let input of [name, description, required]) {
-        input.index = counter
-      }
-      let inputs = Array.from(question.querySelectorAll(".question-option-input"))
-      for (let input of inputs) {
-        input.index = counter
-      }
-      counter += 1
-    }
-  }
-
-  _get_question_data(question) {
-    let name_input = question.querySelector("input[field='name']")
-    let description_input = question.querySelector("input[field='description']")
-    let question_data = {
-      kind: question.kind,
-      name: name_input.value,
-      description: description_input.value,
-      order: question.index,
-      required: false,
-    }
-    if (question.kind == "TEXT") {
-      question_data.text_max_length = question.maxlength
-    }
-    return question_data
+    this._build_question_from_data()
   }
 
   _set_query_inputs() {
@@ -382,14 +130,15 @@ class QueryCreateManager {
   _change_input (event) {
     let field = event.target.field
     let value = event.target.value
-    if (event.target.hasAttribute("question")) {
+    if (event.target.question) {
       if (field == "required") {
         value = event.target.checked? true: false
       }
       if (field == "question-option") {
         this.data.questions[event.target.index].options[event.target.option_index].name = value
+      } else {
+        this.data.questions[event.target.index][field] = value
       }
-      this.data.questions[event.target.index][field] = value
     } else {
       this.data[field] = value
     }
@@ -463,18 +212,323 @@ class QueryCreateManager {
     }
   }
 
-  show_view(on_history) {
-    this._set_in_view()
-    if (on_history) {
-      this.manager.engine._set_url_params("query-create", null)
+  _set_create_question_button() {
+    let button = document.querySelector("#create-question-button")
+    button.addEventListener("click", this._dropdown_create_question, false)
+    button.disabled = false
+    this.buttons.new_question = button
+    let kinds = Array.from(document.querySelectorAll("#create-question-options .dropdown-item"))
+    for (let kind of kinds) {
+      kind.kind = kind.getAttribute("kind")
+      kind.type = kind.getAttribute("type")
+      kind.addEventListener("click", this._click_create_question, false)
     }
   }
 
-  _set_in_view() {
-    this.manager.engine._hide_all_views()
-    this.manager.engine.views.query_create.classList.remove("hidden")
-
+  _dropdown_create_question(event) {
+    let dropdown = document.querySelector("#create-question-options")
+    if (!event.target.disabled) {
+      if (dropdown.classList.contains("hidden")) {
+        dropdown.classList.remove("hidden")
+      } else {
+        dropdown.classList.add("hidden")
+      }
+    }
   }
+
+  _click_create_question (event) {
+    let question = {
+      kind: event.target.kind,
+      name: null, description: null,
+      required: false,
+      order: this.data.questions.length,
+    }
+    if (event.target.kind === "TEXT") {
+      if (event.target.type == "large") {
+        question.text_max_length = 400
+      } else {
+        question.text_max_length = 150
+      }
+    } else if (event.target.kind == "SELECT") {
+      question.options = []
+    }
+    this.data.questions.push(question)
+    this._build_question_from_data()
+    let dropdown = document.querySelector("#create-question-options")
+    dropdown.classList.add("hidden")
+  }
+
+  _build_question_from_data() {
+    let questions_container = document.querySelector("#create-questions-tab")
+    questions_container.innerHTML = ""
+    let index = 0
+    for (let question_data of this.data.questions) {
+      let question = this._create_question_element(question_data, index)
+      questions_container.appendChild(question)
+      this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
+      this._set_question_draggable(question)
+      index += 1
+    }
+    this.validate_inputs()
+  }
+
+  _get_question_id(index) { return `question-item-${index}` }
+
+  _create_question_element(question_data, index) {
+    let question_id = this._get_question_id(index)
+    var question = document.createElement("div")
+    question.classList.add("question-item")
+    question.index = index
+    question.setAttribute("id", question_id)
+    question.kind = question_data.kind
+    question.innerHTML = `
+      <div class="question-move-previous"></div>
+      <div class="question-container">
+        <div class="question-item-move">
+          <i class="icon move"></i>
+        </div>
+        <div class="question-item-content">
+          <input class="question-item-name"
+                 id="${question_id}-name-input"
+                 type="text"
+                 field="name"
+                 placeholder="Escribe tu pregunta aquí">
+          </input>
+          <input class="question-item-description"
+                 id="${question_id}-description-input"
+                 type="text"
+                 field="description"
+                 placeholder="Agrega una descripción para esta pregunta (opcional)">
+          </input>
+        </div>
+        <div class="question-item-actions">
+          <div class="action-delete"><i class="icon trash"></i></div>
+          <div class="action-required">
+            <label class="action-checkbox">
+              <div class="action-label">Obligatorio</div>
+              <input type="checkbox"
+                     id="${question_id}-required-input"
+                     field="required"
+                     class="action-checkbox-input">
+              </input>
+              <span class="action-checkbox-checkmarker"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="question-move-next"></div>
+    `
+    let delete_button = question.querySelector(".action-delete")
+    delete_button.addEventListener("click", this._click_remove_question, false)
+    let question_content = question.querySelector(".question-item-content")
+    if (question_data.kind === "TEXT") {
+      let type = question_data.text_max_length > 150 ? "largo": "corto"
+      question_content.innerHTML += `<div class="kind-text">Respuesta de texto ${type} (${question_data.text_max_length} caracteres)</div>`
+    } else if (question_data.kind === "IMAGE") {
+      question_content.innerHTML += `<div class="kind-image">Respuesta de imagen o foto</div>`
+    } else if (question_data.kind === "POINT") {
+      question_content.innerHTML += `<div class="kind-image">Ubicación</div>`
+    } else if (question_data.kind === "SELECT") {
+      this._set_question_options(question, question_data)
+    }
+    return question
+  }
+
+  _prepare_question_inputs(question, question_data, fields) {
+    let question_id = this._get_question_id(question.index)
+    for (let field of fields) {
+      let element = question.querySelector(`#${question_id}-${field}-input`)
+      element.field = field
+      element.index = question.index
+      element.question = true
+      if (field === "required") {
+        element.checked = question_data[field]
+      } else {
+        element.value = question_data[field]
+      }
+      element.addEventListener("input", this._change_input, false)
+    }
+  }
+
+  _click_remove_question(event) {
+    let question = event.target.closest(".question-item")
+    this.data.questions.splice(question.index, 1)
+    this._build_question_from_data()
+  }
+
+  _set_question_options (question, question_data) {
+    let question_content = question.querySelector(".question-item-content")
+    let options_container = document.createElement("div")
+    options_container.classList.add(".question-options-container")
+    options_container.innerHTML = `
+      <div class="question-option-list"></div>
+      <div class="question-option-add">+ Agregar opción</div>
+    `
+    let question_add_button = options_container.querySelector(".question-option-add")
+    question_add_button.index = question.index
+    question_add_button.addEventListener("click", this._click_question_add_option, false)
+    question_content.appendChild(options_container)
+    let option_list = options_container.querySelector(`.question-option-list`)
+    let option_index = 0
+    for (let option_data of this.data.questions[question.index].options) {
+      let option = document.createElement("div")
+      option.classList.add("question-option")
+      let option_id = `question-option-${question.index}-${option_index}`
+      option.innerHTML = `
+        <div class="question-option-label">${this.letters[option_index]}.</div>
+        <input id="${option_id}" type="text" class="question-option-input" placeholder="Opción ${option_index + 1}">
+        <div class="question-option-delete">X</div>
+      `
+      let input = option.querySelector(".question-option-input")
+      input.field = "question-option"
+      input.index = question.index
+      input.question = true
+      input.option_index = option_index
+      input.value = option_data.name
+      input.addEventListener("input", this._change_input, false)
+      let delete_button = option.querySelector(".question-option-delete")
+      delete_button.index = question.index
+      delete_button.option_index = option_index
+      delete_button.addEventListener("click", this._click_question_remove_option, false)
+      option_index += 1
+      option_list.appendChild(option)
+    }
+    this._set_question_max_answers(question, question_data)
+  }
+
+  _click_question_remove_option(event) {
+    console.log(this)
+    let question = event.target.closest(".question-item")
+    this.data.questions[question.index].options.splice(event.target.option_index, 1)
+    this._build_question_from_data()
+  }
+
+  _set_question_max_answers (question, question_data) {
+    let actions = question.querySelector(".question-item-actions")
+    actions.innerHTML = `
+      <div class="action-max-answers">
+        <div class="action-max-answers-button">
+          <span class="action-label">Cantidad de respuestas</span> <i class="icon bottom"></i>
+        </div>
+        <div class="action-max-answers-dropdown hidden"></div>
+      </div>
+    ` + actions.innerHTML
+    let button = actions.querySelector(".action-max-answers-button")
+    button.addEventListener("click", this._click_question_max_answers_menu, false)
+    let dropdown = actions.querySelector(".action-max-answers-dropdown")
+    for (let i = 0; i < 5; i++) {
+      let option = document.createElement("div")
+      option.classList.add("action-max-answers-option")
+      option.value = i + 1
+      let message = `${i + 1} respuesta`
+      if (option.value == this.data.questions[question.index].max_answers) {
+        actions.querySelector(".action-label").innerText = message
+      }
+      if (i > 0) { message += "s" }
+      option.innerText = message
+      option.addEventListener("click", this._click_question_max_answers_set, false)
+      dropdown.appendChild(option)
+    }
+  }
+
+  _click_question_add_option (event) {
+    let question = event.target.closest(".question-item")
+    let order = this.data.questions[question.index].options.length
+    let empty_option = {
+      name: null, order: order
+    }
+    this.data.questions[question.index].options.push(empty_option)
+    this._build_question_from_data()
+  }
+
+  _click_question_max_answers_menu(event) {
+    let question = event.target.closest(".question-item")
+    let dropdown = question.querySelector(".action-max-answers-dropdown")
+    if (dropdown.classList.contains("hidden")) {
+      dropdown.classList.remove("hidden")
+    } else {
+      dropdown.classList.add("hidden")
+    }
+  }
+
+  _click_question_max_answers_set (event) {
+    let question = event.target.closest(".question-item")
+    let button_label = question.querySelector(".action-max-answers .action-label")
+    let dropdown = question.querySelector(".action-max-answers-dropdown")
+    this.data.questions[question.index].max_answers = event.target.value
+    button_label.innerText = event.target.innerText
+    dropdown.classList.add("hidden")
+  }
+
+  _set_question_draggable (question) {
+    let container = question.querySelector(".question-container")
+    container.draggable = true
+    container.ondragstart = this._move_question_ondragstart
+    container.ondragend = this._move_question_ondragend
+    let move_previous = question.querySelector(".question-move-previous")
+    let move_next = question.querySelector(".question-move-next")
+    move_previous.ondragenter = () => move_previous.classList.add("active")
+    move_previous.ondragleave = () => move_previous.classList.remove("active")
+    move_next.ondragenter = () => move_next.classList.add("active")
+    move_next.ondragleave = () => move_next.classList.remove("active")
+    move_previous.ondragover = (event) => event.preventDefault()
+    move_previous.ondrop = this._move_question_ondrop
+    move_previous.kind = "previous"
+    move_next.ondragover = (event) => event.preventDefault()
+    move_next.kind = "next"
+    move_next.ondrop = this._move_question_ondrop
+  }
+
+  _move_question_ondragstart(event) {
+    let question = event.target.closest(".question-item")
+    let questions_container = document.querySelector("#create-questions-tab")
+    this.current_pos = question.index
+    setTimeout(()=> { question.style.display = "none"}, 0)
+    questions_container.style.heigth = questions_container.clientHeigth - question.clientHeigth + "px"
+  }
+
+  _move_question_ondragend (event) {
+    let questions_container = document.querySelector("#create-questions-tab")
+    for (let question of questions_container.children) {
+      question.style.display = "flex"
+      question.querySelector(".question-move-previous").classList.remove("active")
+      question.querySelector(".question-move-next").classList.remove("active")
+    }
+  }
+
+  _move_question_ondrop(event) {
+    event.preventDefault()
+    let question = event.target.closest(".question-item")
+    let kind = event.target.kind
+    let total_questions = this.data.questions.length
+    let to_index = null
+    if (kind == "previous") {
+      to_index = question.index - 1 < 0? 0 : question.index
+    }
+
+    else if (kind == "next") {
+      to_index = question.index
+    }
+    if (this.current_pos === to_index) {
+      return
+    }
+    let questions = [...this.data.questions]
+    let moved_question = {...questions[this.current_pos]}
+    questions = questions.filter(q => q.order != moved_question.order)
+    questions.splice(to_index, 0, moved_question)
+    this.data.questions = questions
+    this._set_question_data_order()
+    this._build_question_from_data()
+  }
+
+  _set_question_data_order () {
+    let index = 0
+    for (let question of this.data.questions) {
+      question.order = index
+      index += 1
+    }
+  }
+
 
 }
 
