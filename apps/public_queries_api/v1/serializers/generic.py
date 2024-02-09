@@ -21,7 +21,9 @@ class QuestionSerializer(serializers.Serializer):
     required = serializers.BooleanField()
     max_answers = serializers.IntegerField()
     text_max_length = serializers.IntegerField()
-    description = serializers.CharField(required=False, allow_blank=True)
+    description = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
     options = serializers.ListField(child=QuestionOptionSerializer())
     index = serializers.IntegerField()
 

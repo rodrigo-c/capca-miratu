@@ -78,7 +78,7 @@ class QueryDetailManager {
       let template = questions_container.querySelector("#question-template").cloneNode(true)
       template.removeAttribute("id")
       let index = answer_result.question.index
-      template.querySelector(".question-number .value").textContent = index
+      template.querySelector(".question-number .value").textContent = index + 1
       template.querySelector(".question-name").textContent = answer_result.question.name
       template.querySelector(".responses-total .total-value").textContent = answer_result.total
       content.appendChild(template)
