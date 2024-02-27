@@ -191,24 +191,32 @@ class QueryCreateManager {
   _val_field_value_is_required(field, value, question_index) {
     if (this.required_fields.includes(field) && (!value || value == "")) {
       let message = "Este campo es requerido"
-      if (!isNaN(question_index)) {
-        if (!this.errors.questions) {
-          this.errors.questions = {}
-        }
-        if (!this.errors.questions[question_index]) {
-          this.errors.questions[question_index] = {}
-        }
-        this.errors.questions[question_index][field] = message
-      } else {
-        this.errors[field] = message
-      }
+      this._set_field_error(field, message, question_index)
     } else {
-      if (!isNaN(question_index) && this.errors.questions && this.errors.questions[question_index]) {
-        delete this.errors.questions[question_index][field]
+      this._clean_field_error(field, question_index)
+    }
+  }
+
+  _set_field_error (field, message, question_index) {
+    if (!isNaN(question_index)) {
+      if (!this.errors.questions) {
+        this.errors.questions = {}
       }
-      if (isNaN(question_index)) {
-        delete this.errors[field]
+      if (!this.errors.questions[question_index]) {
+        this.errors.questions[question_index] = {}
       }
+      this.errors.questions[question_index][field] = message
+    } else {
+      this.errors[field] = message
+    }
+  }
+
+  _clean_field_error (field, question_index) {
+    if (!isNaN(question_index) && this.errors.questions && this.errors.questions[question_index]) {
+      delete this.errors.questions[question_index][field]
+    }
+    if (isNaN(question_index)) {
+      delete this.errors[field]
     }
   }
 
@@ -265,6 +273,8 @@ class QueryCreateManager {
     for (let question_data of this.data.questions) {
       let question = this._create_question_element(question_data, index)
       questions_container.appendChild(question)
+      let delete_button = question.querySelector(".action-delete")
+      delete_button.addEventListener("click", this._click_remove_question, false)
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
       this._set_question_draggable(question)
       index += 1
@@ -318,8 +328,6 @@ class QueryCreateManager {
       </div>
       <div class="question-move-next"></div>
     `
-    let delete_button = question.querySelector(".action-delete")
-    delete_button.addEventListener("click", this._click_remove_question, false)
     let question_content = question.querySelector(".question-item-content")
     if (question_data.kind === "TEXT") {
       let type = question_data.text_max_length > 150 ? "largo": "corto"
@@ -397,7 +405,6 @@ class QueryCreateManager {
   }
 
   _click_question_remove_option(event) {
-    console.log(this)
     let question = event.target.closest(".question-item")
     this.data.questions[question.index].options.splice(event.target.option_index, 1)
     this._build_question_from_data()
