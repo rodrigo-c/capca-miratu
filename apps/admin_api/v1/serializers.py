@@ -2,6 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 
+from apps.admin_api.lib.constants import PublicQueryErrorConstants
 from apps.public_queries.lib.constants import (
     CreatePublicQueryConstants,
     PublicQueryConstants,
@@ -63,6 +64,26 @@ class CreateQuestionSerializer(QuestionSerializer):
         allow_empty=True,
         required=False,
     )
+
+    def validate(self, data) -> dict:
+        options = data.get("options")
+        if data["kind"] == QuestionConstants.KIND_SELECT:
+            self._validate_options_empty(options=options)
+            self._validate_options_equals(options=options)
+        return data
+
+    def _validate_options_empty(self, options: list) -> dict:
+        if options is None or len(options) < 2:
+            raise serializers.ValidationError(
+                {"options": PublicQueryErrorConstants.OPTIONS_EMPTY}
+            )
+
+    def _validate_options_equals(self, options: list) -> dict:
+        option_names = [option["name"] for option in options]
+        if len(option_names) > len(set(option_names)):
+            raise serializers.ValidationError(
+                {"options": PublicQueryErrorConstants.OPTIONS_EQUALS}
+            )
 
 
 class CreatePublicQuerySerializer(PublicQuerySerializer):

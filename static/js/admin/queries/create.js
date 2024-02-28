@@ -34,6 +34,7 @@ class QueryCreateManager {
     this._set_publish_button()
     this._set_create_question_button()
     this._set_query_inputs()
+
   }
 
   show_view(on_history) {
@@ -93,7 +94,13 @@ class QueryCreateManager {
             }
           })
         } else {
-          console.log(response)
+          response.json()
+          .then((data)=> {
+            this.errors = {...this.errors, ...data}
+            this._set_errors_message()
+            this.manager.engine._hide_all_views()
+            this.manager.engine.views.query_create.classList.remove("hidden")
+          })
         }
       })
     }
@@ -125,6 +132,42 @@ class QueryCreateManager {
       input.addEventListener("input", this._change_input, false)
       this.query_inputs[input.field] = input
     }
+    this.error_containers = {}
+    let base_id = "query-create"
+    for (let field in this.data) {
+      if (field != "questions") {
+        let container = document.querySelector(`#${base_id}-${field}-error`)
+        if (container) {
+          this.error_containers[field] = container
+        }
+      }
+    }
+  }
+
+  _set_errors_message() {
+    let base_id = "query-create"
+    for (let field in this.error_containers) {
+      if (field != "questions") {
+        this.error_containers[field].innerText = ""
+      } else {
+        for (let index in this.error_containers[field]) {
+          for (let question_field in this.error_containers[field][index]) {
+            this.error_containers[field][index][question_field].innerText = ""
+          }
+        }
+      }
+    }
+    for (let field in this.errors) {
+      if (field != "questions") {
+        this.error_containers[field].innerText = this.errors[field]
+      } else if (typeof this.errors[field] == "object") {
+        for (let index in this.errors[field]) {
+          for (let question_field in this.errors[field][index]) {
+            this.error_containers[field][parseInt(index)][question_field].innerText = this.errors[field][index][question_field]
+          }
+        }
+      }
+    }
   }
 
   _change_input (event) {
@@ -143,6 +186,7 @@ class QueryCreateManager {
       this.data[field] = value
     }
     this.validate_inputs()
+    this._set_errors_message()
   }
 
   validate_inputs() {
@@ -159,6 +203,9 @@ class QueryCreateManager {
           for (let field in question) {
             let value = question[field]
             this._val_field_value_is_required(field, value, question.order)
+          }
+          if (question.kind == "SELECT") {
+            this._val_question_options(question)
           }
         }
       } else {
@@ -189,26 +236,54 @@ class QueryCreateManager {
   }
 
   _val_field_value_is_required(field, value, question_index) {
-    if (this.required_fields.includes(field) && (!value || value == "")) {
+    if (this.required_fields.includes(field) && (!value || value.trim() == "")) {
       let message = "Este campo es requerido"
-      if (!isNaN(question_index)) {
-        if (!this.errors.questions) {
-          this.errors.questions = {}
-        }
-        if (!this.errors.questions[question_index]) {
-          this.errors.questions[question_index] = {}
-        }
-        this.errors.questions[question_index][field] = message
-      } else {
-        this.errors[field] = message
-      }
+      this._set_field_error(field, message, question_index)
     } else {
-      if (!isNaN(question_index) && this.errors.questions && this.errors.questions[question_index]) {
-        delete this.errors.questions[question_index][field]
+      this._clean_field_error(field, question_index)
+    }
+  }
+
+  _val_question_options(question) {
+    let message = "Debe agregar al menos dos opciones y no pueden estar vacías"
+    if (question.options.length < 2) {
+      this._set_field_error("options", message, question.order)
+    }
+    let option_values = []
+    for (let option of question.options) {
+      if (!option.name || option.name.trim() == "") {
+        this._set_field_error("options", message, question.order)
+        break
       }
-      if (isNaN(question_index)) {
-        delete this.errors[field]
+      if (option_values.includes(option.name)) {
+        message = "Las opciones no pueden ser iguales"
+        this._set_field_error("options", message, question.order)
+        break
       }
+      option_values.push(option.name)
+    }
+  }
+
+  _set_field_error (field, message, question_index) {
+    if (!isNaN(question_index)) {
+      if (!this.errors.questions) {
+        this.errors.questions = {}
+      }
+      if (!this.errors.questions[question_index]) {
+        this.errors.questions[question_index] = {}
+      }
+      this.errors.questions[question_index][field] = message
+    } else {
+      this.errors[field] = message
+    }
+  }
+
+  _clean_field_error (field, question_index) {
+    if (!isNaN(question_index) && this.errors.questions && this.errors.questions[question_index]) {
+      delete this.errors.questions[question_index][field]
+    }
+    if (isNaN(question_index)) {
+      delete this.errors[field]
     }
   }
 
@@ -265,8 +340,11 @@ class QueryCreateManager {
     for (let question_data of this.data.questions) {
       let question = this._create_question_element(question_data, index)
       questions_container.appendChild(question)
+      let delete_button = question.querySelector(".action-delete")
+      delete_button.addEventListener("click", this._click_remove_question, false)
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
       this._set_question_draggable(question)
+      this._set_question_error_containers(question)
       index += 1
     }
     this.validate_inputs()
@@ -294,12 +372,14 @@ class QueryCreateManager {
                  field="name"
                  placeholder="Escribe tu pregunta aquí">
           </input>
+          <div class="error-label" id="query-create-question-${index}-name-error"></div>
           <input class="question-item-description"
                  id="${question_id}-description-input"
                  type="text"
                  field="description"
                  placeholder="Agrega una descripción para esta pregunta (opcional)">
           </input>
+          <div class="error-label" id="query-create-question-${index}-description-error"></div>
         </div>
         <div class="question-item-actions">
           <div class="action-delete"><i class="icon trash"></i></div>
@@ -318,8 +398,6 @@ class QueryCreateManager {
       </div>
       <div class="question-move-next"></div>
     `
-    let delete_button = question.querySelector(".action-delete")
-    delete_button.addEventListener("click", this._click_remove_question, false)
     let question_content = question.querySelector(".question-item-content")
     if (question_data.kind === "TEXT") {
       let type = question_data.text_max_length > 150 ? "largo": "corto"
@@ -350,6 +428,25 @@ class QueryCreateManager {
     }
   }
 
+  _set_question_error_containers (question) {
+    let base_id = "query-create"
+    if (!this.error_containers.questions) {
+      this.error_containers.questions = {}
+    }
+    if (!this.error_containers.questions[question.index]) {
+      this.error_containers.questions[question.index] = {}
+    }
+    let fields = ["name", "description"]
+    if (question.kind == "SELECT") {
+      fields.push("options")
+    }
+    for (let field of fields) {
+      this.error_containers.questions[question.index][field] = question.querySelector(
+        `#${base_id}-question-${question.index}-${field}-error`
+      )
+    }
+  }
+
   _click_remove_question(event) {
     let question = event.target.closest(".question-item")
     this.data.questions.splice(question.index, 1)
@@ -362,6 +459,7 @@ class QueryCreateManager {
     options_container.classList.add(".question-options-container")
     options_container.innerHTML = `
       <div class="question-option-list"></div>
+      <div class="error-label" id="query-create-question-${question.index}-options-error"></div>
       <div class="question-option-add">+ Agregar opción</div>
     `
     let question_add_button = options_container.querySelector(".question-option-add")
@@ -397,10 +495,11 @@ class QueryCreateManager {
   }
 
   _click_question_remove_option(event) {
-    console.log(this)
     let question = event.target.closest(".question-item")
     this.data.questions[question.index].options.splice(event.target.option_index, 1)
     this._build_question_from_data()
+    this.validate_inputs()
+    this._set_errors_message()
   }
 
   _set_question_max_answers (question, question_data) {
@@ -439,6 +538,8 @@ class QueryCreateManager {
     }
     this.data.questions[question.index].options.push(empty_option)
     this._build_question_from_data()
+    this.validate_inputs()
+    this._set_errors_message()
   }
 
   _click_question_max_answers_menu(event) {

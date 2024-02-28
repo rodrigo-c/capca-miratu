@@ -708,4 +708,10 @@
     font-weight: 700;
     user-select: none;
   }
+
+  .error-label {
+    color: $error;
+    font-size: 1.3vh;
+    padding: 0 1vw;
+  }
 }
