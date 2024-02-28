@@ -1,22 +1,12 @@
-class QueryCreateManager {
+class QueryEditBase {
   constructor ({manager = null}) {
     this.manager = manager
-    this.data = {
-        name: null,
-        description: null,
-        send_at: null,
-        end_at: null,
-        active: false,
-        questions: [],
-    }
     this.letters = "ABCDEFGHIJKLMNOPQRSTUXYZ"
     this.required_fields = ["name"]
+    this.data = this._get_default_data()
     this.errors = {}
-    this.can_publish = false
     this.buttons = {}
-    this.query_inputs = {}
 
-    //bind event methods
     this._click_more_attributes = this._click_more_attributes.bind(this)
     this._click_publish = this._click_publish.bind(this)
 
@@ -25,35 +15,40 @@ class QueryCreateManager {
     this._move_question_ondragstart = this._move_question_ondragstart.bind(this)
     this._move_question_ondragend = this._move_question_ondragend.bind(this)
     this._move_question_ondrop = this._move_question_ondrop.bind(this)
+    this._click_remove_question = this._click_remove_question.bind(this)
+
     this._click_question_add_option = this._click_question_add_option.bind(this)
     this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
-    this._click_remove_question = this._click_remove_question.bind(this)
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
+
+    this._set_initial()
     this._set_more_attrs()
     this._set_publish_button()
     this._set_create_question_button()
     this._set_query_inputs()
-
   }
 
-  show_view(on_history) {
-    this.manager.engine._hide_all_views()
-    this._clean_data()
-    this.manager.engine.views.query_create.classList.remove("hidden")
-    if (on_history) {
-      this.manager.engine._set_url_params("query-create", null)
+  _get_default_data () {
+    return {
+        name: null,
+        description: null,
+        send_at: null,
+        end_at: null,
+        active: false,
+        questions: [],
     }
   }
+  _set_initial() {}
 
   _set_more_attrs() {
-    let button = document.querySelector("#query-create-more-attrs-button")
+    let button = document.querySelector(`#query-${this.view_type}-more-attrs-button`)
     button.addEventListener("click", this._click_more_attributes, false)
   }
 
   _click_more_attributes (event) {
-    let moreattrs = document.querySelector("#query-create-more-attrs")
-    let button = document.querySelector("#query-create-more-attrs-button")
+    let moreattrs = document.querySelector(`#query-${this.view_type}-more-attrs`)
+    let button = document.querySelector(`#query-${this.view_type}-more-attrs-button`)
     if (moreattrs.classList.contains("hidden")) {
       moreattrs.classList.remove("hidden")
       button.classList.add("active")
@@ -64,8 +59,7 @@ class QueryCreateManager {
   }
 
   _set_publish_button () {
-    let publish = document.querySelector("#create-query-button")
-    let new_question = document.querySelector("#create-question-button")
+    let publish = document.querySelector(`#${this.view_type}-query-button`)
     publish.disabled = true
     publish.classList.add("disabled")
     publish.addEventListener("click", this._click_publish, false)
@@ -75,68 +69,37 @@ class QueryCreateManager {
   _click_publish(event) {
     if (event.target.disabled == false) {
       this.manager.engine._set_loading()
-      fetch(this.manager.url_base, {
-        method: "POST",
-        body: JSON.stringify(this.data),
-        headers: {"Content-Type": "application/json", "X-CSRFToken": this.manager.engine.csrf_token},
-        credentials: "same-origin"
-      })
-      .then((response) => {
-        if (response.ok) {
-          response.json()
-          .then((data)=> {
-            if (data.uuid) {
-              this.manager.engine.cursor.key = data.uuid
-              this.manager.engine.show_view("query-detail", true)
-              this._clean_data()
-            } else {
-              console.log(data)
-            }
-          })
-        } else {
-          response.json()
-          .then((data)=> {
-            this.errors = {...this.errors, ...data}
-            this._set_errors_message()
-            this.manager.engine._hide_all_views()
-            this.manager.engine.views.query_create.classList.remove("hidden")
-          })
-        }
-      })
+      this.execute_service()
     }
   }
 
+  execute_service () {}
+
   _clean_data() {
-    this.data = {
-      name: null,
-      description: null,
-      send_at: null,
-      end_at: null,
-      active: false,
-      questions: [],
-    }
+    this.data = this._get_default_data()
     this._build_question_from_data()
   }
 
   _set_query_inputs() {
-    let name = document.querySelector("#query-create-name")
-    let description = document.querySelector("#query-create-description")
-    let start_at = document.querySelector(".query-draft .start-at-input")
-    let end_at = document.querySelector(".query-draft .end-at-input")
-    let active = document.querySelector("#query-create-active")
-    let auth_email = document.querySelector("#query-create-auth-email")
-    let auth_rut = document.querySelector("#query-create-auth-rut")
+    let name = document.querySelector(`#query-${this.view_type}-name`)
+    let description = document.querySelector(`#query-${this.view_type}-description`)
+    let start_at = document.querySelector(`.query-draft .start-at-input`)
+    let end_at = document.querySelector(`.query-draft .end-at-input`)
+    let active = document.querySelector(`#query-${this.view_type}-active`)
+    let auth_email = document.querySelector(`#query-${this.view_type}-auth-email`)
+    let auth_rut = document.querySelector(`#query-${this.view_type}-auth-rut`)
     this._change_input = this._change_input.bind(this)
     for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut]) {
       input.field = input.getAttribute("field")
       input.addEventListener("input", this._change_input, false)
-      this.query_inputs[input.field] = input
+      if (this.data[input.field]) {
+        input.value = this.data[input.field]
+      }
     }
     this.error_containers = {}
-    let base_id = "query-create"
     for (let field in this.data) {
       if (field != "questions") {
-        let container = document.querySelector(`#${base_id}-${field}-error`)
+        let container = document.querySelector(`#query-${this.view_type}-${field}-error`)
         if (container) {
           this.error_containers[field] = container
         }
@@ -145,7 +108,6 @@ class QueryCreateManager {
   }
 
   _set_errors_message() {
-    let base_id = "query-create"
     for (let field in this.error_containers) {
       if (field != "questions") {
         this.error_containers[field].innerText = ""
@@ -288,11 +250,11 @@ class QueryCreateManager {
   }
 
   _set_create_question_button() {
-    let button = document.querySelector("#create-question-button")
+    let button = document.querySelector(`#query-${this.view_type}-create-question-button`)
     button.addEventListener("click", this._dropdown_create_question, false)
     button.disabled = false
     this.buttons.new_question = button
-    let kinds = Array.from(document.querySelectorAll("#create-question-options .dropdown-item"))
+    let kinds = Array.from(document.querySelectorAll(`#query-${this.view_type}-create-question-kinds .dropdown-item`))
     for (let kind of kinds) {
       kind.kind = kind.getAttribute("kind")
       kind.type = kind.getAttribute("type")
@@ -301,7 +263,7 @@ class QueryCreateManager {
   }
 
   _dropdown_create_question(event) {
-    let dropdown = document.querySelector("#create-question-options")
+    let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
     if (!event.target.disabled) {
       if (dropdown.classList.contains("hidden")) {
         dropdown.classList.remove("hidden")
@@ -329,12 +291,12 @@ class QueryCreateManager {
     }
     this.data.questions.push(question)
     this._build_question_from_data()
-    let dropdown = document.querySelector("#create-question-options")
+    let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
     dropdown.classList.add("hidden")
   }
 
   _build_question_from_data() {
-    let questions_container = document.querySelector("#create-questions-tab")
+    let questions_container = document.querySelector(`#query-${this.view_type}-questions-tab`)
     questions_container.innerHTML = ""
     let index = 0
     for (let question_data of this.data.questions) {
@@ -350,7 +312,7 @@ class QueryCreateManager {
     this.validate_inputs()
   }
 
-  _get_question_id(index) { return `question-item-${index}` }
+  _get_question_id(index) { return `query-${this.view_type}-question-item-${index}` }
 
   _create_question_element(question_data, index) {
     let question_id = this._get_question_id(index)
@@ -367,19 +329,19 @@ class QueryCreateManager {
         </div>
         <div class="question-item-content">
           <input class="question-item-name"
-                 id="${question_id}-name-input"
+                 id="query-${this.view_type}-${question_id}-name-input"
                  type="text"
                  field="name"
                  placeholder="Escribe tu pregunta aquí">
           </input>
-          <div class="error-label" id="query-create-question-${index}-name-error"></div>
+          <div class="error-label" id="query-${this.view_type}-question-${index}-name-error"></div>
           <input class="question-item-description"
-                 id="${question_id}-description-input"
+                 id="query-${this.view_type}-${question_id}-description-input"
                  type="text"
                  field="description"
                  placeholder="Agrega una descripción para esta pregunta (opcional)">
           </input>
-          <div class="error-label" id="query-create-question-${index}-description-error"></div>
+          <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
         </div>
         <div class="question-item-actions">
           <div class="action-delete"><i class="icon trash"></i></div>
@@ -387,7 +349,7 @@ class QueryCreateManager {
             <label class="action-checkbox">
               <div class="action-label">Obligatorio</div>
               <input type="checkbox"
-                     id="${question_id}-required-input"
+                     id="query-${this.view_type}-${question_id}-required-input"
                      field="required"
                      class="action-checkbox-input">
               </input>
@@ -415,7 +377,7 @@ class QueryCreateManager {
   _prepare_question_inputs(question, question_data, fields) {
     let question_id = this._get_question_id(question.index)
     for (let field of fields) {
-      let element = question.querySelector(`#${question_id}-${field}-input`)
+      let element = question.querySelector(`#query-${this.view_type}-${question_id}-${field}-input`)
       element.field = field
       element.index = question.index
       element.question = true
@@ -442,7 +404,7 @@ class QueryCreateManager {
     }
     for (let field of fields) {
       this.error_containers.questions[question.index][field] = question.querySelector(
-        `#${base_id}-question-${question.index}-${field}-error`
+        `#query-${this.view_type}-question-${question.index}-${field}-error`
       )
     }
   }
@@ -459,7 +421,7 @@ class QueryCreateManager {
     options_container.classList.add(".question-options-container")
     options_container.innerHTML = `
       <div class="question-option-list"></div>
-      <div class="error-label" id="query-create-question-${question.index}-options-error"></div>
+      <div class="error-label" id="query-${this.view_type}-question-${question.index}-options-error"></div>
       <div class="question-option-add">+ Agregar opción</div>
     `
     let question_add_button = options_container.querySelector(".question-option-add")
@@ -471,7 +433,7 @@ class QueryCreateManager {
     for (let option_data of this.data.questions[question.index].options) {
       let option = document.createElement("div")
       option.classList.add("question-option")
-      let option_id = `question-option-${question.index}-${option_index}`
+      let option_id = `query-${this.view_type}-question-option-${question.index}-${option_index}`
       option.innerHTML = `
         <div class="question-option-label">${this.letters[option_index]}.</div>
         <input id="${option_id}" type="text" class="question-option-input" placeholder="Opción ${option_index + 1}">
@@ -582,14 +544,14 @@ class QueryCreateManager {
 
   _move_question_ondragstart(event) {
     let question = event.target.closest(".question-item")
-    let questions_container = document.querySelector("#create-questions-tab")
+    let questions_container = document.querySelector(`#${this.view_type}-questions-tab`)
     this.current_pos = question.index
     setTimeout(()=> { question.style.display = "none"}, 0)
     questions_container.style.heigth = questions_container.clientHeigth - question.clientHeigth + "px"
   }
 
   _move_question_ondragend (event) {
-    let questions_container = document.querySelector("#create-questions-tab")
+    let questions_container = document.querySelector(`#${this.view_type}-questions-tab`)
     for (let question of questions_container.children) {
       question.style.display = "flex"
       question.querySelector(".question-move-previous").classList.remove("active")
@@ -629,7 +591,53 @@ class QueryCreateManager {
       index += 1
     }
   }
+}
 
+
+class QueryCreateManager extends QueryEditBase {
+  _set_initial() {
+    this.view_type = "create"
+  }
+
+  execute_service() {
+    fetch(this.manager.url_base, {
+      method: "POST",
+      body: JSON.stringify(this.data),
+      headers: {"Content-Type": "application/json", "X-CSRFToken": this.manager.engine.csrf_token},
+      credentials: "same-origin"
+    })
+    .then((response) => {
+      if (response.ok) {
+        response.json()
+        .then((data)=> {
+          if (data.uuid) {
+            this.manager.engine.cursor.key = data.uuid
+            this.manager.engine.show_view("query-detail", true)
+            this._clean_data()
+          } else {
+            console.log(data)
+          }
+        })
+      } else {
+        response.json()
+        .then((data)=> {
+          this.errors = {...this.errors, ...data}
+          this._set_errors_message()
+          this.manager.engine._hide_all_views()
+          this.manager.engine.views.query_create.classList.remove("hidden")
+        })
+      }
+    })
+  }
+
+  show_view(on_history) {
+    this.manager.engine._hide_all_views()
+    this._clean_data()
+    this.manager.engine.views.query_create.classList.remove("hidden")
+    if (on_history) {
+      this.manager.engine._set_url_params("query-create", null)
+    }
+  }
 
 }
 

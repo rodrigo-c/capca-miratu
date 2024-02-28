@@ -1,6 +1,6 @@
 import {QueryListManager} from "./list.js"
 import {QueryDetailManager} from "./detail.js"
-import {QueryCreateManager} from "./create.js"
+import {QueryCreateManager} from "./edit.js"
 
 
 class QueryManager {
