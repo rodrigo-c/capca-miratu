@@ -34,3 +34,7 @@ def bulk_update_question_options(data_list: list[dict]) -> list[QuestionOption]:
     return QuestionOption.objects.bulk_update(
         objs=instances, fields=QUESTION_OPTION_FIELDS
     )
+
+
+def delete_question_option_by_uuids(uuids: list[UUID]) -> None:
+    return QuestionOption.objects.filter(id__in=uuids).delete()
