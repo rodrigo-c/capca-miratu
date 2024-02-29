@@ -43,9 +43,13 @@ def bulk_update_questions(data_list: list[dict]) -> list[Question]:
         instance_kwargs = {
             field: data[field] for field in QUESTION_FIELDS if field in data
         }
-        fields_for_update.add(*list(instance_kwargs))
+        fields_for_update = fields_for_update | set(list(instance_kwargs))
         instance_kwargs["id"] = data["uuid"]
         instance_kwargs["query_id"] = data["query_uuid"]
         instance = Question(**instance_kwargs)
         instances.append(instance)
     return Question.objects.bulk_update(objs=instances, fields=list(fields_for_update))
+
+
+def delete_question_by_uuids(uuids: list[UUID]) -> None:
+    Question.objects.filter(id__in=uuids).delete()
