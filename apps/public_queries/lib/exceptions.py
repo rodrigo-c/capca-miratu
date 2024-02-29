@@ -22,3 +22,7 @@ class CantSubmitPublicQueryError(Exception):
 
 class PublicQueryCreateError(Exception):
     pass
+
+
+class PublicQueryUpdateError(Exception):
+    pass
