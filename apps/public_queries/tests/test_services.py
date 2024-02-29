@@ -27,6 +27,7 @@ from apps.public_queries.lib.exceptions import (
     CantSubmitPublicQueryError,
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
+    PublicQueryUpdateError,
     QuestionDoesNotExist,
 )
 from apps.public_queries.tests.recipes import (
@@ -210,6 +211,10 @@ class TestUpdatePublicQuery:
         assert options[-1].name == new_name_question_select
         assert options[0].name == new_name_question_select
         assert options[0].id != removed_question_option_uuid
+
+    def test_error(self):
+        with pytest.raises(PublicQueryUpdateError):
+            services.update_public_query(query_data={})
 
 
 @pytest.mark.django_db

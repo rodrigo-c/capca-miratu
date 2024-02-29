@@ -54,8 +54,6 @@ def create_public_query(query_data: PublicQueryData) -> PublicQueryData:
 def update_public_query(query_data: PublicQueryData) -> PublicQueryData:
     try:
         created_query = PublicQueryFactory(data=query_data).update()
-    except PublicQueryDoesNotExist as error:
-        raise error
     except Exception as error:
         raise PublicQueryUpdateError(error)
     return created_query
