@@ -4,6 +4,17 @@ from django.db.models import QuerySet
 
 from apps.public_queries.models import Question
 
+QUESTION_FIELDS = [
+    "kind",
+    "name",
+    "description",
+    "order",
+    "required",
+    "text_max_length",
+    "max_answers",
+    "min_answers",
+]
+
 
 def get_questions_by_public_query_uuid(uuid: UUID) -> "QuerySet[Question]":
     return Question.objects.filter(query_id=uuid)
@@ -14,20 +25,27 @@ def get_question_by_uuid(uuid: UUID) -> Question:
 
 
 def bulk_create_questions(data_list: list[dict]) -> list[Question]:
-    fields = [
-        "kind",
-        "name",
-        "description",
-        "order",
-        "required",
-        "text_max_length",
-        "max_answers",
-        "min_answers",
-    ]
     instances = []
     for data in data_list:
-        instance_kwargs = {field: data[field] for field in fields if field in data}
+        instance_kwargs = {
+            field: data[field] for field in QUESTION_FIELDS if field in data
+        }
         instance_kwargs["query_id"] = data["query_uuid"]
         instance = Question(**instance_kwargs)
         instances.append(instance)
     return Question.objects.bulk_create(objs=instances)
+
+
+def bulk_update_questions(data_list: list[dict]) -> list[Question]:
+    instances = []
+    fields_for_update = set()
+    for data in data_list:
+        instance_kwargs = {
+            field: data[field] for field in QUESTION_FIELDS if field in data
+        }
+        fields_for_update.add(*list(instance_kwargs))
+        instance_kwargs["id"] = data["uuid"]
+        instance_kwargs["query_id"] = data["query_uuid"]
+        instance = Question(**instance_kwargs)
+        instances.append(instance)
+    return Question.objects.bulk_update(objs=instances, fields=list(fields_for_update))
