@@ -42,6 +42,8 @@ class PublicQuerySerializer(serializers.Serializer):
     image = serializers.CharField(required=False)
     questions = serializers.ListField(child=QuestionSerializer())
     url_code = serializers.CharField()
+    auth_email = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
+    auth_rut = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
 
 
 class AnswerSerializer(serializers.Serializer):
