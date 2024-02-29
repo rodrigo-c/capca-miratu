@@ -126,3 +126,12 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
                 QuestionOptionData(uuid=None, question_uuid=None, **option)
                 for option in question["options"]
             ]
+
+
+class UpdateQuestionSerializer(CreateQuestionSerializer):
+    uuid = serializers.UUIDField(required=False)
+
+
+class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
+    uuid = serializers.UUIDField(required=True)
+    questions = serializers.ListField(child=UpdateQuestionSerializer(), min_length=1)
