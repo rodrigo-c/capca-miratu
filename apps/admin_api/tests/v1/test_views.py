@@ -4,7 +4,10 @@ from unittest import mock
 import pytest
 from django.urls import reverse
 
-from apps.public_queries.lib.constants import CreatePublicQueryConstants
+from apps.public_queries.lib.constants import (
+    CreatePublicQueryConstants,
+    PublicQueryConstants,
+)
 from apps.public_queries.tests.recipes import (
     make_public_query_data,
     public_query_recipe,
@@ -82,3 +85,68 @@ class TestPublicQueryManager:
             str(response.data["non_field_errors"][0])
             == CreatePublicQueryConstants.INVALID_START_END_AT
         )
+
+    def test_update_success(self, api_client, user, ended_public_query):
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-detail", kwargs={"pk": ended_public_query.url_code}
+        )
+        data = self.get_update_data(public_query=ended_public_query)
+        response = api_client.put(url, data=data, format="json")
+        assert response.status_code == 200
+        ended_public_query.refresh_from_db()
+        for field, value in data.items():
+            if field != "questions":
+                assert getattr(ended_public_query, field) == value
+        refreshed_questions = list(ended_public_query.questions.all())
+        for index, question in enumerate(refreshed_questions):
+            assert question.name == f"Question {index}"
+            if question.kind == "SELECT":
+                assert question.options.first().name == "new"
+
+    @mock.patch("apps.public_queries.providers.question.bulk_update_questions")
+    def test_update_error(
+        self, mock_update_public_query, api_client, user, ended_public_query
+    ):
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-detail", kwargs={"pk": ended_public_query.url_code}
+        )
+        mock_update_public_query.side_effect = ValueError
+        data = self.get_update_data(ended_public_query)
+        response = api_client.put(url, data=data, format="json")
+        assert response.status_code == 400
+
+    def get_update_data(self, public_query):
+        data = {
+            "name": "public_query_modified",
+            "description": "_modified",
+            "active": not public_query.active,
+            "max_responses": 10,
+            "auth_rut": PublicQueryConstants.AUTH_REQUIRED,
+            "auth_email": PublicQueryConstants.AUTH_REQUIRED,
+        }
+        questions = []
+        for index, question in enumerate(public_query.questions.all()):
+            question_data = {
+                "kind": question.kind,
+                "query_uuid": public_query.id,
+                "uuid": question.id if index > 0 else None,
+                "name": f"Question {index}",
+                "description": question.description,
+                "order": index,
+                "required": question.required,
+            }
+            if question.kind == "SELECT":
+                question_data["options"] = [
+                    {
+                        "name": option.name if i > 0 else "new",
+                        "uuid": option.id if i > 0 else None,
+                        "question_uuid": question.id,
+                        "order": i,
+                    }
+                    for i, option in enumerate(question.options.all())
+                ]
+            questions.append(question_data)
+        data["questions"] = questions
+        return data
