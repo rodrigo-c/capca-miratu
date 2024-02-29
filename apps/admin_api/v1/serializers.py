@@ -112,13 +112,18 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
     def get_dataclass(self) -> PublicQueryData:
         questions = [
             QuestionData(
-                uuid=None,
-                query_uuid=None,
-                **{**question, "options": self._get_options(question)}
+                **{
+                    **question,
+                    "uuid": question.get("uuid"),
+                    "query_uuid": question.get("query_uuid"),
+                    "options": self._get_options(question),
+                }
             )
             for question in self.data["questions"]
         ]
-        return PublicQueryData(uuid=None, **{**self.data, "questions": questions})
+        return PublicQueryData(
+            **{**self.data, "uuid": self.data.get("uuid"), "questions": questions}
+        )
 
     def _get_options(self, question: dict) -> list[QuestionOptionData]:
         if question.get("options") is not None:
@@ -129,7 +134,7 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
 
 
 class UpdateQuestionSerializer(CreateQuestionSerializer):
-    uuid = serializers.UUIDField(required=False)
+    uuid = serializers.UUIDField(required=False, allow_null=True)
 
 
 class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
