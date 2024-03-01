@@ -45,6 +45,9 @@ class PublicQuerySerializer(serializers.Serializer):
     auth_email = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
     auth_rut = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
     max_responses = serializers.IntegerField(default=0)
+    status_verbose = serializers.DictField(
+        child=serializers.CharField(), allow_empty=True, required=False
+    )
 
 
 class AnswerSerializer(serializers.Serializer):
