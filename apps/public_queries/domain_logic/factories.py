@@ -242,9 +242,11 @@ class PublicQueryFactory:
                 index=index,
             )
             question_data_list.append(question_data)
+        public_query.refresh_from_db()
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
             instance=public_query,
             uuid=public_query.id,
             questions=question_data_list,
+            status_verbose=None,
         )

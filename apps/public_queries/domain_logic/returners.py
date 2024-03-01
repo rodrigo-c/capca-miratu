@@ -2,8 +2,9 @@ from collections import defaultdict
 from uuid import UUID
 
 from django.conf import settings
+from django.utils import timezone
 
-from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
 from apps.public_queries.lib.dataclasses import (
     PublicQueryData,
     QuestionData,
@@ -81,13 +82,27 @@ class PublicQueryReturner:
                 )
                 for index, question in enumerate(question_queryset)
             ]
+        status_verbose = self._get_status_verbose(instance=instance)
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
             instance=instance,
             uuid=instance.id,
             image=instance.image.url if instance.image else None,
             questions=questions or None,
+            status_verbose=status_verbose,
         )
+
+    def _get_status_verbose(self, instance: PublicQuery) -> str:
+        now = timezone.now()
+        if instance.is_active:
+            code = PublicQueryConstants.STATUS_VERBOSE_ACTIVE
+        elif instance.active and instance.end_at and now > instance.end_at:
+            code = PublicQueryConstants.STATUS_VERBOSE_FINISHED
+        elif instance.active and instance.start_at and now < instance.start_at:
+            code = PublicQueryConstants.STATUS_VERBOSE_EARRING
+        else:
+            code = PublicQueryConstants.STATUS_VERBOSE_DRAFT
+        return {"code": code, "label": PublicQueryConstants.STATUS_VERBOSE_LABELS[code]}
 
     def get_responses_data(self) -> list[dict]:
         responses_map = self.public_query.responses.in_bulk()
