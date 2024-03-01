@@ -105,7 +105,7 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
             and data["start_at"] >= data["end_at"]
         ):
             raise serializers.ValidationError(
-                CreatePublicQueryConstants.INVALID_START_END_AT
+                {"start_at": CreatePublicQueryConstants.INVALID_START_END_AT}
             )
         return data
 

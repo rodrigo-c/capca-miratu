@@ -82,7 +82,7 @@ class TestPublicQueryManager:
         response = api_client.post(url, data=data, format="json")
         assert response.status_code == 400
         assert (
-            str(response.data["non_field_errors"][0])
+            str(response.data["start_at"][0])
             == CreatePublicQueryConstants.INVALID_START_END_AT
         )
 
