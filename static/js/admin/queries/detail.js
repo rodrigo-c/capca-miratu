@@ -10,6 +10,7 @@ class QueryDetailManager {
     this.charts = {
       summary: null
     }
+    this._click_query_edit = this._click_query_edit.bind(this)
   }
 
   show_view(on_history) {
@@ -30,7 +31,7 @@ class QueryDetailManager {
         })
       } else {
         console.log(response)
-        this._set_query_list_in_view(on_history)
+        this.manager.engine.show_view("query-list", false)
       }
     })
   }
@@ -42,11 +43,17 @@ class QueryDetailManager {
     document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
     document.querySelector("#detail-action-map").setAttribute("href", this.data.links.map)
     document.querySelector("#detail-action-data").setAttribute("href", this.data.links.data)
+    let edit_button = document.querySelector("#detail-action-edit")
+    edit_button.addEventListener("click", this._click_query_edit, false)
     this._clean()
     this._set_summary()
     this._set_questions()
     this.manager.engine._hide_all_views()
     this.manager.engine.views.query_detail.classList.remove("hidden")
+  }
+
+  _click_query_edit (event) {
+    this.manager.engine.show_view("query-update", true)
   }
 
   _set_summary () {

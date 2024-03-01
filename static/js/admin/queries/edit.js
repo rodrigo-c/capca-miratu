@@ -4,6 +4,7 @@ class QueryEditBase {
     this.letters = "ABCDEFGHIJKLMNOPQRSTUXYZ"
     this.required_fields = ["name"]
     this.data = this._get_default_data()
+    this.inputs = {}
     this.errors = {}
     this.buttons = {}
 
@@ -33,12 +34,15 @@ class QueryEditBase {
     return {
         name: null,
         description: null,
-        send_at: null,
+        start_at: null,
         end_at: null,
         active: false,
         questions: [],
+        auth_rut: "OPTIONAL",
+        auth_email: "OPTIONAL",
     }
   }
+
   _set_initial() {}
 
   _set_more_attrs() {
@@ -83,8 +87,8 @@ class QueryEditBase {
   _set_query_inputs() {
     let name = document.querySelector(`#query-${this.view_type}-name`)
     let description = document.querySelector(`#query-${this.view_type}-description`)
-    let start_at = document.querySelector(`.query-draft .start-at-input`)
-    let end_at = document.querySelector(`.query-draft .end-at-input`)
+    let start_at = document.querySelector(`#query-${this.view_type}-start_at`)
+    let end_at = document.querySelector(`#query-${this.view_type}-end_at`)
     let active = document.querySelector(`#query-${this.view_type}-active`)
     let auth_email = document.querySelector(`#query-${this.view_type}-auth-email`)
     let auth_rut = document.querySelector(`#query-${this.view_type}-auth-rut`)
@@ -92,9 +96,7 @@ class QueryEditBase {
     for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut]) {
       input.field = input.getAttribute("field")
       input.addEventListener("input", this._change_input, false)
-      if (this.data[input.field]) {
-        input.value = this.data[input.field]
-      }
+      this.inputs[input.field] = input
     }
     this.error_containers = {}
     for (let field in this.data) {
@@ -105,6 +107,7 @@ class QueryEditBase {
         }
       }
     }
+    this.error_containers["times"] = document.querySelector(`#query-${this.view_type}-times-error`)
   }
 
   _set_errors_message() {
@@ -120,8 +123,10 @@ class QueryEditBase {
       }
     }
     for (let field in this.errors) {
-      if (field != "questions") {
+      if (!["questions", "start_at", "end_at"].includes(field)) {
         this.error_containers[field].innerText = this.errors[field]
+      } else if (["start_at", "end_at"].includes(field)) {
+        this.error_containers.times.innerText = this.errors[field]
       } else if (typeof this.errors[field] == "object") {
         for (let index in this.errors[field]) {
           for (let question_field in this.errors[field][index]) {
@@ -134,7 +139,7 @@ class QueryEditBase {
 
   _change_input (event) {
     let field = event.target.field
-    let value = event.target.value
+    let value = event.target.value != ""? event.target.value: null
     if (event.target.question) {
       if (field == "required") {
         value = event.target.checked? true: false
@@ -173,6 +178,9 @@ class QueryEditBase {
       } else {
         let value = this.data[field]
         this._val_field_value_is_required(field, value)
+        if (value && ["start_at", "end_at"].includes(field)) {
+          this._val_date_field_value(field, value)
+        }
       }
     }
     if (this.errors.questions && this.errors.questions.length == 0) {
@@ -194,6 +202,17 @@ class QueryEditBase {
     } else {
       this.buttons.publish.classList.add("disabled")
       this.buttons.publish.disabled = true
+    }
+  }
+
+  _val_date_field_value(field, value) {
+    let start_at = this.data["start_at"]? new Date(this.data["start_at"]): null
+    let end_at = this.data["end_at"]? new Date(this.data["end_at"]): null
+    if (start_at && end_at && start_at >= end_at) {
+      let message = "La fecha de inicio debe ser menor que la de término"
+      this._set_field_error(field, message)
+    } else {
+      this._clean_field_error("start_at")
     }
   }
 
@@ -544,14 +563,14 @@ class QueryEditBase {
 
   _move_question_ondragstart(event) {
     let question = event.target.closest(".question-item")
-    let questions_container = document.querySelector(`#${this.view_type}-questions-tab`)
+    let questions_container = document.querySelector(`#query-${this.view_type}-questions-tab`)
     this.current_pos = question.index
     setTimeout(()=> { question.style.display = "none"}, 0)
     questions_container.style.heigth = questions_container.clientHeigth - question.clientHeigth + "px"
   }
 
   _move_question_ondragend (event) {
-    let questions_container = document.querySelector(`#${this.view_type}-questions-tab`)
+    let questions_container = document.querySelector(`#query-${this.view_type}-questions-tab`)
     for (let question of questions_container.children) {
       question.style.display = "flex"
       question.querySelector(".question-move-previous").classList.remove("active")
@@ -599,6 +618,15 @@ class QueryCreateManager extends QueryEditBase {
     this.view_type = "create"
   }
 
+  show_view(on_history) {
+    this.manager.engine._hide_all_views()
+    this._clean_data()
+    this.manager.engine.views.query_create.classList.remove("hidden")
+    if (on_history) {
+      this.manager.engine._set_url_params("query-create", null)
+    }
+  }
+
   execute_service() {
     fetch(this.manager.url_base, {
       method: "POST",
@@ -629,16 +657,115 @@ class QueryCreateManager extends QueryEditBase {
       }
     })
   }
-
-  show_view(on_history) {
-    this.manager.engine._hide_all_views()
-    this._clean_data()
-    this.manager.engine.views.query_create.classList.remove("hidden")
-    if (on_history) {
-      this.manager.engine._set_url_params("query-create", null)
-    }
-  }
-
 }
 
-export {QueryCreateManager}
+class QueryUpdateManager extends QueryEditBase {
+  _set_initial() {
+    this.view_type = "update"
+  }
+
+  show_view(on_history) {
+    fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}`, {
+      method: "GET",
+      headers: {"Content-Type": "application/json"},
+      credentials: "same-origin"
+    })
+    .then(response=> {
+      if (response.ok) {
+        response.json()
+        .then((data)=> {
+          this._set_in_view(data)
+          if (on_history) {
+            this.manager.engine._set_url_params("query-update", data.query.url_code)
+          }
+        })
+      } else {
+        console.log(response)
+        this.manager.engine.show_view("query-list", false)
+      }
+    })
+  }
+
+  execute_service () {
+    fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}/`, {
+      method: "PUT",
+      body: JSON.stringify(this.data),
+      headers: {"Content-Type": "application/json", "X-CSRFToken": this.manager.engine.csrf_token},
+      credentials: "same-origin"
+    })
+    .then((response) => {
+      if (response.ok) {
+        response.json()
+        .then((data)=> {
+          if (data.uuid) {
+            this.manager.engine.cursor.key = data.uuid
+            this.manager.engine.show_view("query-detail", true)
+            this._clean_data()
+          } else {
+            console.log(data)
+          }
+        })
+      } else {
+        response.json()
+        .then((data)=> {
+          this.errors = {...this.errors, ...data}
+          this._set_errors_message()
+          this.manager.engine._hide_all_views()
+          this.manager.engine.views.query_update.classList.remove("hidden")
+        })
+      }
+    })
+  }
+
+  _set_in_view (data) {
+    this.data = {
+        uuid: data.query.uuid,
+        name: data.query.name,
+        description: data.query.description,
+        start_at: data.query.start_at,
+        end_at: data.query.end_at,
+        active: data.query.active,
+        auth_email: data.query.auth_email,
+        auth_rut: data.query.auth_rut,
+        questions: [],
+    }
+    let questions = Array.isArray(data.query.questions)? data.query.questions: []
+    for (let question of questions) {
+      let cleaned_question = this._get_cleaned_question(question)
+      this.data.questions.push(cleaned_question)
+    }
+    for (let field in this.inputs) {
+      let input = this.inputs[field]
+      if (["start_at", "end_at"].includes(field) && this.data[field]) {
+        input.value = new Date(this.data[field]).toISOString().split('T')[0]
+      } else {
+        input.value = this.data[field]
+      }
+    }
+    this._build_question_from_data()
+    this.manager.engine._hide_all_views()
+    this.manager.engine.views.query_update.classList.remove("hidden")
+  }
+
+  _get_cleaned_question (question) {
+    let cleaned_question = {
+      uuid: question.uuid,
+      kind: question.kind,
+      name: question.name,
+      description: question.description,
+      required: question.required,
+      order: question.order,
+    }
+    if (question.kind == "TEXT") {
+      cleaned_question.text_max_length = question.text_max_length
+    }
+    if (question.kind == "SELECT") {
+      cleaned_question.max_answers = question.max_answers
+      cleaned_question.options = question.options
+    }
+    return cleaned_question
+  }
+}
+
+
+export {QueryCreateManager, QueryUpdateManager}

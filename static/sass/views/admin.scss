@@ -185,6 +185,7 @@
       color: $error;
     }
 
+    &.earring,
     &.draft {
       border: 2px solid $secondary;
       color: $secondary;
@@ -367,6 +368,7 @@
     }
   }
 
+  .query-update-content,
   .query-create-content {
     height: 80vh;
     overflow-y: scroll;
@@ -389,6 +391,7 @@
   .query-draft {
     display: flex;
 
+    .query-item.update,
     .query-item.create {
       flex-basis: 70%;
     }
@@ -450,6 +453,7 @@
     }
   }
 
+  .update-questions-tab,
   .create-questions-tab {
     display: flex;
     flex-direction: column;
