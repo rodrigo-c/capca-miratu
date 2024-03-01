@@ -15,11 +15,17 @@
                     <div class="times">
                         <div class="start-at">
                             <div class="time-label">Desde:</div>
-                            <input class="start-at-input" type="date" field="start_at">
+                            <input class="start-at-input"
+                                   type="date"
+                                   field="start_at"
+                                   id="query-{{ view_type }}-start_at">
                         </div>
                         <div class="end-at">
                             <div class="time-label">Hasta:</div>
-                            <input class="end-at-input" type="date" field="end_at">
+                            <input class="end-at-input"
+                                   type="date"
+                                   field="end_at"
+                                   id="query-{{ view_type }}-end_at">
                         </div>
                     </div>
                     <div class="error-label" id="query-{{ view_type }}-times-error"></div>
@@ -58,7 +64,7 @@
                         <option value="REQUIRED">Requerido</option>
                         <option value="DISABLED">Deshabilitado</option>
                     </select>
-                    <div class="error-label" id="query-{{ view_type }}-auth-email-error"></div>
+                    <div class="error-label" id="query-{{ view_type }}-auth_email-error"></div>
                 </div>
                 <div class="attribute with-label">
                     <div class="attribute-label">Solicitar RUT</div>
@@ -67,20 +73,26 @@
                             field="auth_rut">
                         <option value="OPTIONAL">Opcional</option>
                         <option value="REQUIRED">Requerido</option>
-                        <option value="DISABLED">Deshabilitado</option>
+                        <option value="DISABLE">Deshabilitado</option>
                     </select>
-                    <div class="error-label" id="query-{{ view_type }}-auth-rut-error"></div>
+                    <div class="error-label" id="query-{{ view_type }}-auth_rut-error"></div>
                 </div>
             </div>
         </div>
         <div class="rightbar">
-            <div class="sidebar-button" id="{{ view_type }}-query-button">Publicar consulta</div>
+            <div class="sidebar-button" id="{{ view_type }}-query-button">
+                {% if view_type == "create" %}Publicar consulta{% endif %}
+                {% if view_type == "update" %}Guardar consulta{% endif %}
+            </div>
         </div>
     </div>
     <div class="query-components">
         <div class="tabs" id="query-{{ view_type }}-tabs">
             <div class="tab-links">
-                <div class="tab-link active">Crear consulta</div>
+                <div class="tab-link active">
+                    {% if view_type == "create" %}Crear consulta{% endif %}
+                    {% if view_type == "update" %}Editar consulta{% endif %}
+                </div>
             </div>
             <div class="{{ view_type }}-questions-tab"
                  id="query-{{ view_type }}-questions-tab"></div>
