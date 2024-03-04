@@ -31,7 +31,8 @@
             </div>
             {% include "admin/views/query-list.html" %}
             {% include "admin/views/query-detail.html" %}
-            {% include "admin/views/query-create.html" %}
+            {% include "admin/views/query-edit.html" with view_type="create" %}
+            {% include "admin/views/query-edit.html" with view_type="update" %}
         </div>
     </div>
 {% endblock content %}

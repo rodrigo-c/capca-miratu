@@ -23,6 +23,7 @@ from apps.public_queries.lib.dataclasses import (
 from apps.public_queries.lib.exceptions import (
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
+    PublicQueryUpdateError,
     ResponseDoesNotExist,
 )
 from apps.public_queries.models import Response
@@ -47,6 +48,14 @@ def create_public_query(query_data: PublicQueryData) -> PublicQueryData:
         created_query = PublicQueryFactory(data=query_data).create()
     except Exception as error:
         raise PublicQueryCreateError(error)
+    return created_query
+
+
+def update_public_query(query_data: PublicQueryData) -> PublicQueryData:
+    try:
+        created_query = PublicQueryFactory(data=query_data).update()
+    except Exception as error:
+        raise PublicQueryUpdateError(error)
     return created_query
 
 

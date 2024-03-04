@@ -27,6 +27,7 @@ from apps.public_queries.lib.exceptions import (
     CantSubmitPublicQueryError,
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
+    PublicQueryUpdateError,
     QuestionDoesNotExist,
 )
 from apps.public_queries.tests.recipes import (
@@ -159,6 +160,61 @@ class TestCreatePublicQuery:
         with pytest.raises(PublicQueryCreateError) as error:
             services.create_public_query(query_data={})
         assert error.value.__class__ == PublicQueryCreateError
+
+
+@pytest.mark.django_db
+class TestUpdatePublicQuery:
+    def test_success(self, ended_public_query):
+        public_query_data = services.get_public_query(identifier=ended_public_query.id)
+        basic_data_modified = {
+            "name": "public_query_modified",
+            "description": "_modified",
+            "active": not public_query_data.active,
+            "max_responses": 10,
+            "auth_rut": PublicQueryConstants.AUTH_REQUIRED,
+            "auth_email": PublicQueryConstants.AUTH_REQUIRED,
+        }
+        for field, value in basic_data_modified.items():
+            setattr(public_query_data, field, value)
+
+        removed_question_uuid = public_query_data.questions[0].uuid
+        new_question_name = "new_question_name"
+        public_query_data.questions[0].uuid = None
+        public_query_data.questions[0].name = new_question_name
+        for index, question in enumerate(public_query_data.questions):
+            question.order = index
+
+        new_name_question_select = "new select question"
+        public_query_data.questions[2].name = new_name_question_select
+        public_query_data.questions[2].options[-1].name = new_name_question_select
+        removed_question_option_uuid = public_query_data.questions[2].options[0].uuid
+        public_query_data.questions[2].options[0].uuid = None
+        public_query_data.questions[2].options[0].name = new_name_question_select
+        for index, option in enumerate(public_query_data.questions[2].options):
+            option.order = index
+
+        services.update_public_query(query_data=public_query_data)
+
+        ended_public_query.refresh_from_db()
+        for field, value in basic_data_modified.items():
+            assert getattr(ended_public_query, field) == value
+
+        questions = list(ended_public_query.questions.all())
+        assert questions[0].name == new_question_name
+        assert questions[0].id != removed_question_uuid
+        assert questions[1].id == public_query_data.questions[1].uuid
+        assert questions[-1].id == public_query_data.questions[-1].uuid
+        assert questions[2].id == public_query_data.questions[2].uuid
+        assert questions[2].name == new_name_question_select
+        options = list(questions[2].options.all())
+        assert options[-1].id == public_query_data.questions[2].options[-1].uuid
+        assert options[-1].name == new_name_question_select
+        assert options[0].name == new_name_question_select
+        assert options[0].id != removed_question_option_uuid
+
+    def test_error(self):
+        with pytest.raises(PublicQueryUpdateError):
+            services.update_public_query(query_data={})
 
 
 @pytest.mark.django_db

@@ -105,20 +105,25 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
             and data["start_at"] >= data["end_at"]
         ):
             raise serializers.ValidationError(
-                CreatePublicQueryConstants.INVALID_START_END_AT
+                {"start_at": CreatePublicQueryConstants.INVALID_START_END_AT}
             )
         return data
 
     def get_dataclass(self) -> PublicQueryData:
         questions = [
             QuestionData(
-                uuid=None,
-                query_uuid=None,
-                **{**question, "options": self._get_options(question)}
+                **{
+                    **question,
+                    "uuid": question.get("uuid"),
+                    "query_uuid": question.get("query_uuid"),
+                    "options": self._get_options(question),
+                }
             )
             for question in self.data["questions"]
         ]
-        return PublicQueryData(uuid=None, **{**self.data, "questions": questions})
+        return PublicQueryData(
+            **{**self.data, "uuid": self.data.get("uuid"), "questions": questions}
+        )
 
     def _get_options(self, question: dict) -> list[QuestionOptionData]:
         if question.get("options") is not None:
@@ -126,3 +131,12 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
                 QuestionOptionData(uuid=None, question_uuid=None, **option)
                 for option in question["options"]
             ]
+
+
+class UpdateQuestionSerializer(CreateQuestionSerializer):
+    uuid = serializers.UUIDField(required=False, allow_null=True)
+
+
+class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
+    uuid = serializers.UUIDField(required=True)
+    questions = serializers.ListField(child=UpdateQuestionSerializer(), min_length=1)

@@ -1,0 +1,116 @@
+<div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
+    <div class="main-label link" id="link-to-query-list">Todas las consultas</div>
+    <div class="query-{{ view_type }}-content">
+        <div class="query-draft">
+            <div class="query-item {{ view_type }}" id="query-{{ view_type }}-item">
+                <input class="name input"
+                       type="text"
+                       field="name"
+                       placeholder="Escribe un título para la consulta..."
+                       id="query-{{ view_type }}-name">
+            </input>
+            <div class="error-label" id="query-{{ view_type }}-name-error"></div>
+            <div class="content">
+                <div class="attributes">
+                    <div class="times">
+                        <div class="start-at">
+                            <div class="time-label">Desde:</div>
+                            <input class="start-at-input"
+                                   type="date"
+                                   field="start_at"
+                                   id="query-{{ view_type }}-start_at">
+                        </div>
+                        <div class="end-at">
+                            <div class="time-label">Hasta:</div>
+                            <input class="end-at-input"
+                                   type="date"
+                                   field="end_at"
+                                   id="query-{{ view_type }}-end_at">
+                        </div>
+                    </div>
+                    <div class="error-label" id="query-{{ view_type }}-times-error"></div>
+                    <div class="status">
+                        <div class="status-label">Estado actual:</div>
+                        <select class="input status-value"
+                                id="query-{{ view_type }}-active"
+                                field="active">
+                            <option value="false">Borrador</option>
+                            <option value="true">Activa</option>
+                        </select>
+                    </div>
+                    <div class="error-label" id="query-{{ view_type }}-status-error"></div>
+                </div>
+                <div class="actions">
+                    <div class="action-more-attributes-button"
+                         id="query-{{ view_type }}-more-attrs-button">
+                        <i class="icon bottom"></i><span>Opciones</span>
+                    </div>
+                </div>
+            </div>
+            <div class="more-attributes hidden" id="query-{{ view_type }}-more-attrs">
+                <div class="attribute">
+                    <textarea id="query-{{view_type}}-description"
+                              class="attribute-textarea"
+                              field="description"
+                              placeholder="Agrega una descripción..."></textarea>
+                    <div class="error-label" id="query-{{ view_type }}-description-error"></div>
+                </div>
+                <div class="attribute with-label">
+                    <div class="attribute-label">Solicitar correo</div>
+                    <select id="query-{{ view_type }}-auth-email"
+                            class="status-value"
+                            field="auth_email">
+                        <option value="OPTIONAL">Opcional</option>
+                        <option value="REQUIRED">Requerido</option>
+                        <option value="DISABLED">Deshabilitado</option>
+                    </select>
+                    <div class="error-label" id="query-{{ view_type }}-auth_email-error"></div>
+                </div>
+                <div class="attribute with-label">
+                    <div class="attribute-label">Solicitar RUT</div>
+                    <select id="query-{{ view_type }}-auth-rut"
+                            class="status-value"
+                            field="auth_rut">
+                        <option value="OPTIONAL">Opcional</option>
+                        <option value="REQUIRED">Requerido</option>
+                        <option value="DISABLE">Deshabilitado</option>
+                    </select>
+                    <div class="error-label" id="query-{{ view_type }}-auth_rut-error"></div>
+                </div>
+            </div>
+        </div>
+        <div class="rightbar">
+            <div class="sidebar-button" id="{{ view_type }}-query-button">
+                {% if view_type == "create" %}Publicar consulta{% endif %}
+                {% if view_type == "update" %}Guardar consulta{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="query-components">
+        <div class="tabs" id="query-{{ view_type }}-tabs">
+            <div class="tab-links">
+                <div class="tab-link active">
+                    {% if view_type == "create" %}Crear consulta{% endif %}
+                    {% if view_type == "update" %}Editar consulta{% endif %}
+                </div>
+            </div>
+            <div class="{{ view_type }}-questions-tab"
+                 id="query-{{ view_type }}-questions-tab"></div>
+        </div>
+        <div class="rightbar">
+            <div class="dropdown">
+                <div class="sidebar-button"
+                     id="query-{{ view_type }}-create-question-button">Añadir pregunta</div>
+                <div class="dropdown-content hidden"
+                     id="query-{{ view_type }}-create-question-kinds">
+                    <div class="dropdown-item" kind="TEXT" type="short">Texto corto</div>
+                    <div class="dropdown-item" kind="TEXT" type="large">Texto largo</div>
+                    <div class="dropdown-item" kind="SELECT">Selección múltiple</div>
+                    <div class="dropdown-item" kind="IMAGE">Imagen</div>
+                    <div class="dropdown-item" kind="POINT">Ubicación</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

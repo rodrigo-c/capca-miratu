@@ -10,12 +10,14 @@ from rest_framework.viewsets import ViewSet
 from apps.admin_api.v1.serializers import (
     CreatePublicQuerySerializer,
     PublicQueryResultSerializer,
+    UpdatePublicQuerySerializer,
 )
 from apps.public_queries import services as public_queries_services
 from apps.public_queries.lib.dataclasses import PublicQueryData
 from apps.public_queries.lib.exceptions import (
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
+    PublicQueryUpdateError,
 )
 from apps.public_queries_api.v1.serializers.generic import PublicQuerySerializer
 
@@ -51,6 +53,22 @@ class PublicQueryManager(ViewSet):
                 query_data=public_query_data
             )
         except PublicQueryCreateError:
+            raise ValidationError("Unknown error")
+        serializer = PublicQuerySerializer(instance=returned_data)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None) -> Response:
+        public_query = self.get_public_query(identifier=pk)
+        serializer = UpdatePublicQuerySerializer(
+            data={**request.data, "uuid": public_query.uuid}
+        )
+        serializer.is_valid(raise_exception=True)
+        public_query_data = serializer.get_dataclass()
+        try:
+            returned_data = public_queries_services.update_public_query(
+                query_data=public_query_data
+            )
+        except PublicQueryUpdateError:
             raise ValidationError("Unknown error")
         serializer = PublicQuerySerializer(instance=returned_data)
         return Response(serializer.data)

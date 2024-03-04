@@ -1,6 +1,6 @@
 import {QueryListManager} from "./list.js"
 import {QueryDetailManager} from "./detail.js"
-import {QueryCreateManager} from "./create.js"
+import {QueryCreateManager, QueryUpdateManager} from "./edit.js"
 
 
 class QueryManager {
@@ -10,6 +10,7 @@ class QueryManager {
     this.list = new QueryListManager({manager:this})
     this.detail = new QueryDetailManager({manager:this})
     this.create = new QueryCreateManager({manager:this})
+    this.update = new QueryUpdateManager({manager:this})
   }
 
   _create_query_item(item, query_item) {
@@ -28,17 +29,9 @@ class QueryManager {
       }
     }
     let status_value = query_item.querySelector(".status > .status-value")
-    status_value.classList.remove("draft", "finished", "active")
-    if (!item.active) {
-      status_value.textContent = "Borrador"
-      status_value.classList.add("draft")
-    } else if (item.active && !item.is_active) {
-      status_value.textContent = "Finalizada"
-      status_value.classList.add("finished")
-    } else if (item.active && item.is_active) {
-      status_value.textContent = "Activa"
-      status_value.classList.add("active")
-    }
+    status_value.classList.remove("draft", "finished", "active", "earring")
+    status_value.textContent = item.status_verbose.label
+    status_value.classList.add(item.status_verbose.code)
     return query_item
   }
 

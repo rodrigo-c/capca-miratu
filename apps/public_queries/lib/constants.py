@@ -34,6 +34,17 @@ class PublicQueryConstants:
     VERBOSE_NAME_PLURAL = "Consultas"
     NOT_MAX_RESPONSES = 0
 
+    STATUS_VERBOSE_DRAFT = "draft"
+    STATUS_VERBOSE_ACTIVE = "active"
+    STATUS_VERBOSE_FINISHED = "finished"
+    STATUS_VERBOSE_EARRING = "earring"
+    STATUS_VERBOSE_LABELS = {
+        STATUS_VERBOSE_DRAFT: "Borrador",
+        STATUS_VERBOSE_ACTIVE: "Activa",
+        STATUS_VERBOSE_FINISHED: "Finalizada",
+        STATUS_VERBOSE_EARRING: "Pendiente",
+    }
+
 
 class AuthConstants:
     RUT_REQUIRED = "El RUT es requerido"

@@ -36,17 +36,17 @@ class AdminEngine {
     let query_list = document.querySelector("#query-list")
     let query_detail = document.querySelector("#query-detail")
     let query_create = document.querySelector("#query-create")
+    let query_update = document.querySelector("#query-update")
     this.views = {
-      loading, query_list, query_detail, query_create
+      loading, query_list, query_detail, query_create, query_update
     }
     this.click_query_list = this.click_query_list.bind(this)
     this.click_query_detail = this.click_query_detail.bind(this)
-    query_detail.querySelector("#link-to-query-list").addEventListener(
-      "click", this.click_query_list, false
-    )
-    query_create.querySelector("#link-to-query-list").addEventListener(
-      "click", this.click_query_list, false
-    )
+    for (let view of [query_detail, query_create, query_update]) {
+      view.querySelector("#link-to-query-list").addEventListener(
+        "click", this.click_query_list, false
+      )
+    }
 
     this.click_detail_summary = this.click_detail_summary.bind(this)
     this.click_detail_questions = this.click_detail_questions.bind(this)
@@ -63,6 +63,7 @@ class AdminEngine {
     this.views.query_list.classList.add("hidden")
     this.views.query_detail.classList.add("hidden")
     this.views.query_create.classList.add("hidden")
+    this.views.query_update.classList.add("hidden")
   }
 
   _set_loading () {
@@ -75,11 +76,14 @@ class AdminEngine {
     if (name == "query-list") {
       this.query_manager.list.show_view(on_history)
     }
-    if (name == "query-detail") {
+    else if (name == "query-detail") {
       this.query_manager.detail.show_view(on_history)
     }
-    if (name == "query-create") {
+    else if (name == "query-create") {
       this.query_manager.create.show_view(on_history)
+    }
+    else if (name == "query-update") {
+      this.query_manager.update.show_view(on_history)
     }
     else {
       this.query_manager.list.show_view(on_history)

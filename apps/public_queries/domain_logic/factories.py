@@ -31,12 +31,37 @@ class PublicQueryFactory:
         )
         return public_query_data
 
+    def update(self) -> PublicQueryData:
+        with transaction.atomic():
+            public_query = self._update_query()
+            questions = self._update_questions()
+            options = self._update_options()
+        public_query_data = self._to_dataclass(
+            public_query=public_query,
+            questions=questions,
+            options=options,
+        )
+        return public_query_data
+
     def _create_query(self, user_id) -> PublicQuery:
         public_query_kwargs = self._get_public_query_kwargs()
         public_query = public_query_providers.create_public_query(
             user_id=user_id, **public_query_kwargs
         )
         self.data.uuid = public_query.id
+        return public_query
+
+    def _update_query(self) -> PublicQuery:
+        public_query = public_query_providers.get_public_query_by_uuid(
+            uuid=self.data.uuid
+        )
+        public_query_kwargs = self._get_public_query_kwargs()
+        fields_for_update = set()
+        for field, value in public_query_kwargs.items():
+            if hasattr(public_query, field) and getattr(public_query, field) != value:
+                fields_for_update.add(field)
+                setattr(public_query, field, value)
+        public_query.save(update_fields=list(fields_for_update))
         return public_query
 
     def _get_public_query_kwargs(self) -> dict:
@@ -68,6 +93,50 @@ class PublicQueryFactory:
             self.data.questions[index].uuid = question.id
         return created_questions
 
+    def _update_questions(self) -> list[Question]:
+        current_questions = question_providers.get_questions_by_public_query_uuid(
+            uuid=self.data.uuid
+        )
+        current_questions_map = {
+            str(question.id): question for question in current_questions
+        }
+        updated_questions_map = {}
+        new_questions = []
+        for question in self.data.questions:
+            question_kwargs = self._get_question_kwargs(question=question)
+            if question.uuid and str(question.uuid) in current_questions_map:
+                question_kwargs["uuid"] = question.uuid
+                updated_questions_map[str(question.uuid)] = question_kwargs
+            else:
+                new_questions.append(question_kwargs)
+        if updated_questions_map:
+            question_providers.bulk_update_questions(
+                data_list=list(updated_questions_map.values())
+            )
+        created_questions = (
+            question_providers.bulk_create_questions(data_list=new_questions)
+            if new_questions
+            else []
+        )
+
+        question_uuids_for_delete = [
+            question_uuid
+            for question_uuid in current_questions_map
+            if question_uuid not in updated_questions_map
+        ]
+        if question_uuids_for_delete:
+            question_providers.delete_question_by_uuids(uuids=question_uuids_for_delete)
+        created_questions_by_order = {
+            question.order: question for question in created_questions
+        }
+        for question in self.data.questions:
+            if not question.uuid:
+                question.uuid = created_questions_by_order[question.order].id
+
+        return question_providers.get_questions_by_public_query_uuid(
+            uuid=self.data.uuid
+        )
+
     def _get_question_kwargs(self, question: QuestionData) -> dict:
         return {
             "query_uuid": self.data.uuid,
@@ -78,12 +147,11 @@ class PublicQueryFactory:
             "required": question.required or False,
             "text_max_length": question.text_max_length or 255,
             "max_answers": question.max_answers or 1,
-            # "min_answers": question.min_answers or 1,
         }
 
     def _create_options(self) -> list[QuestionOption]:
         options_data_list = []
-        for index, question in enumerate(self.data.questions):
+        for question in self.data.questions:
             if question.kind == QuestionConstants.KIND_SELECT:
                 options_kwargs = [
                     {
@@ -100,6 +168,52 @@ class PublicQueryFactory:
             )
             if options_data_list
             else []
+        )
+
+    def _update_options(self) -> list[QuestionOption]:
+        options_data_list = []
+        current_options = question_option_providers.get_question_options_by_query_uuid(
+            query_uuid=self.data.uuid
+        )
+        current_options_map = {str(option.id): option for option in current_options}
+        for question in self.data.questions:
+            if question.kind == QuestionConstants.KIND_SELECT:
+                options_kwargs = [
+                    {
+                        "uuid": option.uuid,
+                        "question_uuid": question.uuid,
+                        "name": option.name,
+                        "order": option.order or 0,
+                    }
+                    for option in question.options or []
+                ]
+                options_data_list.extend(options_kwargs)
+        options_for_update = {}
+        options_for_create = []
+        for option in options_data_list:
+            if option["uuid"] and str(option["uuid"]) in current_options_map:
+                options_for_update[str(option["uuid"])] = option
+            else:
+                options_for_create.append(option)
+        if options_for_update:
+            question_option_providers.bulk_update_question_options(
+                data_list=list(options_for_update.values())
+            )
+        question_option_providers.bulk_create_question_options(
+            data_list=options_for_create
+        ) if options_for_create else []
+
+        options_uuids_for_delete = [
+            option_uuid
+            for option_uuid in current_options_map
+            if option_uuid not in options_for_update
+        ]
+        if options_uuids_for_delete:
+            question_option_providers.delete_question_option_by_uuids(
+                uuids=options_uuids_for_delete
+            )
+        return question_option_providers.get_question_options_by_query_uuid(
+            query_uuid=self.data.uuid
         )
 
     def _to_dataclass(
@@ -128,9 +242,11 @@ class PublicQueryFactory:
                 index=index,
             )
             question_data_list.append(question_data)
+        public_query.refresh_from_db()
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
             instance=public_query,
             uuid=public_query.id,
             questions=question_data_list,
+            status_verbose=None,
         )
