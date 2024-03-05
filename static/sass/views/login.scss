@@ -1,0 +1,47 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    max-width: 30vw;
+  }
+
+  .form-field {
+    width: 30vw;
+  }
+
+  .main-title {
+    color: $primary;
+    font-family: Roboto;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: .5px;
+    line-height: 80%;
+    padding-bottom: 5vh;
+    text-align: center;
+    user-select: none;
+    width: 100%;
+
+    b {
+      display: block;
+    }
+  }
+
+  .login-submit {
+    align-self: center;
+    background-color: $primary;
+    color: $white;
+    cursor: pointer;
+    font-family: Gotham;
+    margin: 3vh 0;
+    padding: 1vh 3vw;
+
+    &:hover {
+      opacity: .7;
+    }
+  }
+}
