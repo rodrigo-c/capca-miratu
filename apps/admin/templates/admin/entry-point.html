@@ -18,6 +18,11 @@
 {% block content %}
     <div class="admin-content">
         <div class="admin-sidebar">
+            <div class="main-label">Usuario</div>
+            <div class="user-content">
+                <div class="user-email">{{ user.email }}</div>
+                <a class="user-logout" href="{% url 'admin:logout' %}">Cerrar sesión</a>
+            </div>
             <div class="main-label">Consultas públicas</div>
             <div class="sidebar-button" id="query-create-link">
                 <i class="icon plus"></i> Crear consulta
