@@ -14,6 +14,24 @@
     width: 20vw;
   }
 
+  .user-content {
+    font-size: 2.2vh;
+    margin-bottom: 2vh;
+    padding: 0 .5vw;
+  }
+
+  .user-logout {
+    color: $cegir-primary;
+    font-size: 2vh;
+    text-decoration: none;
+    user-select: none;
+
+    &:hover {
+      opacity: .7;
+      transition: opacity .3s;
+    }
+  }
+
   .sidebar-button {
     background-color: $cegir-primary;
     border-radius: 6px;
@@ -520,6 +538,14 @@
       border-radius: 4px;
       font-size: 1.7vh;
       padding: 1vh 1vw;
+    }
+
+    .kind-point {
+      background-image: url('../images/geomap.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      padding: 3.5vh 0;
     }
   }
 
