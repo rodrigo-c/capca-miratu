@@ -3,13 +3,25 @@
   flex-direction: column;
 
   form {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    max-width: 30vw;
   }
 
   .form-field {
-    width: 30vw;
+    width: 45vw;
+
+    @include small {
+      width: 30vw;
+    }
+
+    @include medium {
+      width: 25vw;
+    }
+
+    @include large {
+      width: 20vw;
+    }
   }
 
   .main-title {
