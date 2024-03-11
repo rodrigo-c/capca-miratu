@@ -1,18 +1,95 @@
-.admin-content {
-  display: flex;
-  justify-content: space-between;
-  max-height: 90vh;
-  overflow: hidden;
+.navbar {
+  .right {
+    display: flex;
+    justify-content: right;
+  }
 
-  .admin-sidebar {
-    align-items: flex-start;
-    box-shadow: 0 1px 1px 1px $shadow;
+  .menu-dropdown {
+    display: inline-block;
+    position: relative;
+  }
+
+  .menu-button {
+    background-image: url('../images/icons/menu.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 6vh;
+    margin-right: 1vw;
+    width: 5vw;
+  }
+
+  .menu-content {
+    background: $white;
+    box-shadow: 0 1px 1px 0 $shadow-ligth, 0 0 5.3px 0 $shadow;
     display: flex;
     flex-direction: column;
-    height: 85vh;
-    padding: 5vh 3vw;
-    width: 20vw;
+    padding: 2vh 1vw;
+    position: absolute;
+    width: max-content;
+    z-index: 1;
+
+    &.hidden {
+      display: none;
+    }
   }
+
+  .menu-item {
+    color: $inactive;
+    display: flex;
+    font-size: 2vh;
+    justify-content: left;
+    margin: 0 1vw;
+    padding: 1vh 1vw;
+    text-decoration: none;
+
+    &.link {
+      color: $secondary;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    &.link:hover {
+      opacity: .7;
+    }
+
+    .menu-label {
+      margin-left: 1vw;
+    }
+  }
+
+  .icon {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-right: 2vw;
+
+    &.plus {
+      background-image: url('../images/icons/add-dark.svg');
+
+    }
+
+    &.list {
+      background-image: url('../images/icons/list.svg');
+    }
+
+    &.user {
+      background-image: url('../images/icons/user.svg');
+    }
+  }
+
+  .menu-divider {
+    border-bottom: 1px solid $inactive;
+    margin: 1vh 1vw;
+  }
+
+}
+
+.admin-content {
+  display: flex;
+  justify-content: center;
+  max-height: 90vh;
+  overflow: hidden;
 
   .sidebar-button {
     background-color: $cegir-primary;
@@ -134,6 +211,7 @@
 
     .actions {
       align-self: end;
+      display: flex;
     }
   }
 
@@ -158,6 +236,7 @@
     font-family: Open Sans;
     font-size: 2vh;
     font-weight: 600;
+    margin: 0 .5vw;
     padding: .7vh 1vw;
     text-decoration: none;
     user-select: none;
@@ -520,6 +599,14 @@
       border-radius: 4px;
       font-size: 1.7vh;
       padding: 1vh 1vw;
+    }
+
+    .kind-point {
+      background-image: url('../images/geomap.svg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      padding: 3.5vh 0;
     }
   }
 

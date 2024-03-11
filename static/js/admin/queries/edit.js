@@ -312,6 +312,7 @@ class QueryEditBase {
     this._build_question_from_data()
     let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
     dropdown.classList.add("hidden")
+    document.querySelector(`#query-${this.view_type}-questions-tab .question-item:last-child`).scrollIntoView()
   }
 
   _build_question_from_data() {
@@ -386,7 +387,7 @@ class QueryEditBase {
     } else if (question_data.kind === "IMAGE") {
       question_content.innerHTML += `<div class="kind-image">Respuesta de imagen o foto</div>`
     } else if (question_data.kind === "POINT") {
-      question_content.innerHTML += `<div class="kind-image">Ubicación</div>`
+      question_content.innerHTML += `<div class="kind-point"></div>`
     } else if (question_data.kind === "SELECT") {
       this._set_question_options(question, question_data)
     }

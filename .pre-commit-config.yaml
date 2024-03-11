@@ -11,7 +11,7 @@ repos:
         files: (.*\.py$|.*\.css$|.*\.js$|.*\.html$)
         exclude: (^.*\/migrations\/.*\.py$)
       - id: end-of-file-fixer
-        exclude: (.*\.project\.css$|.*\.min\..*|.*project\.css$|.*vendors\.js$)
+        exclude: (.*\.project\.css$|.*\.min\..*|.*project\.css$|.*vendors\.js$|.*\.svg)
       - id: check-json
       - id: check-xml
       - id: check-yaml

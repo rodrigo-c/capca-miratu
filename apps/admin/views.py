@@ -8,6 +8,8 @@ from apps.public_queries.lib.constants import ContextConstants
 
 class UserLoginView(auth_views.LoginView):
     template_name = "admin/login.html"
+    next_page = "admin:entry-point"
+    redirect_authenticated_user = True
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -22,6 +24,16 @@ class UserLoginView(auth_views.LoginView):
         form.fields["password"].widget.attrs["placeholder"] = "Contraseña"
         return form
 
+    def get_success_url(self):
+        return self.get_default_redirect_url()
+
+
+class UserLogoutView(auth_views.LogoutView):
+    next_page = "admin:login"
+
+    def get_success_url(self):
+        return self.get_default_redirect_url()
+
 
 class AdminEntryPoint(LoginRequiredMixin, TemplateView):
     template_name = "admin/entry-point.html"
@@ -29,6 +41,7 @@ class AdminEntryPoint(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context["user"] = {"email": self.request.user.email}
         context["url_base"] = reverse("admin_api:v1:public-query-list")
         context["cursor"] = {
             "focus": self.request.GET.get("f"),

@@ -14,7 +14,7 @@ class AdminEngine {
 
     this._onpopstate = this._onpopstate.bind(this)
     window.addEventListener("popstate", this._onpopstate, false)
-    this._set_admin_sidebar()
+    this._set_admin_menu()
     this._set_views()
     this.show_view(this.cursor.focus, true)
   }
@@ -25,10 +25,35 @@ class AdminEngine {
     this.show_view(this.cursor.focus, false)
   }
 
-  _set_admin_sidebar() {
-    this.click_query_create = this.click_query_create.bind(this)
-    let create_button = document.querySelector("#query-create-link")
-    create_button.addEventListener("click", this.click_query_create, false)
+  _click_menu_item(event) {
+    let focus = event.target.focus
+    console.log(focus)
+    this.show_view(focus, true)
+    event.target.closest(".menu-content").classList.add("hidden")
+  }
+
+  _set_admin_menu() {
+    this._click_menu_item = this._click_menu_item.bind(this)
+    let menu_button = document.querySelector("#navbar .menu-dropdown .menu-button")
+    let menu_content = document.querySelector("#navbar .menu-dropdown .menu-content")
+    menu_button.addEventListener("click", (event) => {
+      if (menu_content.classList.contains("hidden")) {
+        menu_content.classList.remove("hidden")
+      } else {
+        menu_content.classList.add("hidden")
+      }
+    })
+    this._set_admin_menu_item("query-create-link", "query-create", menu_content)
+    this._set_admin_menu_item("query-list-link", "query-list", menu_content)
+  }
+
+  _set_admin_menu_item(id, focus, menu_content) {
+    let menu_item = menu_content.querySelector(`#${id}`)
+    menu_item.focus = focus
+    for (let child of menu_item.children) {
+      child.focus = focus
+    }
+    menu_item.addEventListener("click", this._click_menu_item, false)
   }
 
   _set_views () {
@@ -47,7 +72,6 @@ class AdminEngine {
         "click", this.click_query_list, false
       )
     }
-
     this.click_detail_summary = this.click_detail_summary.bind(this)
     this.click_detail_questions = this.click_detail_questions.bind(this)
     query_detail.querySelector("#summary-link").addEventListener(

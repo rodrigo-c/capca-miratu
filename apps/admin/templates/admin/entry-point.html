@@ -8,7 +8,31 @@
 {% endblock extra_css %}
 {% block navbar %}
     <div class="navbar" id="navbar">
-        <div class="logo-cegir"></div>
+        <div class="right">
+            <div class="menu-dropdown">
+                <div class="menu-button"></div>
+                <div class="menu-content hidden">
+                    <div class="menu-item link" id="query-create-link">
+                        <icon class="icon plus"></icon>
+                        <div class="menu-label">Crear nueva consulta</div>
+                    </div>
+                    <div class="menu-item link" id="query-list-link">
+                        <icon class="icon list"></icon>
+                        <div class="menu-label">Todas las consultas</div>
+                    </div>
+                    <div class="menu-item">
+                        <icon class="icon user"></icon>
+                        <div class="menu-label">{{ user.email }}</div>
+                    </div>
+                    <div class="menu-divider"></div>
+                    <a class="menu-item link" href="{% url 'admin:logout' %}">
+                        <icon class="icon"></icon>
+                        <div class="menu-label">Cerrar sesión</div>
+                    </a>
+                </div>
+            </div>
+            <div class="logo-cegir"></div>
+        </div>
         <div class="nav-brand">
             Visión <b>Ciudadana</b>
         </div>
@@ -17,12 +41,6 @@
 {% endblock navbar %}
 {% block content %}
     <div class="admin-content">
-        <div class="admin-sidebar">
-            <div class="main-label">Consultas públicas</div>
-            <div class="sidebar-button" id="query-create-link">
-                <i class="icon plus"></i> Crear consulta
-            </div>
-        </div>
         <div class="views">
             <div class="view load" id="loading">
                 <div class="loading">
