@@ -2,6 +2,8 @@ class QueryListManager {
   constructor ({manager = null}) {
     this.manager = manager
     this.data = []
+    this._click_query_detail = this._click_query_detail.bind(this)
+    this._click_query_update = this._click_query_update.bind(this)
   }
 
   show_view(on_history) {
@@ -34,15 +36,30 @@ class QueryListManager {
     for (let item of this.data) {
       let query_item = template.cloneNode(true)
       let returned_query_item = this.manager._create_query_item(item, query_item)
-      let action_button = returned_query_item.querySelector(".action-button")
-      action_button.query_uuid = item.uuid
-      action_button.addEventListener(
-        "click", this.manager.engine.click_query_detail, false
+      let detail_link = returned_query_item.querySelector(".action-button.item-detail-link")
+      detail_link.query_uuid = item.uuid
+      detail_link.addEventListener(
+        "click", this._click_query_detail, false
+      )
+      let update_link = returned_query_item.querySelector(".action-button.item-update-link")
+      update_link.query_uuid = item.uuid
+      update_link.addEventListener(
+        "click", this._click_query_update, false
       )
       query_list.appendChild(returned_query_item)
     }
     this.manager.engine._hide_all_views()
     this.manager.engine.views.query_list.classList.remove("hidden")
+  }
+
+  _click_query_detail (event) {
+    this.manager.engine.cursor.key = event.currentTarget.query_uuid
+    this.manager.engine.show_view("query-detail", true)
+  }
+
+  _click_query_update (event) {
+    this.manager.engine.cursor.key = event.currentTarget.query_uuid
+    this.manager.engine.show_view("query-update", true)
   }
 
 }
