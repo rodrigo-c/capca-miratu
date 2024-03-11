@@ -17,11 +17,10 @@
   background-repeat: no-repeat;
   background-size: contain;
   padding-bottom: 8vh;
-  padding-right: 8vh;
+  padding-right: 20vw;
 
   @include small {
     padding-bottom: 4vh;
-    padding-right: 9vh;
   }
 }
 
