@@ -312,6 +312,7 @@ class QueryEditBase {
     this._build_question_from_data()
     let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
     dropdown.classList.add("hidden")
+    document.querySelector(`#query-${this.view_type}-questions-tab .question-item:last-child`).scrollIntoView()
   }
 
   _build_question_from_data() {
