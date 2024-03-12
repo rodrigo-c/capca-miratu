@@ -168,3 +168,43 @@ class TestPublicQueryManager:
             questions.append(question_data)
         data["questions"] = questions
         return data
+
+    def test_get_map(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-map", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert response.data["query"]["uuid"] == str(ended_public_query.id)
+        assert len(response.data["point_list"]) == 16
+
+    def test_get_map_not_found(self, api_client, user, ended_public_query):
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-map", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 404
+
+    def test_get_data(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-data", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert response.data["query"]["uuid"] == str(ended_public_query.id)
+        assert len(response.data["dataset"]) == 16
+
+    def test_get_data_not_found(self, api_client, user, ended_public_query):
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-data", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 404
