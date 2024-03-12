@@ -90,6 +90,7 @@ class PublicQueryReturner:
             image=instance.image.url if instance.image else None,
             questions=questions or None,
             status_verbose=status_verbose,
+            created_by_email=instance.created_by.email if instance.created_by else None,
         )
 
     def _get_status_verbose(self, instance: PublicQuery) -> str:
