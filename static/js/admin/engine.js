@@ -10,9 +10,14 @@ class AdminEngine {
   ) {
     this.csrf_token = csrf_token
     this.cursor = {focus: focus?focus:"query-list", key}
-    this.query_manager = new QueryManager({engine: this, url_base})
-
+    this.url_base = url_base
+    this.ready = this.ready.bind(this)
     this._onpopstate = this._onpopstate.bind(this)
+    document.addEventListener("DOMContentLoaded", this.ready)
+  }
+
+  ready() {
+    this.query_manager = new QueryManager({engine: this, url_base: this.url_base})
     window.addEventListener("popstate", this._onpopstate, false)
     this._set_admin_menu()
     this._set_views()
@@ -27,7 +32,6 @@ class AdminEngine {
 
   _click_menu_item(event) {
     let focus = event.target.focus
-    console.log(focus)
     this.show_view(focus, true)
     event.target.closest(".menu-content").classList.add("hidden")
   }
@@ -62,8 +66,15 @@ class AdminEngine {
     let query_detail = document.querySelector("#query-detail")
     let query_create = document.querySelector("#query-create")
     let query_update = document.querySelector("#query-update")
+    let query_map = document.querySelector("#query-map")
+    let query_data = document.querySelector("#query-data")
     this.views = {
-      loading, query_list, query_detail, query_create, query_update
+      loading, query_list,
+      query_detail,
+      query_create,
+      query_update,
+      query_map,
+      query_data,
     }
     this.click_query_list = this.click_query_list.bind(this)
     this.click_query_detail = this.click_query_detail.bind(this)
@@ -88,6 +99,8 @@ class AdminEngine {
     this.views.query_detail.classList.add("hidden")
     this.views.query_create.classList.add("hidden")
     this.views.query_update.classList.add("hidden")
+    this.views.query_map.classList.add("hidden")
+    this.views.query_data.classList.add("hidden")
   }
 
   _set_loading () {
@@ -108,6 +121,12 @@ class AdminEngine {
     }
     else if (name == "query-update") {
       this.query_manager.update.show_view(on_history)
+    }
+    else if (name == "query-map") {
+      this.query_manager.map.show_view(on_history)
+    }
+    else if (name == "query-data") {
+      this.query_manager.data.show_view(on_history)
     }
     else {
       this.query_manager.list.show_view(on_history)
