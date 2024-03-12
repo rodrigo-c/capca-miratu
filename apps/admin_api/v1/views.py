@@ -26,9 +26,25 @@ class PublicQueryManager(ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request) -> Response:
-        data_list = public_queries_services.get_public_query_list()
+        data_list = self.filter_by_user(
+            public_queries=public_queries_services.get_public_query_list()
+        )
         serializer = PublicQuerySerializer(many=True, instance=data_list)
-        return Response({"list": serializer.data})
+        show_user_email = request.user.is_superuser if request.user else False
+        return Response({"list": serializer.data, "show_user_email": show_user_email})
+
+    def filter_by_user(
+        self,
+        public_queries: list,
+    ) -> list:
+        filtered_queries = filter(
+            lambda query: (
+                query.created_by_email == self.request.user.email
+                or self.request.user.is_superuser
+            ),
+            public_queries,
+        )
+        return list(filtered_queries)
 
     def retrieve(self, request, pk=None) -> Response:
         public_query = self.get_public_query(identifier=pk)
@@ -50,7 +66,7 @@ class PublicQueryManager(ViewSet):
         public_query_data = serializer.get_dataclass()
         try:
             returned_data = public_queries_services.create_public_query(
-                query_data=public_query_data
+                query_data=public_query_data, user_id=request.user.id
             )
         except PublicQueryCreateError:
             raise ValidationError("Unknown error")
@@ -78,6 +94,8 @@ class PublicQueryManager(ViewSet):
             public_query = public_queries_services.get_public_query(
                 identifier=identifier
             )
+            if not self.filter_by_user(public_queries=[public_query]):
+                raise PublicQueryDoesNotExist
         except PublicQueryDoesNotExist:
             raise Http404
         return public_query
