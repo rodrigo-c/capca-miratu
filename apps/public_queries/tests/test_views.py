@@ -208,25 +208,25 @@ class TestSuccessSubmit:
         assert http_response.status_code == 404
 
 
-@pytest.mark.django_db
-class TestPublicQueryMapResult:
-    public_query_pattern = "public_queries:query-map-result"
+# @pytest.mark.django_db
+# class TestPublicQueryMapResult:
+#     public_query_pattern = "public_queries:query-map-result"
 
-    def test_success(self, client, ended_public_query):
-        url = reverse(
-            self.public_query_pattern, kwargs={"uuid": ended_public_query.url_code}
-        )
-        http_response = client.get(url)
-        assert http_response.status_code == 200
+#     def test_success(self, client, ended_public_query):
+#         url = reverse(
+#             self.public_query_pattern, kwargs={"uuid": ended_public_query.url_code}
+#         )
+#         http_response = client.get(url)
+#         assert http_response.status_code == 200
 
 
-@pytest.mark.django_db
-class TestPublicQueryDataResult:
-    public_query_pattern = "public_queries:query-data"
+# @pytest.mark.django_db
+# class TestPublicQueryDataResult:
+#     public_query_pattern = "public_queries:query-data"
 
-    def test_success(self, client, ended_public_query):
-        url = reverse(
-            self.public_query_pattern, kwargs={"uuid": ended_public_query.url_code}
-        )
-        http_response = client.get(url)
-        assert http_response.status_code == 200
+#     def test_success(self, client, ended_public_query):
+#         url = reverse(
+#             self.public_query_pattern, kwargs={"uuid": ended_public_query.url_code}
+#         )
+#         http_response = client.get(url)
+#         assert http_response.status_code == 200

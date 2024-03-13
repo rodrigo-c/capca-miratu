@@ -12,7 +12,6 @@ from apps.public_queries.lib.constants import (
 )
 from apps.public_queries.mixins import UUIDObjectURL
 from apps.public_queries.services import (
-    get_public_query,
     get_response_by_uuid,
     get_submit_public_query,
     submit_response,
@@ -122,36 +121,4 @@ class SuccessSubmit(UUIDObjectURL, TemplateView):
         context["response_data"] = self.object
         context["success_message"] = ContextConstants.SUCCESS_MESSAGE
         context["sucess_gratitude_message"] = ContextConstants.SUCCESS_GRATITUDE
-        return context
-
-
-class PublicQueryMapResult(UUIDObjectURL, TemplateView):
-    template_name = "public_queries/map-result.html"
-    url_service = get_public_query
-
-    def get_context_data(self, *args, **kwargs) -> dict:
-        context = super().get_context_data(*args, **kwargs)
-        context["focus"] = self.request.GET.get("f")
-        context["resource_url"] = reverse(
-            "public_queries_api:v1:query-map-result-detail",
-            kwargs={"pk": self.object.url_code},
-        )
-        context["public_query"] = self.object
-        return context
-
-
-class PublicQueryDataResult(UUIDObjectURL, TemplateView):
-    template_name = "public_queries/data-result.html"
-    url_service = get_public_query
-
-    def get_context_data(self, *args, **kwargs) -> dict:
-        context = super().get_context_data(*args, **kwargs)
-        context["resource_url"] = reverse(
-            "public_queries_api:v1:query-data-result-detail",
-            kwargs={"pk": self.object.url_code},
-        )
-        context["map_url"] = reverse(
-            "public_queries:query-map-result", kwargs={"uuid": self.object.url_code}
-        )
-        context["public_query"] = self.object
         return context
