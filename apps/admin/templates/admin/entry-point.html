@@ -5,6 +5,18 @@
 {% block extra_css %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css"
+          rel="stylesheet"
+          type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
+            type="text/javascript"></script>
 {% endblock extra_css %}
 {% block navbar %}
     <div class="navbar" id="navbar">
@@ -51,6 +63,10 @@
             {% include "admin/views/query-detail.html" %}
             {% include "admin/views/query-edit.html" with view_type="create" %}
             {% include "admin/views/query-edit.html" with view_type="update" %}
+            {% include "admin/views/query-result.html" with view_type="result" %}
+            {% include "admin/views/query-result.html" with view_type="questions" %}
+            {% include "admin/views/query-result.html" with view_type="map" %}
+            {% include "admin/views/query-result.html" with view_type="data" %}
         </div>
     </div>
 {% endblock content %}
