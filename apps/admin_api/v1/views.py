@@ -9,10 +9,14 @@ from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
 
-from apps.admin_api.v1.serializers import (
+from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
-    PublicQueryResultSerializer,
     UpdatePublicQuerySerializer,
+)
+from apps.admin_api.v1.serializers.generic import PublicQuerySerializer
+from apps.admin_api.v1.serializers.results import (
+    PublicQueryResultSerializer,
+    QueryMapResultSerializer,
 )
 from apps.public_queries import services as public_queries_services
 from apps.public_queries.lib.constants import QuestionConstants
@@ -23,8 +27,6 @@ from apps.public_queries.lib.exceptions import (
     PublicQueryUpdateError,
 )
 from apps.public_queries_api.v1.lib.constants import PublicQueryDataResultConstants
-from apps.public_queries_api.v1.serializers.generic import PublicQuerySerializer
-from apps.public_queries_api.v1.serializers.map_result import QueryMapResultSerializer
 
 
 class PublicQueryManager(ViewSet):
