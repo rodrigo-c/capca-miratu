@@ -48,6 +48,7 @@ class QueryListManager {
       )
       query_list.appendChild(returned_query_item)
     }
+    this.manager._build_sidebar()
     this.manager.engine._hide_all_views()
     this.manager.engine.views.query_list.classList.remove("hidden")
   }
