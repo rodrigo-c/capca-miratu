@@ -172,6 +172,7 @@
   .view.query-list,
   .view.query-detail {
     margin: auto;
+    max-width: 600px;
   }
 
   .query-item {
@@ -355,7 +356,7 @@
       height: 10vh;
       margin: 1vh 3vw;
       margin-bottom: 3vh;
-      width: 50vw;
+      max-width: 600px;
     }
   }
 
