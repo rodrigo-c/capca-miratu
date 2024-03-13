@@ -88,9 +88,40 @@
 .admin-content {
   display: flex;
   justify-content: center;
-  max-height: 90vh;
-  overflow: hidden;
 
+  .sidebar {
+    font-family: Open Sans;
+    font-size: 2.2vh;
+    padding: 3vh 1vw;
+  }
+
+  .sidebar-element {
+    border-bottom: 1px solid $inactive;
+    cursor: pointer;
+    padding: 2.2vh 2vw;
+    user-select: none;
+
+    &:first-child {
+      padding-bottom: 4vh;
+    }
+
+    &:hover {
+      opacity: .7;
+    }
+
+    &.current {
+      border-bottom: 1px solid $secondary;
+      cursor: auto;
+      font-weight: 600;
+    }
+
+    &.current:hover {
+      opacity: 1;
+    }
+
+  }
+
+  //todo: change sidebar to other else
   .sidebar-button {
     background-color: $cegir-primary;
     border-radius: 6px;
@@ -138,28 +169,9 @@
     }
   }
 
-  .query-item-list {
-    max-height: 80vh;
-    max-width: 600px;
-    overflow-y: scroll;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: $inactive;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: $secondary;
-      border: 3px solid $secondary;
-      border-radius: 20;
-    }
-  }
-
+  .view.query-list,
   .view.query-detail {
-    max-width: 600px;
+    margin: auto;
   }
 
   .query-item {
@@ -210,8 +222,23 @@
     }
 
     .actions {
-      align-self: end;
+      align-items: flex-end;
       display: flex;
+      flex-direction: column;
+    }
+
+    .total-responses {
+      font-size: 1.8vh;
+      margin-bottom: 1vh;
+      margin-right: .5vw;
+    }
+
+    .field {
+      margin-right: 1vw;
+    }
+
+    .value {
+      font-weight: 600;
     }
   }
 
@@ -273,6 +300,62 @@
     &.input {
       background: none;
       user-select: none;
+    }
+  }
+
+  .query-preview {
+    padding: 2vh 2vw;
+
+    .subtitle {
+      font-family: Gotham;
+      font-size: 2.3vh;
+      font-weight: 600;
+      margin-bottom: 1vh;
+    }
+
+    .query-preview-description {
+      font-family: Open Sans;
+      font-size: 2vh;
+      margin-bottom: 3vh;
+    }
+
+    .question-name {
+      font-family: Open Sans;
+      font-size: 3vh;
+      font-weight: 600;
+      padding: 1vh 1vw;
+    }
+
+    .question-description {
+      font-size: 2vh;
+      margin-bottom: 2vh;
+      padding: 1vh 1vw;
+    }
+
+    .option {
+      border: 1px solid $inactive;
+      border-radius: 6px;
+      font-size: 2vh;
+      margin-bottom: 1vh;
+      padding: 1vh 1vw;
+    }
+
+    .option-label {
+      font-weight: 600;
+    }
+
+    .question-options {
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+      padding: 1vh 1vw;
+    }
+
+    .question-map {
+      height: 10vh;
+      margin: 1vh 3vw;
+      margin-bottom: 3vh;
+      width: 50vw;
     }
   }
 
@@ -447,24 +530,39 @@
     }
   }
 
-  .query-update-content,
-  .query-create-content {
-    height: 80vh;
-    overflow-y: scroll;
+  .query-map-content {
+    display: flex;
+    flex-direction: column;
+  }
 
-    &::-webkit-scrollbar {
-      width: 8px;
+  .query-questions-content {
+    padding: 4vh 4vw;
+  }
+
+  .query-result-content {
+    padding: 2vh 3vw;
+
+    .summary {
+      max-height: 40vh;
     }
 
-    &::-webkit-scrollbar-track {
-      background: $inactive;
+    .responses-total {
+      margin-bottom: 4vh;
     }
+  }
 
-    &::-webkit-scrollbar-thumb {
-      background-color: $secondary;
-      border: 3px solid $secondary;
-      border-radius: 20;
-    }
+  .query-data .datatable-container {
+    max-height: 60vh;
+    width: 75vw;
+  }
+
+  .query-data .data-result-container {
+    padding: 1vh 1vw;
+  }
+
+  .query-map .map.map-result {
+    height: 70vh;
+    margin: 0;
   }
 
   .query-draft {
