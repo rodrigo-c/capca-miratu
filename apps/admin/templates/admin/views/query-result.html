@@ -9,7 +9,7 @@
         <div class="tab-link {% if view_type == 'data' %}active{% endif %}"
              to="query-data">Tabla</div>
     </div>
-    <div class="result-content">
+    <div class="query-{{ view_type }}-content">
         {% if view_type == "result" %}
             <div class="summary" id="query-result-summary">
                 <div class="responses-total">
