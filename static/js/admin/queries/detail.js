@@ -1,8 +1,3 @@
-import {
-  get_chart
-} from "../charts.js"
-
-
 class QueryDetailManager {
   constructor ({manager = null}) {
     this.manager = manager
