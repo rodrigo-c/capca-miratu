@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
 
+from apps.admin_api.lib.constants import PublicQueryDataResultConstants
 from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
     UpdatePublicQuerySerializer,
@@ -26,7 +27,6 @@ from apps.public_queries.lib.exceptions import (
     PublicQueryDoesNotExist,
     PublicQueryUpdateError,
 )
-from apps.public_queries_api.v1.lib.constants import PublicQueryDataResultConstants
 
 
 class PublicQueryManager(ViewSet):
