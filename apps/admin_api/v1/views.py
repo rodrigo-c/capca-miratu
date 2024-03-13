@@ -46,8 +46,6 @@ class PublicQueryManager(ViewSet):
         kwargs = {"uuid": public_query.url_code}
         result.links = {
             "submit": reverse("public_queries:submit", kwargs=kwargs),
-            "map": reverse("public_queries:query-map-result", kwargs=kwargs),
-            "data": reverse("public_queries:query-data", kwargs=kwargs),
         }
         serializer = PublicQueryResultSerializer(instance=result)
         return Response(serializer.data)
