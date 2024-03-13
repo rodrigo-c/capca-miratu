@@ -1,8 +1,3 @@
-import {
-  get_chart
-} from "../charts.js"
-
-
 class QueryDetailManager {
   constructor ({manager = null}) {
     this.manager = manager
@@ -36,18 +31,12 @@ class QueryDetailManager {
     })
   }
 
-
   _set_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this.manager._create_query_item(this.data.query, query_item)
     document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
-    document.querySelector("#detail-action-map").setAttribute("href", this.data.links.map)
-    document.querySelector("#detail-action-data").setAttribute("href", this.data.links.data)
-    let edit_button = document.querySelector("#detail-action-edit")
-    edit_button.addEventListener("click", this._click_query_edit, false)
-    this._clean()
-    this._set_summary()
-    this._set_questions()
+    this._set_query_preview()
+    this.manager._build_sidebar()
     this.manager.engine._hide_all_views()
     this.manager.engine.views.query_detail.classList.remove("hidden")
   }
@@ -56,86 +45,40 @@ class QueryDetailManager {
     this.manager.engine.show_view("query-update", true)
   }
 
-  _set_summary () {
-    document.querySelector(
-      "#query-detail .responses-total .total-value"
-    ).textContent = this.data.total_responses
-    let summary_answer = this._get_first_select_result()
-    if (summary_answer) {
-      document.querySelector("#summary-chart").classList.remove("hidden")
-      let answer_labels = summary_answer.options.map((x)=> x.option_name)
-      let answer_values = summary_answer.options.map((x)=> x.total)
-      let options = {indexAxis: "x"}
-      let chart = get_chart({
-        id: "summary-chart",
-        type: "bar",
-        labels: answer_labels,
-        values: answer_values,
-        options
-      })
-      this.charts.summary = chart
-    }
-
-  }
-
-  _set_questions() {
-    let questions_container = document.querySelector("#query-detail-questions")
-    let content = questions_container.querySelector(".content")
+  _set_query_preview () {
+    document.querySelector("#query-detail .query-preview-description").textContent = this.data.query.description
+    let questions = document.querySelector("#query-detail .query-preview-questions")
+    questions.innerHTML = ""
+    let index = 0
     for (let answer_result of this.data.answer_results) {
-      let template = questions_container.querySelector("#question-template").cloneNode(true)
-      template.removeAttribute("id")
-      let index = answer_result.question.index
-      template.querySelector(".question-number .value").textContent = index + 1
-      template.querySelector(".question-name").textContent = answer_result.question.name
-      template.querySelector(".responses-total .total-value").textContent = answer_result.total
-      content.appendChild(template)
-      if (answer_result.question.kind == "SELECT") {
-        let id = `question-chart-${index}`
-        let canvas = template.querySelector(".question-chart")
-        canvas.setAttribute("id", id)
-        let labels = template.querySelector(".chart-labels")
-        labels.setAttribute("id", `${id}-labels`)
-        let answer_labels = answer_result.options.map((x)=> x.option_name)
-        let answer_values = answer_result.options.map((x)=> x.total)
-        let chart = get_chart({
-          id,
-          type: "bar",
-          labels: answer_labels,
-          values: answer_values,
-          options: {indexAxis: "y"},
-        })
-        canvas.classList.remove("hidden")
-        labels.classList.remove("hidden")
+      let question = answer_result.question
+      let question_container = document.createElement("div")
+      question_container.classList.add("question-container")
+      question_container.innerHTML = `
+        <div class="subtitle">Pregunta ${index + 1}</div>
+        <div class="question-name">${question.name}</div>
+        <div class="question-description">${question.description}</div>
+      `
+      if (question.kind == "POINT") {
+        question_container.innerHTML += "<div class='question-map map-bg'></div>"
+      } else if (question.kind == "SELECT") {
+        question_container.innerHTML += `<div class="question-options"></div>`
+        let options_container = question_container.querySelector(".question-options")
+        let option_index = 0
+        for (let option of question.options) {
+          options_container.innerHTML += `
+            <div class="option">
+              <span class="option-label">${this.manager.letters[option_index]}.</span>
+              <span class="option-value">${option.name}</span>
+            </div>
+          `
+        }
+        option_index += 1
       }
-      template.classList.remove("hidden")
-    }
-
-  }
-
-  _get_first_select_result () {
-    let result = null
-    for (let answer_result of this.data.answer_results) {
-      if (answer_result.question.kind == "SELECT") {
-        result = answer_result
-        break
-      }
-    }
-    return result
-  }
-
-  _clean () {
-    let view = document.querySelector("#query-detail")
-    view.querySelector(".responses-total .total-value").textContent = ""
-    view.querySelector("#query-detail-summary .content").innerHTML = ""
-    view.querySelector("#query-detail-questions .content").innerHTML = ""
-    document.querySelector("#summary-chart").classList.add("hidden")
-    if (this.charts.summary) {
-      this.charts.summary.destroy()
+      questions.appendChild(question_container)
+      index += 1
     }
   }
-
-
-
 }
 
 export {QueryDetailManager}

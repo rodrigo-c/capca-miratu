@@ -48,6 +48,8 @@ class PublicQuerySerializer(serializers.Serializer):
     status_verbose = serializers.DictField(
         child=serializers.CharField(), allow_empty=True, required=False
     )
+    created_by_email = serializers.CharField(required=False)
+    total_responses = serializers.IntegerField(required=False, allow_null=True)
 
 
 class AnswerSerializer(serializers.Serializer):

@@ -46,6 +46,8 @@ class PublicQueryData:
     auth_rut: str | None = None
     max_responses: int | None = None
     status_verbose: dict | None = None
+    created_by_email: str | None = None
+    total_responses: int | None = None
 
 
 @dataclass

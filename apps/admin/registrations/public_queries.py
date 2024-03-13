@@ -94,8 +94,8 @@ class PublicQueryAdmin(NestedModelAdmin):
         return format_html(f"<a href='{url}'>{obj.url_code}</a>")
 
     def view_result(self, obj):
-        url = reverse("public_queries:query-data", kwargs={"uuid": obj.url_code})
-        return format_html(f"<a href='{url}' target='_blank'>Resultado</a>")
+        url = f"/admin/?f=query-result&k={obj.url_code}"
+        return format_html(f"<a href='{url}'>Resultado</a>")
 
     def response_post_save_add(self, request, obj):
         obj.created_by_id = request.user.id
@@ -160,7 +160,7 @@ class ResponseAdmin(admin.ModelAdmin):
         return format_html(f"<a href='{url}'>{url_code}</a>")
 
     def edit_query(self, obj):
-        url = f"/admin/public_queries/publicquery/{obj.query_id}"
+        url = f"/admin/?f=query-update&k={obj.query_id}"
         return format_html(f"<a href='{url}'>{obj.query_id}</a>")
 
 

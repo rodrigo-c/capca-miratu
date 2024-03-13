@@ -1,0 +1,56 @@
+<div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
+    <div class="result tab-links">
+        <div class="tab-link {% if view_type == 'result' %}active{% endif %}"
+             to="query-result">Resumen</div>
+        <div class="tab-link {% if view_type == 'questions' %}active{% endif %}"
+             to="query-questions">Preguntas</div>
+        <div class="tab-link {% if view_type == 'map' %}active{% endif %}"
+             to="query-map">Mapa</div>
+        <div class="tab-link {% if view_type == 'data' %}active{% endif %}"
+             to="query-data">Tabla</div>
+    </div>
+    <div class="query-{{ view_type }}-content">
+        {% if view_type == "result" %}
+            <div class="summary" id="query-result-summary">
+                <div class="responses-total">
+                    <div class="total-label">Total respuestas:</div>
+                    <div class="total-value"></div>
+                </div>
+                <canvas class="summary-chart hidden" id="result-summary-chart"></canvas>
+                <div class="chart-labels hidden" id="result-summary-chart-labels"></div>
+                <div class="content"></div>
+            </div>
+        {% endif %}
+        {% if view_type == "questions" %}
+            <div class="questions" id="query-result-questions">
+                <div class="question hidden" id="result-question-template">
+                    <div class="question-number">
+                        Pregunta <span class="value"></span>
+                    </div>
+                    <div class="question-name"></div>
+                    <div class="responses-total">
+                        <div class="total-label">Total respuestas:</div>
+                        <div class="total-value"></div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas class="question-chart hidden"></canvas>
+                    </div>
+                    <div class="chart-labels hidden"></div>
+                </div>
+                <div class="content"></div>
+            </div>
+        {% endif %}
+        {% if view_type == "map" %}
+            <div class="map map-result" id="query-result-map"></div>
+            <div class="fetch-meta">
+                <div class="range-responses"></div>
+                <div class="fetch-at"></div>
+            </div>
+        {% endif %}
+        {% if view_type == "data" %}
+            <div class="data-result-container">
+                <div class="data-table" id="query-result-data-table"></div>
+            </div>
+        {% endif %}
+    </div>
+</div>

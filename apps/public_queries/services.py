@@ -43,9 +43,12 @@ def get_public_query_list() -> list[PublicQueryData]:
     return returner.get()
 
 
-def create_public_query(query_data: PublicQueryData) -> PublicQueryData:
+def create_public_query(
+    query_data: PublicQueryData,
+    user_id: int | None = None,
+) -> PublicQueryData:
     try:
-        created_query = PublicQueryFactory(data=query_data).create()
+        created_query = PublicQueryFactory(data=query_data).create(user_id=user_id)
     except Exception as error:
         raise PublicQueryCreateError(error)
     return created_query

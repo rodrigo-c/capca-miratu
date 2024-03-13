@@ -1,7 +1,7 @@
 import pytest
 
 from apps.admin_api.lib.constants import PublicQueryErrorConstants
-from apps.admin_api.v1.serializers import CreateQuestionSerializer
+from apps.admin_api.v1.serializers.edit import CreateQuestionSerializer
 from apps.public_queries.lib.constants import QuestionConstants
 
 

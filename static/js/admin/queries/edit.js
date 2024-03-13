@@ -1,7 +1,6 @@
 class QueryEditBase {
   constructor ({manager = null}) {
     this.manager = manager
-    this.letters = "ABCDEFGHIJKLMNOPQRSTUXYZ"
     this.required_fields = ["name"]
     this.data = this._get_default_data()
     this.inputs = {}
@@ -22,7 +21,6 @@ class QueryEditBase {
     this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
-
     this._set_initial()
     this._set_more_attrs()
     this._set_publish_button()
@@ -455,7 +453,7 @@ class QueryEditBase {
       option.classList.add("question-option")
       let option_id = `query-${this.view_type}-question-option-${question.index}-${option_index}`
       option.innerHTML = `
-        <div class="question-option-label">${this.letters[option_index]}.</div>
+        <div class="question-option-label">${this.manager.letters[option_index]}.</div>
         <input id="${option_id}" type="text" class="question-option-input" placeholder="Opción ${option_index + 1}">
         <div class="question-option-delete">X</div>
       `
@@ -621,6 +619,7 @@ class QueryCreateManager extends QueryEditBase {
 
   show_view(on_history) {
     this.manager.engine._hide_all_views()
+    this.manager._build_sidebar()
     this._clean_data()
     this.manager.engine.views.query_create.classList.remove("hidden")
     if (on_history) {
@@ -744,6 +743,7 @@ class QueryUpdateManager extends QueryEditBase {
       }
     }
     this._build_question_from_data()
+    this.manager._build_sidebar()
     this.manager.engine._hide_all_views()
     this.manager.engine.views.query_update.classList.remove("hidden")
   }

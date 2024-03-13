@@ -6,44 +6,6 @@ from apps.public_queries.tests.recipes import public_query_recipe, response_reci
 
 
 @pytest.mark.django_db
-class TestPublicQueryMapResult:
-    def test_success(self, api_client, ended_public_query):
-        url = reverse(
-            "public_queries_api:v1:query-map-result-detail",
-            kwargs={"pk": ended_public_query.url_code},
-        )
-        response = api_client.get(url)
-        assert response.status_code == 200
-
-    def test_not_found(self, api_client, ended_public_query):
-        url = reverse(
-            "public_queries_api:v1:query-map-result-detail",
-            kwargs={"pk": 1},
-        )
-        response = api_client.get(url)
-        assert response.status_code == 404
-
-
-@pytest.mark.django_db
-class TestPublicQueryDataResult:
-    def test_success(self, api_client, ended_public_query):
-        url = reverse(
-            "public_queries_api:v1:query-data-result-detail",
-            kwargs={"pk": ended_public_query.url_code},
-        )
-        response = api_client.get(url)
-        assert response.status_code == 200
-
-    def test_not_found(self, api_client, ended_public_query):
-        url = reverse(
-            "public_queries_api:v1:query-data-result-detail",
-            kwargs={"pk": 1},
-        )
-        response = api_client.get(url)
-        assert response.status_code == 404
-
-
-@pytest.mark.django_db
 class TestPublicQueryAuth:
     def test_success(self, api_client):
         public_query = public_query_recipe.make(

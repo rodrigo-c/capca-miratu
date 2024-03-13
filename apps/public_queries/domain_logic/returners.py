@@ -15,6 +15,7 @@ from apps.public_queries.models import Answer, PublicQuery, Question, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
+from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
 
@@ -83,6 +84,9 @@ class PublicQueryReturner:
                 for index, question in enumerate(question_queryset)
             ]
         status_verbose = self._get_status_verbose(instance=instance)
+        total_responses = response_providers.get_total_responses_by_query_uuid(
+            query_uuid=instance.id
+        )
         return build_dataclass_from_model_instance(
             klass=PublicQueryData,
             instance=instance,
@@ -90,6 +94,8 @@ class PublicQueryReturner:
             image=instance.image.url if instance.image else None,
             questions=questions or None,
             status_verbose=status_verbose,
+            created_by_email=instance.created_by.email if instance.created_by else None,
+            total_responses=total_responses,
         )
 
     def _get_status_verbose(self, instance: PublicQuery) -> str:

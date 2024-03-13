@@ -249,4 +249,8 @@ class PublicQueryFactory:
             uuid=public_query.id,
             questions=question_data_list,
             status_verbose=None,
+            created_by_email=(
+                public_query.created_by.email if public_query.created_by else None
+            ),
+            total_responses=None,
         )

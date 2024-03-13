@@ -1,34 +1,44 @@
+import re
 from uuid import UUID
 
 from django.http import Http404
 from django.urls import reverse
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
 
-from apps.admin_api.v1.serializers import (
+from apps.admin_api.lib.constants import PublicQueryDataResultConstants
+from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
-    PublicQueryResultSerializer,
     UpdatePublicQuerySerializer,
 )
+from apps.admin_api.v1.serializers.generic import PublicQuerySerializer
+from apps.admin_api.v1.serializers.results import (
+    PublicQueryResultSerializer,
+    QueryMapResultSerializer,
+)
 from apps.public_queries import services as public_queries_services
-from apps.public_queries.lib.dataclasses import PublicQueryData
+from apps.public_queries.lib.constants import QuestionConstants
+from apps.public_queries.lib.dataclasses import PublicQueryData, QueryMapResultData
 from apps.public_queries.lib.exceptions import (
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
     PublicQueryUpdateError,
 )
-from apps.public_queries_api.v1.serializers.generic import PublicQuerySerializer
 
 
 class PublicQueryManager(ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request) -> Response:
-        data_list = public_queries_services.get_public_query_list()
+        data_list = self.filter_by_user(
+            public_queries=public_queries_services.get_public_query_list()
+        )
         serializer = PublicQuerySerializer(many=True, instance=data_list)
-        return Response({"list": serializer.data})
+        show_user_email = request.user.is_superuser if request.user else False
+        return Response({"list": serializer.data, "show_user_email": show_user_email})
 
     def retrieve(self, request, pk=None) -> Response:
         public_query = self.get_public_query(identifier=pk)
@@ -38,8 +48,6 @@ class PublicQueryManager(ViewSet):
         kwargs = {"uuid": public_query.url_code}
         result.links = {
             "submit": reverse("public_queries:submit", kwargs=kwargs),
-            "map": reverse("public_queries:query-map-result", kwargs=kwargs),
-            "data": reverse("public_queries:query-data", kwargs=kwargs),
         }
         serializer = PublicQueryResultSerializer(instance=result)
         return Response(serializer.data)
@@ -50,7 +58,7 @@ class PublicQueryManager(ViewSet):
         public_query_data = serializer.get_dataclass()
         try:
             returned_data = public_queries_services.create_public_query(
-                query_data=public_query_data
+                query_data=public_query_data, user_id=request.user.id
             )
         except PublicQueryCreateError:
             raise ValidationError("Unknown error")
@@ -73,11 +81,116 @@ class PublicQueryManager(ViewSet):
         serializer = PublicQuerySerializer(instance=returned_data)
         return Response(serializer.data)
 
+    @action(detail=True, methods=["get"])
+    def map(self, request, pk) -> Response:
+        public_query_result = self.get_public_query_map_result(identifier=pk)
+        serializer = QueryMapResultSerializer(instance=public_query_result)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def data(self, request, pk) -> Response:
+        public_query_result = self._get_public_query_data_result(identifier=pk)
+        verbose_fields = self._get_verbose_fields(dataset=public_query_result)
+        public_query_result["verbose_fields"] = verbose_fields
+        public_query_result["simpletables_config"] = self._get_simpletables_config(
+            public_query=public_query_result["query"], fields=verbose_fields
+        )
+        return Response(public_query_result)
+
+    def filter_by_user(
+        self,
+        public_queries: list,
+    ) -> list:
+        filtered_queries = filter(
+            lambda query: (
+                query.created_by_email == self.request.user.email
+                or self.request.user.is_superuser
+            ),
+            public_queries,
+        )
+        return list(filtered_queries)
+
     def get_public_query(self, identifier: str | UUID) -> PublicQueryData:
         try:
             public_query = public_queries_services.get_public_query(
                 identifier=identifier
             )
+            if not self.filter_by_user(public_queries=[public_query]):
+                raise PublicQueryDoesNotExist
         except PublicQueryDoesNotExist:
             raise Http404
         return public_query
+
+    def get_public_query_map_result(self, identifier: str) -> QueryMapResultData:
+        try:
+            public_query_result = public_queries_services.get_public_query_map_result(
+                identifier=identifier
+            )
+            if not self.filter_by_user(public_queries=[public_query_result.query]):
+                raise PublicQueryDoesNotExist
+        except PublicQueryDoesNotExist:
+            raise Http404
+        return public_query_result
+
+    def _get_public_query_data_result(self, identifier: str) -> dict:
+        try:
+            public_query_result = (
+                public_queries_services.get_public_query_responses_data(
+                    identifier=identifier
+                )
+            )
+            created_by_email = public_query_result["query"]["created_by_email"]
+            if (
+                not self.request.user.is_superuser
+                and self.request.user.email != created_by_email
+            ):
+                raise PublicQueryDoesNotExist
+        except PublicQueryDoesNotExist:
+            raise Http404
+        return public_query_result
+
+    def _get_verbose_fields(self, dataset: dict) -> list:
+        verbose_fields = {}
+        for field in dataset["fields"]:
+            verbose = PublicQueryDataResultConstants.VERBOSE_FIELDS.get(field, field)
+            if "pregunta_" in field:
+                verbose = field.replace("_", " ").capitalize()
+            verbose_fields[field] = verbose
+        return verbose_fields
+
+    def _get_simpletables_config(self, public_query, fields) -> dict:
+        columns = []
+        for index, (field, label) in enumerate(fields.items()):
+            column = {"select": index, "type": "html", "cellClass": "cell"}
+            if field == "send_at":
+                column["type"] = "date"
+                column["format"] = "MYSQL"
+            if "pregunta_" in field:
+                index = int(re.search(r"\d+", field)[0]) - 1
+                question = public_query["questions"][index]
+                if question["kind"] == QuestionConstants.KIND_TEXT:
+                    column["cellClass"] = "cell-tooltip value-text"
+                if question["kind"] == QuestionConstants.KIND_IMAGE:
+                    column["cellClass"] = "cell-tooltip value-image"
+                if question["kind"] == QuestionConstants.KIND_POINT:
+                    column["cellClass"] = "cell-tooltip value-point"
+                if question["kind"] == QuestionConstants.KIND_SELECT:
+                    column["cellClass"] = "cell-tooltip value-select"
+            else:
+                column["cellClass"] = f"cell {field}"
+            columns.append(column)
+        return {
+            "locale": "es-cl",
+            "perPageSelect": [5, 10, 50, 100],
+            "columns": columns,
+            "data": {
+                "headings": fields.values(),
+                "data": [],
+            },
+            "fixedColumns": True,
+            "labels": {
+                "placeholder": "Buscar...",
+                "info": "Mostrando {start} a {end} de {rows} respuestas",
+                "perPage": "Consultas por página",
+            },
+        }

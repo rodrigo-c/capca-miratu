@@ -10,9 +10,14 @@ class AdminEngine {
   ) {
     this.csrf_token = csrf_token
     this.cursor = {focus: focus?focus:"query-list", key}
-    this.query_manager = new QueryManager({engine: this, url_base})
-
+    this.url_base = url_base
+    this.ready = this.ready.bind(this)
     this._onpopstate = this._onpopstate.bind(this)
+    document.addEventListener("DOMContentLoaded", this.ready)
+  }
+
+  ready() {
+    this.query_manager = new QueryManager({engine: this, url_base: this.url_base})
     window.addEventListener("popstate", this._onpopstate, false)
     this._set_admin_menu()
     this._set_views()
@@ -27,7 +32,6 @@ class AdminEngine {
 
   _click_menu_item(event) {
     let focus = event.target.focus
-    console.log(focus)
     this.show_view(focus, true)
     event.target.closest(".menu-content").classList.add("hidden")
   }
@@ -62,24 +66,28 @@ class AdminEngine {
     let query_detail = document.querySelector("#query-detail")
     let query_create = document.querySelector("#query-create")
     let query_update = document.querySelector("#query-update")
+    let query_result = document.querySelector("#query-result")
+    let query_questions = document.querySelector("#query-questions")
+    let query_map = document.querySelector("#query-map")
+    let query_data = document.querySelector("#query-data")
     this.views = {
-      loading, query_list, query_detail, query_create, query_update
+      loading,
+      query_list,
+      query_detail,
+      query_create,
+      query_update,
+      query_result,
+      query_questions,
+      query_map,
+      query_data,
     }
     this.click_query_list = this.click_query_list.bind(this)
     this.click_query_detail = this.click_query_detail.bind(this)
-    for (let view of [query_detail, query_create, query_update]) {
+    for (let view of [query_create, query_update]) {
       view.querySelector("#link-to-query-list").addEventListener(
         "click", this.click_query_list, false
       )
     }
-    this.click_detail_summary = this.click_detail_summary.bind(this)
-    this.click_detail_questions = this.click_detail_questions.bind(this)
-    query_detail.querySelector("#summary-link").addEventListener(
-      "click", this.click_detail_summary, false
-    )
-    query_detail.querySelector("#questions-link").addEventListener(
-      "click", this.click_detail_questions, false
-    )
   }
 
   _hide_all_views () {
@@ -88,6 +96,10 @@ class AdminEngine {
     this.views.query_detail.classList.add("hidden")
     this.views.query_create.classList.add("hidden")
     this.views.query_update.classList.add("hidden")
+    this.views.query_result.classList.add("hidden")
+    this.views.query_questions.classList.add("hidden")
+    this.views.query_map.classList.add("hidden")
+    this.views.query_data.classList.add("hidden")
   }
 
   _set_loading () {
@@ -97,6 +109,7 @@ class AdminEngine {
 
   show_view(name, on_history) {
     this._set_loading()
+    this.cursor.focus = name
     if (name == "query-list") {
       this.query_manager.list.show_view(on_history)
     }
@@ -109,7 +122,20 @@ class AdminEngine {
     else if (name == "query-update") {
       this.query_manager.update.show_view(on_history)
     }
+    else if (name == "query-result") {
+      this.query_manager.result.show_view(on_history)
+    }
+    else if (name == "query-questions") {
+      this.query_manager.questions.show_view(on_history)
+    }
+    else if (name == "query-map") {
+      this.query_manager.map.show_view(on_history)
+    }
+    else if (name == "query-data") {
+      this.query_manager.data.show_view(on_history)
+    }
     else {
+      this.cursor.focus = "query-list"
       this.query_manager.list.show_view(on_history)
     }
   }
@@ -140,21 +166,6 @@ class AdminEngine {
   click_query_create (event) {
     this.show_view("query-create", true)
   }
-
-  click_detail_summary (event) {
-    document.querySelector("#query-detail #query-detail-summary").classList.remove("hidden")
-    document.querySelector("#query-detail #query-detail-questions").classList.add("hidden")
-    document.querySelector("#query-detail #summary-link").classList.add("active")
-    document.querySelector("#query-detail #questions-link").classList.remove("active")
-  }
-
-  click_detail_questions (event) {
-    document.querySelector("#query-detail #query-detail-summary").classList.add("hidden")
-    document.querySelector("#query-detail #query-detail-questions").classList.remove("hidden")
-    document.querySelector("#query-detail #summary-link").classList.remove("active")
-    document.querySelector("#query-detail #questions-link").classList.add("active")
-  }
-
 }
 
 export {AdminEngine}
