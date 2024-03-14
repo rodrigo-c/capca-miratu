@@ -1,5 +1,4 @@
 <div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
-    <div class="main-label link" id="link-to-query-list">Todas las consultas</div>
     <div class="query-{{ view_type }}-content">
         <div class="query-draft">
             <div class="query-item {{ view_type }}" id="query-{{ view_type }}-item">
@@ -39,68 +38,62 @@
                         </select>
                     </div>
                     <div class="error-label" id="query-{{ view_type }}-status-error"></div>
-                </div>
-                <div class="actions">
-                    <div class="action-more-attributes-button"
-                         id="query-{{ view_type }}-more-attrs-button">
-                        <i class="icon bottom"></i><span>Opciones</span>
+                    <div class="attribute">
+                        <textarea id="query-{{view_type}}-description"
+                                  class="attribute-textarea"
+                                  field="description"
+                                  placeholder="Agrega una descripción..."></textarea>
+                        <div class="error-label" id="query-{{ view_type }}-description-error"></div>
                     </div>
-                </div>
-            </div>
-            <div class="more-attributes hidden" id="query-{{ view_type }}-more-attrs">
-                <div class="attribute">
-                    <textarea id="query-{{view_type}}-description"
-                              class="attribute-textarea"
-                              field="description"
-                              placeholder="Agrega una descripción..."></textarea>
-                    <div class="error-label" id="query-{{ view_type }}-description-error"></div>
-                </div>
-                <div class="attribute with-label">
-                    <div class="attribute-label">Solicitar correo</div>
-                    <select id="query-{{ view_type }}-auth-email"
-                            class="status-value"
-                            field="auth_email">
-                        <option value="OPTIONAL">Opcional</option>
-                        <option value="REQUIRED">Requerido</option>
-                        <option value="DISABLED">Deshabilitado</option>
-                    </select>
+                    <div class="attribute with-label">
+                        <div class="attribute-label">Solicitar correo</div>
+                        <select id="query-{{ view_type }}-auth-email"
+                                class="status-value"
+                                field="auth_email">
+                            <option value="OPTIONAL">Opcional</option>
+                            <option value="REQUIRED">Requerido</option>
+                            <option value="DISABLED">Deshabilitado</option>
+                        </select>
+                    </div>
                     <div class="error-label" id="query-{{ view_type }}-auth_email-error"></div>
-                </div>
-                <div class="attribute with-label">
-                    <div class="attribute-label">Solicitar RUT</div>
-                    <select id="query-{{ view_type }}-auth-rut"
-                            class="status-value"
-                            field="auth_rut">
-                        <option value="OPTIONAL">Opcional</option>
-                        <option value="REQUIRED">Requerido</option>
-                        <option value="DISABLE">Deshabilitado</option>
-                    </select>
+                    <div class="attribute with-label">
+                        <div class="attribute-label">Solicitar RUT</div>
+                        <select id="query-{{ view_type }}-auth-rut"
+                                class="status-value"
+                                field="auth_rut">
+                            <option value="OPTIONAL">Opcional</option>
+                            <option value="REQUIRED">Requerido</option>
+                            <option value="DISABLE">Deshabilitado</option>
+                        </select>
+                    </div>
                     <div class="error-label" id="query-{{ view_type }}-auth_rut-error"></div>
                 </div>
             </div>
         </div>
         <div class="rightbar">
             <div class="sidebar-button" id="{{ view_type }}-query-button">
-                {% if view_type == "create" %}Publicar consulta{% endif %}
-                {% if view_type == "update" %}Guardar consulta{% endif %}
+                {% if view_type == "create" %}<i class="icon upload"></i>Publicar consulta{% endif %}
+                {% if view_type == "update" %}<i class="icon folder"></i> Guardar{% endif %}
             </div>
+            {% if view_type == "update" %}
+                <div class="sidebar-button" id="update-query-delete-button">
+                    <i class="icon delete"></i> Borrar
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="query-components">
         <div class="tabs" id="query-{{ view_type }}-tabs">
-            <div class="tab-links">
-                <div class="tab-link active">
-                    {% if view_type == "create" %}Crear consulta{% endif %}
-                    {% if view_type == "update" %}Editar consulta{% endif %}
-                </div>
-            </div>
+            <div class="subtitle">Preguntas</div>
             <div class="{{ view_type }}-questions-tab"
                  id="query-{{ view_type }}-questions-tab"></div>
         </div>
         <div class="rightbar">
             <div class="dropdown">
                 <div class="sidebar-button"
-                     id="query-{{ view_type }}-create-question-button">Añadir pregunta</div>
+                     id="query-{{ view_type }}-create-question-button">
+                    <i class="icon plus"></i> Añadir pregunta
+                </div>
                 <div class="dropdown-content hidden"
                      id="query-{{ view_type }}-create-question-kinds">
                     <div class="dropdown-item" kind="TEXT" type="short">Texto corto</div>
