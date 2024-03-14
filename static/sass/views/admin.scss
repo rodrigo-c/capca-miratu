@@ -85,6 +85,72 @@
 
 }
 
+.admin-modal {
+  background-color: $shadow-strong;
+  display: flex;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+
+  &.hidden {
+    display: none;
+  }
+
+  .admin-modal-content {
+    background-color: $white;
+    border-radius: 2px;
+    margin: auto;
+    min-width: 50vh;
+    padding: 2vh 2vw;
+    width: max-content;
+  }
+
+  .modal-title {
+    font-family: Roboto;
+    font-size: 2.5vh;
+    font-weight: 600;
+    margin-bottom: 2vh;
+    text-align: center;
+  }
+
+  .modal-content {
+    font-family: Open Sans;
+    font-size: 2vh;
+    margin-bottom: 3vh;
+    max-width: 65%;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+
+    .primary-button {
+      margin: 1vh 1vw;
+      min-width: 2vw;
+      text-align: center;
+    }
+  }
+
+  .modal-icon-alert {
+    align-self: end;
+    background-image: url('../images/icons/alert.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 2vw;
+  }
+
+  .query-delete-confirmation {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 3vh 3vw;
+  }
+}
+
+
 .admin-content {
   display: flex;
   justify-content: center;
@@ -103,6 +169,10 @@
 
     &:first-child {
       padding-bottom: 4vh;
+    }
+
+    &.current[to="query-create"] {
+      border: 0;
     }
 
     &:hover {
@@ -129,11 +199,14 @@
     color: $white;
     cursor: pointer;
     font-family: Gotham;
-    font-size: 2vh;
+    font-size: 1.8vh;
     font-weight: 600;
-    padding: 1vh 1vw;
-    text-align: center;
+    padding: 1.8vh 1vw;
     user-select: none;
+
+    .icon {
+      padding-right: 2vw;
+    }
 
     &:hover {
       opacity: .7;
@@ -276,10 +349,12 @@
   }
 
   .status-value {
-    border-radius: 6px;
-    box-shadow: 0 0 2px 0 $shadow;
+    background: none;
+    border: 1px solid $terciary;
+    border-radius: 3px;
+    font-family: Open Sans;
     font-size: 1.7vh;
-    font-weight: 600;
+    font-weight: 500;
     padding: .2vh 1.5vw;
 
     &.active {
@@ -458,7 +533,7 @@
 
   .name.input {
     border: 0;
-    padding: none;
+    padding: 0;
     width: 100%;
 
     &:focus-visible {
@@ -470,24 +545,7 @@
     }
 
     &::placeholder {
-      color: $inactive;
-    }
-  }
-
-  .action-more-attributes-button {
-    color: $inactive;
-    cursor: pointer;
-    display: flex;
-    font-size: 2vh;
-    justify-content: space-between;
-    user-select: none;
-
-    &.active {
-      color: $secondary;
-    }
-
-    &:hover {
-      color: $secondary;
+      color: $terciary;
     }
   }
 
@@ -506,13 +564,9 @@
     opacity: 1;
   }
 
-  .more-attributes {
-    padding: 1vh 1vw;
-  }
-
   .attribute {
     font-size: 2vh;
-    padding: 1vh 1vw;
+    padding: 1vh 0;
     width: 80%;
 
     &.with-label {
@@ -581,6 +635,13 @@
     .tabs {
       flex-basis: 70%;
     }
+
+    .subtitle {
+      font-family: Gotham;
+      font-size: 2.3vh;
+      font-weight: 600;
+      padding: 1vh 1vw;
+    }
   }
 
   .rightbar {
@@ -591,6 +652,8 @@
     padding: 2vh 1vw;
 
     .sidebar-button {
+      margin-bottom: 1vh;
+      min-width: 6vw;
       width: fit-content;
     }
   }
@@ -675,6 +738,13 @@
     width: 3vw;
   }
 
+  .question-item-kind {
+    font-family: 'Open Sans';
+    font-size: 1.8vh;
+    font-style: italic;
+    padding: 0 1vw;
+  }
+
   .question-item-content {
     display: flex;
     flex-direction: column;
@@ -705,7 +775,9 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      margin: 0 1vw;
       padding: 3.5vh 0;
+      width: 100%;
     }
   }
 
@@ -724,7 +796,7 @@
     }
 
     &::placeholder {
-      color: $inactive;
+      color: $terciary;
     }
   }
 
@@ -732,16 +804,18 @@
     align-items: flex-end;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 2vh 2vw;
   }
 
   .action-delete {
     cursor: pointer;
-    height: 6vh;
-    margin: .5vh .5vw;
+    margin-right: -1vw;
     text-align: center;
-    width: 3vw;
+
+    .icon {
+      padding-right: 2.3vh;
+    }
   }
 
   .action-checkbox {
@@ -793,6 +867,7 @@
     display: inline-block;
     font-family: Gotham;
     font-size: 1.6vh;
+    margin-bottom: 2vh;
     position: relative;
   }
 
@@ -873,12 +948,12 @@
     }
 
     &::placeholder {
-      color: $inactive;
+      color: $terciary;
     }
   }
 
   .question-option-add {
-    color: $inactive;
+    color: $terciary;
     cursor: pointer;
     font-family: Gotham;
     font-size: 1.8vh;
