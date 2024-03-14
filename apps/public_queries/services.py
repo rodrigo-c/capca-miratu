@@ -27,6 +27,7 @@ from apps.public_queries.lib.exceptions import (
     ResponseDoesNotExist,
 )
 from apps.public_queries.models import Response
+from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
@@ -60,6 +61,11 @@ def update_public_query(query_data: PublicQueryData) -> PublicQueryData:
     except Exception as error:
         raise PublicQueryUpdateError(error)
     return created_query
+
+
+def delete_public_query(uuid: str | UUID) -> bool:
+    obj_deleted, detail = public_query_providers.delete_public_query(uuid=uuid)
+    return detail.get("public_queries.PublicQuery") == 1
 
 
 def get_submit_public_query(

@@ -366,9 +366,65 @@
   padding-right: 2vw;
 }
 
+.icon.folder {
+  background-image: url('../images/icons/folder.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.delete {
+  background-image: url('../images/icons/delete.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.upload {
+  background-image: url('../images/icons/upload.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.close-dark {
+  background-image: url('../images/icons/close-dark.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .map-bg {
   background-image: url('../images/geomap.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.primary-button {
+  background-color: $cegir-primary;
+  border-radius: 6px;
+  box-shadow: 0 0 2px 0 $shadow;
+  color: $white;
+  cursor: pointer;
+  font-family: Gotham;
+  font-size: 1.8vh;
+  font-weight: 600;
+  padding: 1.8vh 1vw;
+  user-select: none;
+  width: fit-content;
+
+  .icon {
+    padding-right: 2vw;
+  }
+
+  &:hover {
+    opacity: .7;
+    transition: opacity .3s;
+  }
+
+  &.disabled {
+    cursor: auto;
+    opacity: .4;
+  }
 }

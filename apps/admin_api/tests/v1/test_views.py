@@ -8,6 +8,7 @@ from apps.public_queries.lib.constants import (
     CreatePublicQueryConstants,
     PublicQueryConstants,
 )
+from apps.public_queries.models import PublicQuery
 from apps.public_queries.tests.recipes import (
     make_public_query_data,
     public_query_recipe,
@@ -168,6 +169,28 @@ class TestPublicQueryManager:
             questions.append(question_data)
         data["questions"] = questions
         return data
+
+    def test_delete(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-detail", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.delete(url, data={"confirmation": "TRUE"}, format="json")
+        assert response.status_code == 202
+        assert not PublicQuery.objects.filter(id=ended_public_query.id)
+
+    def test_delete_without_confirmation(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-detail", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.delete(url, format="json")
+        assert response.status_code == 406
+        assert PublicQuery.objects.filter(id=ended_public_query.id).exists()
 
     def test_get_map(self, api_client, user, ended_public_query):
         ended_public_query.created_by_id = user.id

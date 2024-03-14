@@ -102,6 +102,15 @@ class TestGetPublicQuery:
 
 
 @pytest.mark.django_db
+class TestDeletePublicQuery:
+    def test_success(self, public_query):
+        assert services.delete_public_query(uuid=public_query.id) is True
+
+    def test_not_found(self):
+        assert services.delete_public_query(uuid=uuid4()) is False
+
+
+@pytest.mark.django_db
 class TestGetSubmitPublicQuery:
     def test_success_with_open(self):
         public_query = public_query_recipe.make(active=True)

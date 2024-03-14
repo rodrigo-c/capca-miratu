@@ -46,3 +46,7 @@ def create_public_query(name, kind, user_id, **kwargs) -> PublicQuery:
     return PublicQuery.objects.create(
         name=name, kind=kind, created_by_id=user_id, **other_values
     )
+
+
+def delete_public_query(uuid: str | None) -> None:
+    return PublicQuery.objects.filter(id=uuid).delete()
