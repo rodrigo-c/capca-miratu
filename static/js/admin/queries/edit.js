@@ -7,9 +7,7 @@ class QueryEditBase {
     this.errors = {}
     this.buttons = {}
 
-    this._click_more_attributes = this._click_more_attributes.bind(this)
     this._click_publish = this._click_publish.bind(this)
-
     this._dropdown_create_question = this._dropdown_create_question.bind(this)
     this._click_create_question = this._click_create_question.bind(this)
     this._move_question_ondragstart = this._move_question_ondragstart.bind(this)
@@ -22,7 +20,6 @@ class QueryEditBase {
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
     this._set_initial()
-    this._set_more_attrs()
     this._set_publish_button()
     this._set_create_question_button()
     this._set_query_inputs()
@@ -43,23 +40,6 @@ class QueryEditBase {
 
   _set_initial() {}
 
-  _set_more_attrs() {
-    let button = document.querySelector(`#query-${this.view_type}-more-attrs-button`)
-    button.addEventListener("click", this._click_more_attributes, false)
-  }
-
-  _click_more_attributes (event) {
-    let moreattrs = document.querySelector(`#query-${this.view_type}-more-attrs`)
-    let button = document.querySelector(`#query-${this.view_type}-more-attrs-button`)
-    if (moreattrs.classList.contains("hidden")) {
-      moreattrs.classList.remove("hidden")
-      button.classList.add("active")
-    } else {
-      moreattrs.classList.add("hidden")
-      button.classList.remove("active")
-    }
-  }
-
   _set_publish_button () {
     let publish = document.querySelector(`#${this.view_type}-query-button`)
     publish.disabled = true
@@ -69,7 +49,8 @@ class QueryEditBase {
   }
 
   _click_publish(event) {
-    if (event.target.disabled == false) {
+    let publish = document.querySelector(`#${this.view_type}-query-button`)
+    if (publish.disabled == false) {
       this.manager.engine._set_loading()
       this.execute_service()
     }
@@ -280,8 +261,9 @@ class QueryEditBase {
   }
 
   _dropdown_create_question(event) {
+    let button = document.querySelector(`#query-${this.view_type}-create-question-button`)
     let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
-    if (!event.target.disabled) {
+    if (!button.disabled) {
       if (dropdown.classList.contains("hidden")) {
         dropdown.classList.remove("hidden")
       } else {
@@ -321,13 +303,18 @@ class QueryEditBase {
       let question = this._create_question_element(question_data, index)
       questions_container.appendChild(question)
       let delete_button = question.querySelector(".action-delete")
-      delete_button.addEventListener("click", this._click_remove_question, false)
+      let click_delete = this._get_question_delete_callback()
+      delete_button.addEventListener("click", click_delete, false)
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
       this._set_question_draggable(question)
       this._set_question_error_containers(question)
       index += 1
     }
     this.validate_inputs()
+  }
+
+  _get_question_delete_callback() {
+    return this._click_remove_question
   }
 
   _get_question_id(index) { return `query-${this.view_type}-question-item-${index}` }
@@ -339,6 +326,7 @@ class QueryEditBase {
     question.index = index
     question.setAttribute("id", question_id)
     question.kind = question_data.kind
+    let kind_label = this._get_kind_label(question_data)
     question.innerHTML = `
       <div class="question-move-previous"></div>
       <div class="question-container">
@@ -346,6 +334,7 @@ class QueryEditBase {
           <i class="icon move"></i>
         </div>
         <div class="question-item-content">
+          <div class="question-item-kind">${kind_label}</div>
           <input class="question-item-name"
                  id="query-${this.view_type}-${question_id}-name-input"
                  type="text"
@@ -362,17 +351,21 @@ class QueryEditBase {
           <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
         </div>
         <div class="question-item-actions">
-          <div class="action-delete"><i class="icon trash"></i></div>
-          <div class="action-required">
-            <label class="action-checkbox">
-              <div class="action-label">Obligatorio</div>
-              <input type="checkbox"
-                     id="query-${this.view_type}-${question_id}-required-input"
-                     field="required"
-                     class="action-checkbox-input">
-              </input>
-              <span class="action-checkbox-checkmarker"></span>
-            </label>
+          <div class="actions-top">
+            <div class="action-delete"><i class="icon close-dark"></i></div>
+          </div>
+          <div class="actions-bottom">
+            <div class="action-required">
+              <label class="action-checkbox">
+                <div class="action-label">Obligatorio</div>
+                <input type="checkbox"
+                       id="query-${this.view_type}-${question_id}-required-input"
+                       field="required"
+                       class="action-checkbox-input">
+                </input>
+                <span class="action-checkbox-checkmarker"></span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -388,8 +381,25 @@ class QueryEditBase {
       question_content.innerHTML += `<div class="kind-point"></div>`
     } else if (question_data.kind === "SELECT") {
       this._set_question_options(question, question_data)
+      this._set_question_max_answers(question, question_data)
     }
     return question
+  }
+
+  _get_kind_label(question_data) {
+    let kind_label = ""
+    if (question_data.kind === "TEXT" && question_data.text_max_length > 150) {
+      kind_label = "Texto largo"
+    } else if (question_data.kind === "TEXT" && question_data.text_max_length <= 150) {
+      kind_label = "Texto corto"
+    } else if (question_data.kind === "SELECT") {
+      kind_label = "Selección múltiple"
+    } else if (question_data.kind === "IMAGE") {
+      kind_label = "Imagen"
+    } else if (question_data.kind === "POINT") {
+      kind_label = "Ubicación"
+    }
+    return kind_label
   }
 
   _prepare_question_inputs(question, question_data, fields) {
@@ -471,7 +481,6 @@ class QueryEditBase {
       option_index += 1
       option_list.appendChild(option)
     }
-    this._set_question_max_answers(question, question_data)
   }
 
   _click_question_remove_option(event) {
@@ -483,7 +492,7 @@ class QueryEditBase {
   }
 
   _set_question_max_answers (question, question_data) {
-    let actions = question.querySelector(".question-item-actions")
+    let actions = question.querySelector(".question-item-actions .actions-bottom")
     actions.innerHTML = `
       <div class="action-max-answers">
         <div class="action-max-answers-button">
@@ -662,6 +671,75 @@ class QueryCreateManager extends QueryEditBase {
 class QueryUpdateManager extends QueryEditBase {
   _set_initial() {
     this.view_type = "update"
+    this._click_query_delete_modal = this._click_query_delete_modal.bind(this)
+    this._click_query_delete = this._click_query_delete.bind(this)
+    this._click_remove_question_modal = this._click_remove_question_modal.bind(this)
+    let query_delete_button = document.querySelector("#update-query-delete-button")
+    query_delete_button.addEventListener("click", this._click_query_delete_modal, false)
+  }
+
+  _click_query_delete_modal(event) {
+    let config = {
+      class: "query-delete-confirmation",
+      icon: "alert",
+      title: "¿Estás seguro de que quieres eliminar esta consulta?",
+      content: `Se perderán todas las respuestas (${this.total_responses}) y datos asociados a esta consulta de manera permanente`,
+      actions: [
+        {name: "Sí", click: this._click_query_delete},
+        {name: "No", click: this.manager.engine.hide_modal},
+      ],
+    }
+    this.manager.engine.show_modal(config)
+  }
+
+  _click_query_delete(event) {
+    this.manager.engine._set_loading()
+    this.manager.engine.hide_modal()
+    fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}`, {
+      method: "DELETE",
+      body: JSON.stringify({"confirmation": "TRUE"}),
+      headers: {"Content-Type": "application/json", "X-CSRFToken": this.manager.engine.csrf_token},
+      credentials: "same-origin"
+    })
+    .then(response=> {
+      if (response.ok) {
+        response.json()
+        .then((data)=> {
+          this.manager.engine.show_view("query-list", true)
+        })
+      } else {
+        console.log(response)
+        this.manager.engine.show_view("query-update", true)
+      }
+    })
+  }
+
+  _get_question_delete_callback() {
+    return this._click_remove_question_modal
+  }
+
+  _click_remove_question_modal(event) {
+    let question = event.target.closest(".question-item")
+    let config = {
+      class: "query-delete-confirmation",
+      icon: "alert",
+      title: "¿Estás seguro de que quieres eliminar esta pregunta?",
+      content: `Se perderán todas las respuestas y datos asociados a esta pregunta de manera permanente`,
+      actions: [
+        {name: "Sí", click: this._click_remove_question},
+        {name: "No", click: this.manager.engine.hide_modal},
+      ],
+      data: {question_index: question.index }
+    }
+    this.manager.engine.show_modal(config)
+  }
+
+  _click_remove_question(event) {
+    let modal_data = event.target.closest("#admin-modal").data
+    let question_index = modal_data.question_index
+    this.data.questions.splice(question_index, 1)
+    this._build_question_from_data()
+    this.manager.engine.hide_modal()
   }
 
   show_view(on_history) {
@@ -681,6 +759,7 @@ class QueryUpdateManager extends QueryEditBase {
         })
       } else {
         console.log(response)
+        this.manager.engine._set_url_params("query-list")
         this.manager.engine.show_view("query-list", false)
       }
     })
@@ -729,6 +808,7 @@ class QueryUpdateManager extends QueryEditBase {
         auth_rut: data.query.auth_rut,
         questions: [],
     }
+    this.total_responses = data.query.total_responses
     let questions = Array.isArray(data.query.questions)? data.query.questions: []
     for (let question of questions) {
       let cleaned_question = this._get_cleaned_question(question)

@@ -75,6 +75,12 @@ class QueryManager {
       for (let element of sidebar.querySelectorAll(".sidebar-element")) {
         element.addEventListener("click", this._click_go_to_view, false)
       }
+    } else if (current == "query-create") {
+      sidebar.innerHTML = `
+        <div class="sidebar-element current" to="query-create">
+          Crear consulta
+        </div>
+      `
     } else {
       sidebar.remove()
     }
