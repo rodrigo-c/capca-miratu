@@ -21,6 +21,7 @@ class AdminEngine {
     window.addEventListener("popstate", this._onpopstate, false)
     this._set_admin_menu()
     this._set_views()
+    this._set_modal()
     this.show_view(this.cursor.focus, true)
   }
 
@@ -83,10 +84,17 @@ class AdminEngine {
     }
     this.click_query_list = this.click_query_list.bind(this)
     this.click_query_detail = this.click_query_detail.bind(this)
-    for (let view of [query_create, query_update]) {
-      view.querySelector("#link-to-query-list").addEventListener(
-        "click", this.click_query_list, false
-      )
+  }
+
+  _set_modal() {
+    this._click_out_modal_content = this._click_out_modal_content.bind(this)
+    let modal = document.querySelector("#admin-modal")
+    modal.addEventListener("click", this._click_out_modal_content, false)
+  }
+
+  _click_out_modal_content(event) {
+    if (event.target.getAttribute("id") === "admin-modal") {
+      this.hide_modal()
     }
   }
 
@@ -152,6 +160,35 @@ class AdminEngine {
       this.cursor.key = null
     }
     history.pushState(this.cursor, null, "?" + query_params.toString())
+  }
+
+  show_modal(config) {
+    let modal = document.querySelector("#admin-modal")
+    let html_element = document.createElement("div")
+    html_element.classList.add(config.class)
+    html_element.innerHTML = `
+      <div class="modal-icon-${config.icon}"></div>
+      <div class="modal-title">${config.title}</div>
+      <div class="modal-content">${config.content}</div>
+      <div class="modal-actions"></div>
+    `
+    modal.data = config.data
+    let actions = html_element.querySelector(".modal-actions")
+    for (let action of config.actions) {
+      let button = document.createElement("div")
+      button.classList.add("primary-button")
+      button.innerText = action.name
+      button.addEventListener("click", action.click, false)
+      actions.appendChild(button)
+    }
+    modal.querySelector(".admin-modal-content").appendChild(html_element)
+    modal.classList.remove("hidden")
+  }
+
+  hide_modal() {
+    let modal = document.querySelector("#admin-modal")
+    modal.classList.add("hidden")
+    modal.querySelector(".admin-modal-content").innerHTML = ""
   }
 
   click_query_detail (event) {
