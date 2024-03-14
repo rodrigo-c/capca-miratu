@@ -3,6 +3,7 @@ from uuid import UUID
 
 from django.http import Http404
 from django.urls import reverse
+from rest_framework import status as response_status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -80,6 +81,13 @@ class PublicQueryManager(ViewSet):
             raise ValidationError("Unknown error")
         serializer = PublicQuerySerializer(instance=returned_data)
         return Response(serializer.data)
+
+    def delete(self, request, pk=None) -> Response:
+        public_query = self.get_public_query(identifier=pk)
+        if request.data.get("confirmation") == "TRUE":
+            if public_queries_services.delete_public_query(uuid=public_query.uuid):
+                return Response({}, status=response_status.HTTP_202_ACCEPTED)
+        return Response({}, status=response_status.HTTP_406_NOT_ACCEPTABLE)
 
     @action(detail=True, methods=["get"])
     def map(self, request, pk) -> Response:
