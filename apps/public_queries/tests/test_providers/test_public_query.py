@@ -1,5 +1,6 @@
 import pytest
 
+from apps.public_queries.models import PublicQuery
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.tests.recipes import public_query_recipe
 
@@ -43,6 +44,16 @@ class TestCreatePublicQuery:
         assert created_query.id is not None
         assert other_query.id != created_query.id
         assert other_query.url_code != created_query.url_code
+
+
+@pytest.mark.django_db
+def test_delete_public_query(public_query):
+    deleted_num, detail = public_query_providers.delete_public_query(
+        uuid=public_query.id
+    )
+    assert deleted_num == 1
+    assert detail["public_queries.PublicQuery"] == 1
+    assert not PublicQuery.objects.filter(id=public_query.id)
 
 
 @pytest.mark.django_db
