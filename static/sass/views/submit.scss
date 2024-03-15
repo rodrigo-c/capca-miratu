@@ -64,6 +64,16 @@
       padding: 2vh;
     }
   }
+
+  .form-field-detail {
+    align-self: center;
+    color: $secondary;
+    font-size: 1.8vh;
+    font-style: italic;
+    margin-bottom: 2vh;
+    margin-left: 4vw;
+    width: 70%;
+  }
 }
 
 .detail.content-container {
