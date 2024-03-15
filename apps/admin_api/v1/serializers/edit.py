@@ -103,13 +103,23 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
     def _get_options(self, question: dict) -> list[QuestionOptionData]:
         if question.get("options") is not None:
             return [
-                QuestionOptionData(uuid=None, question_uuid=None, **option)
+                QuestionOptionData(**{"uuid": None, "question_uuid": None, **option})
                 for option in question["options"]
             ]
 
 
+class UpdateQuestionOptionSerializer(QuestionOptionSerializer):
+    uuid = serializers.UUIDField(required=False, allow_null=True)
+    question_uuid = serializers.UUIDField(required=False, allow_null=True)
+
+
 class UpdateQuestionSerializer(CreateQuestionSerializer):
     uuid = serializers.UUIDField(required=False, allow_null=True)
+    options = serializers.ListField(
+        child=UpdateQuestionOptionSerializer(),
+        allow_empty=True,
+        required=False,
+    )
 
 
 class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):

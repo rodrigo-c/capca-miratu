@@ -118,7 +118,6 @@ class PublicQueryFactory:
             if new_questions
             else []
         )
-
         question_uuids_for_delete = [
             question_uuid
             for question_uuid in current_questions_map
@@ -196,13 +195,21 @@ class PublicQueryFactory:
             else:
                 options_for_create.append(option)
         if options_for_update:
-            question_option_providers.bulk_update_question_options(
-                data_list=list(options_for_update.values())
-            )
+            changed_options = [
+                option
+                for option_uuid, option in options_for_update.items()
+                if any(
+                    option[field] != getattr(current_options_map[option_uuid], field)
+                    for field in ["name", "order"]
+                )
+            ]
+            if changed_options:
+                question_option_providers.bulk_update_question_options(
+                    data_list=changed_options
+                )
         question_option_providers.bulk_create_question_options(
             data_list=options_for_create
         ) if options_for_create else []
-
         options_uuids_for_delete = [
             option_uuid
             for option_uuid in current_options_map
