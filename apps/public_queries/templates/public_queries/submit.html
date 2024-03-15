@@ -26,6 +26,11 @@
             {% for field in response_form.visible_fields %}
                 {% if not field.field.disabled %}
                     <div class="form-field{% if field.errors %} error{% endif %}">{{ field }}</div>
+                    {% if field.field.required %}
+                        <div class="form-field-detail">Requerido</div>
+                    {% else %}
+                        <div class="form-field-detail">Opcional</div>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
             <div class="errors">
