@@ -255,3 +255,14 @@ class TestPublicQueryManager:
         assert response.status_code == 200
         assert response.filename == f"consulta-{ended_public_query.url_code}.pdf"
         assert response.headers["Content-Type"] == "application/force-download"
+
+    def test_get_excel(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-excel", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert response.filename == f"consulta-{ended_public_query.url_code}-data.xlsx"
