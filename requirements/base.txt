@@ -28,3 +28,6 @@ svglib==1.5.1  # https://github.com/deeplook/svglib
 
 # QR
 segno==1.6.1  # https://segno.readthedocs.io/en/latest/pillow-qrcodes.html
+
+# PDF
+openpyxl==3.1.2  # https://openpyxl.readthedocs.io
