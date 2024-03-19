@@ -1,6 +1,8 @@
+from io import BytesIO
 from uuid import UUID
 
 from apps.public_queries.domain_logic.auth import CanSubmitPublicQuery
+from apps.public_queries.domain_logic.exports import PublicQueryExporter
 from apps.public_queries.domain_logic.factories import PublicQueryFactory
 from apps.public_queries.domain_logic.results import (
     AnswerResultReturner,
@@ -165,3 +167,9 @@ def can_submit_public_query(
         responder_rut=rut,
         secret_key=secret_key,
     ).validate()
+
+
+def get_public_query_share_document(
+    public_query: PublicQueryData, host: str | None = None
+) -> BytesIO:
+    return PublicQueryExporter(public_query=public_query, host=host).get_share_pdf()

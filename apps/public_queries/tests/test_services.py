@@ -1,4 +1,5 @@
 from datetime import datetime
+from io import BytesIO
 from tempfile import NamedTemporaryFile
 from uuid import uuid4
 
@@ -558,3 +559,10 @@ class TestCanSubmitPublicQuery:
             )
             is None
         )
+
+
+@pytest.mark.django_db
+def test_get_public_query_share_document(ended_public_query):
+    public_query = services.get_public_query(identifier=ended_public_query.id)
+    file = services.get_public_query_share_document(public_query=public_query)
+    assert isinstance(file, BytesIO)
