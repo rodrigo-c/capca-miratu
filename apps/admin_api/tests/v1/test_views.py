@@ -231,3 +231,27 @@ class TestPublicQueryManager:
         )
         response = api_client.get(url)
         assert response.status_code == 404
+
+    def test_get_share(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-share", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert response.filename == f"consulta-{ended_public_query.url_code}.pdf"
+        assert response.headers["Content-Type"] == "application/pdf"
+
+    def test_get_share_download(self, api_client, user, ended_public_query):
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-share", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url + "?k=download")
+        assert response.status_code == 200
+        assert response.filename == f"consulta-{ended_public_query.url_code}.pdf"
+        assert response.headers["Content-Type"] == "application/force-download"

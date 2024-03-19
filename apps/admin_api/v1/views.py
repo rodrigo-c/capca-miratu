@@ -1,7 +1,7 @@
 import re
 from uuid import UUID
 
-from django.http import Http404
+from django.http import FileResponse, Http404
 from django.urls import reverse
 from rest_framework import status as response_status
 from rest_framework.decorators import action
@@ -104,6 +104,20 @@ class PublicQueryManager(ViewSet):
             public_query=public_query_result["query"], fields=verbose_fields
         )
         return Response(public_query_result)
+
+    @action(detail=True, methods=["get"])
+    def share(self, request, pk=None):
+        public_query = self.get_public_query(identifier=pk)
+        pdf_file = public_queries_services.get_public_query_share_document(
+            public_query=public_query, host=request.get_host()
+        )
+        filename = f"consulta-{public_query.url_code}.pdf"
+        content_type = (
+            "application/force-download"
+            if self.request.GET.get("k") == "download"
+            else "application/pdf"
+        )
+        return FileResponse(pdf_file, filename=filename, content_type=content_type)
 
     def filter_by_user(
         self,

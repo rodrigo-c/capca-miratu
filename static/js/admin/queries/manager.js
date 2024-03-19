@@ -2,6 +2,7 @@ import {QueryListManager} from "./list.js"
 import {QueryDetailManager} from "./detail.js"
 import {QueryCreateManager, QueryUpdateManager} from "./edit.js"
 import {QueryResultManager} from "./results.js"
+import {QueryShareManager} from "./share.js"
 
 
 class QueryManager {
@@ -17,6 +18,7 @@ class QueryManager {
     this.questions = new QueryResultManager({manager:this, kind: "questions"})
     this.map = new QueryResultManager({manager:this, kind: "map"})
     this.data = new QueryResultManager({manager:this, kind: "data"})
+    this.share = new QueryShareManager({manager: this})
     this._click_go_to_view = this._click_go_to_view.bind(this)
   }
 
@@ -49,7 +51,7 @@ class QueryManager {
 
   _build_sidebar () {
     let current = this.engine.cursor.focus
-    let views_with_sidebar = ["query-detail", "query-update"]
+    let views_with_sidebar = ["query-detail", "query-update", "query-share"]
     let result_views = ["query-result", "query-data", "query-map", "query-questions"]
     let admin_content = document.querySelector(".admin-content")
     let sidebar = document.querySelector(".admin-content > .sidebar")
@@ -67,6 +69,9 @@ class QueryManager {
         </div>
         <div class="sidebar-element${current == 'query-update'?' current': ''}" to="query-update">
           Editar
+        </div>
+        <div class="sidebar-element${current == 'query-share'?' current': ''}" to="query-share">
+          Compartir
         </div>
         <div class="sidebar-element${result_views.includes(current)?' current': ''}" to="query-result">
           Resultados

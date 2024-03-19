@@ -14,6 +14,19 @@ class AdminEngine {
     this.ready = this.ready.bind(this)
     this._onpopstate = this._onpopstate.bind(this)
     document.addEventListener("DOMContentLoaded", this.ready)
+    this.view_names = [
+      "loading",
+      "query_list",
+      "query_detail",
+      "query_create",
+      "query_update",
+      "query_result",
+      "query_questions",
+      "query_map",
+      "query_data",
+      "query_share",
+    ]
+    this.views = {}
   }
 
   ready() {
@@ -62,28 +75,10 @@ class AdminEngine {
   }
 
   _set_views () {
-    let loading = document.querySelector("#loading")
-    let query_list = document.querySelector("#query-list")
-    let query_detail = document.querySelector("#query-detail")
-    let query_create = document.querySelector("#query-create")
-    let query_update = document.querySelector("#query-update")
-    let query_result = document.querySelector("#query-result")
-    let query_questions = document.querySelector("#query-questions")
-    let query_map = document.querySelector("#query-map")
-    let query_data = document.querySelector("#query-data")
-    this.views = {
-      loading,
-      query_list,
-      query_detail,
-      query_create,
-      query_update,
-      query_result,
-      query_questions,
-      query_map,
-      query_data,
+    for (let name of this.view_names) {
+      let view = document.querySelector(`#${name.replace("_", "-")}`)
+      this.views[name] = view
     }
-    this.click_query_list = this.click_query_list.bind(this)
-    this.click_query_detail = this.click_query_detail.bind(this)
   }
 
   _set_modal() {
@@ -99,15 +94,9 @@ class AdminEngine {
   }
 
   _hide_all_views () {
-    this.views.loading.classList.add("hidden")
-    this.views.query_list.classList.add("hidden")
-    this.views.query_detail.classList.add("hidden")
-    this.views.query_create.classList.add("hidden")
-    this.views.query_update.classList.add("hidden")
-    this.views.query_result.classList.add("hidden")
-    this.views.query_questions.classList.add("hidden")
-    this.views.query_map.classList.add("hidden")
-    this.views.query_data.classList.add("hidden")
+    for (let name in this.views) {
+      this.views[name].classList.add("hidden")
+    }
   }
 
   _set_loading () {
@@ -118,31 +107,16 @@ class AdminEngine {
   show_view(name, on_history) {
     this._set_loading()
     this.cursor.focus = name
-    if (name == "query-list") {
-      this.query_manager.list.show_view(on_history)
+    let view_name = name.split("-")
+    let view_kind = view_name[0]
+    let view_selector = view_name[1]
+    let manager = null
+    if (view_kind == "query") {
+      manager = this.query_manager[view_selector]
     }
-    else if (name == "query-detail") {
-      this.query_manager.detail.show_view(on_history)
-    }
-    else if (name == "query-create") {
-      this.query_manager.create.show_view(on_history)
-    }
-    else if (name == "query-update") {
-      this.query_manager.update.show_view(on_history)
-    }
-    else if (name == "query-result") {
-      this.query_manager.result.show_view(on_history)
-    }
-    else if (name == "query-questions") {
-      this.query_manager.questions.show_view(on_history)
-    }
-    else if (name == "query-map") {
-      this.query_manager.map.show_view(on_history)
-    }
-    else if (name == "query-data") {
-      this.query_manager.data.show_view(on_history)
-    }
-    else {
+    if (manager && manager.show_view) {
+      manager.show_view(on_history)
+    } else {
       this.cursor.focus = "query-list"
       this.query_manager.list.show_view(on_history)
     }
@@ -189,19 +163,6 @@ class AdminEngine {
     let modal = document.querySelector("#admin-modal")
     modal.classList.add("hidden")
     modal.querySelector(".admin-modal-content").innerHTML = ""
-  }
-
-  click_query_detail (event) {
-    this.cursor.key = event.currentTarget.query_uuid
-    this.show_view("query-detail", true)
-  }
-
-  click_query_list (event) {
-    this.show_view("query-list", true)
-  }
-
-  click_query_create (event) {
-    this.show_view("query-create", true)
   }
 }
 
