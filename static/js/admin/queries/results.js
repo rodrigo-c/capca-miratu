@@ -20,6 +20,36 @@ class QueryResultManager {
     for (let tab_link of tab_links.children) {
       tab_link.addEventListener("click", click_got_to, false)
     }
+    this._set_download_links()
+  }
+
+  _set_download_links () {
+    this._click_excel_link = this._click_excel_link.bind(this)
+    this._click_download_dropdown = this._click_download_dropdown.bind(this)
+    let dropdown_button = document.querySelector(`#query-${this.kind}-download-button`)
+    dropdown_button.addEventListener("click", this._click_download_dropdown, false)
+    let excel_link = document.querySelector(`#query-${this.kind}-download-excel`)
+    excel_link.addEventListener("click", this._click_excel_link, false)
+  }
+
+  _click_download_dropdown (event) {
+    let dropdown_content = document.querySelector(`#query-${this.kind}-dropdown`)
+    if (dropdown_content.classList.contains("hidden")) {
+      dropdown_content.classList.remove("hidden")
+    } else {
+      dropdown_content.classList.add("hidden")
+    }
+  }
+
+  _click_excel_link (event) {
+    let excel_link = this._get_excel_link()
+    window.open(excel_link)
+    let dropdown_content = document.querySelector(`#query-${this.kind}-dropdown`)
+    dropdown_content.classList.add("hidden")
+  }
+
+  _get_excel_link () {
+    return `${this.manager.url_base}${this.manager.engine.cursor.key}/excel/`
   }
 
   show_view(on_history) {
