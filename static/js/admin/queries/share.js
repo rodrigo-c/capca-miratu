@@ -15,43 +15,41 @@ class QueryShareManager {
   }
 
   _set_in_view() {
-    this._set_copy_link()
-    this._set_download_link()
-    this._set_print_link()
-  }
-
-  _set_copy_link () {
+    this._click_copy_link = this._click_copy_link.bind(this)
+    this._click_download_link = this._click_download_link.bind(this)
+    this._click_print_link = this._click_print_link.bind(this)
     let copy_link = document.querySelector("#query-share-copy-link")
-    let submit_link = this._get_submit_link()
-    copy_link.addEventListener("click", (event) => {
-      navigator.clipboard.writeText(submit_link)
-      let action_container = event.target.closest(".action-container")
-      if (!action_container.querySelector(".action-success")) {
-        let success = document.createElement("div")
-        success.classList.add("action-success")
-        success.innerHTML = "<i class='icon ok-simple'></i> Copiado correctamente"
-        action_container.appendChild(success)
-        setTimeout(function () {
-          action_container.querySelector(".action-success").remove()
-        }, 3000)
-      }
-    })
-  }
-
-  _set_download_link () {
+    copy_link.addEventListener("click", this._click_copy_link, false)
     let download_link = document.querySelector("#query-share-download-link")
-    let pdf_link = this._get_pdf_link()
-    download_link.addEventListener("click", (event) => {
-      window.open(pdf_link + "?k=download")
-    })
+    download_link.addEventListener("click", this._click_download_link, false)
+    let print_link = document.querySelector("#query-share-print-link")
+    print_link.addEventListener("click", this._click_print_link, false)
   }
 
-  _set_print_link () {
-    let print_link = document.querySelector("#query-share-print-link")
+  _click_copy_link(event) {
+    let submit_link = this._get_submit_link()
+    navigator.clipboard.writeText(submit_link)
+    let action_container = event.target.closest(".action-container")
+    if (!action_container.querySelector(".action-success")) {
+      let success = document.createElement("div")
+      success.classList.add("action-success")
+      success.innerHTML = "<i class='icon ok-simple'></i> Copiado correctamente"
+      action_container.appendChild(success)
+      setTimeout(function () {
+        action_container.querySelector(".action-success").remove()
+      }, 3000)
+    }
+  }
+
+  _click_download_link (event) {
     let pdf_link = this._get_pdf_link()
-    print_link.addEventListener("click", (event) => {
-      window.open(pdf_link).print()
-    })
+    window.open(pdf_link + "?k=download")
+  }
+
+  _click_print_link (event) {
+    let pdf_link = this._get_pdf_link()
+    let w = window.open(pdf_link)
+    w.print()
   }
 
   _get_submit_link() {

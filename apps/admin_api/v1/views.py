@@ -1,4 +1,5 @@
 import re
+from io import BytesIO
 from uuid import UUID
 
 from django.http import FileResponse, Http404
@@ -9,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
+
+from openpyxl import Workbook
 
 from apps.admin_api.lib.constants import PublicQueryDataResultConstants
 from apps.admin_api.v1.serializers.edit import (
@@ -106,7 +109,7 @@ class PublicQueryManager(ViewSet):
         return Response(public_query_result)
 
     @action(detail=True, methods=["get"])
-    def share(self, request, pk=None):
+    def share(self, request, pk=None) -> FileResponse:
         public_query = self.get_public_query(identifier=pk)
         pdf_file = public_queries_services.get_public_query_share_document(
             public_query=public_query, host=request.get_host()
@@ -118,6 +121,22 @@ class PublicQueryManager(ViewSet):
             else "application/pdf"
         )
         return FileResponse(pdf_file, filename=filename, content_type=content_type)
+
+    @action(detail=True, methods=["get"])
+    def excel(self, request, pk=None) -> FileResponse:
+        public_query_result = self._get_public_query_data_result(identifier=pk)
+        verbose_fields = self._get_verbose_fields(dataset=public_query_result)
+        excel_file = self._get_excel_file(
+            dataset=public_query_result, verbose_fields=verbose_fields
+        )
+        filename = f"consulta-{public_query_result['query']['url_code']}-data.xlsx"
+        return FileResponse(
+            excel_file,
+            filename=filename,
+            content_type=(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ),
+        )
 
     def filter_by_user(
         self,
@@ -216,3 +235,19 @@ class PublicQueryManager(ViewSet):
                 "perPage": "Consultas por página",
             },
         }
+
+    def _get_excel_file(self, dataset, verbose_fields) -> BytesIO:
+        wb = Workbook()
+        ws = wb.active
+        ws.append(list(verbose_fields.values()))
+        for data in dataset.get("dataset", []):
+            row = [
+                str(value) if value else ""
+                for field, value in data.items()
+                if field != "uuid"
+            ]
+            ws.append(row)
+        excel_file = BytesIO()
+        wb.save(excel_file)
+        excel_file.seek(0)
+        return excel_file
