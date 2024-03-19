@@ -77,7 +77,7 @@ class PublicQueryExporter:
         style.fontName = "Open Sans Bold"
         style.leading = 30
         title = Paragraph(self.query_data.name, style)
-        w, h = title.wrap(int(width / 1.5), int(height / 2))
+        w, h = title.wrap(int(width / 1.6), int(height / 2))
         title.drawOn(
             canvas,
             int(width / 4.5),
@@ -99,6 +99,7 @@ class PublicQueryExporter:
             )
 
     def _add_link(self, canvas) -> None:
+        canvas.setFont("Open Sans", size=12)
         width, height = letter
         canvas.drawCentredString(
             int(width / 2),
