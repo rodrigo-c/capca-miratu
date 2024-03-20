@@ -175,6 +175,7 @@ class TestCreatePublicQuery:
 @pytest.mark.django_db
 class TestUpdatePublicQuery:
     def test_success(self, ended_public_query):
+        ended_public_query.responses.all().delete()
         public_query_data = services.get_public_query(identifier=ended_public_query.id)
         basic_data_modified = {
             "name": "public_query_modified",

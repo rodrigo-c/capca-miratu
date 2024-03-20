@@ -1,18 +1,13 @@
-from collections import defaultdict
-
 from django.db import transaction
 
+from apps.public_queries.domain_logic.restrictions import query_can_edit_questions
+from apps.public_queries.domain_logic.returners import PublicQueryReturner
 from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
-from apps.public_queries.lib.dataclasses import (
-    PublicQueryData,
-    QuestionData,
-    QuestionOptionData,
-)
+from apps.public_queries.lib.dataclasses import PublicQueryData, QuestionData
 from apps.public_queries.models import PublicQuery, Question, QuestionOption
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
 from apps.public_queries.providers import question_option as question_option_providers
-from apps.utils.dataclasses import build_dataclass_from_model_instance
 
 
 class PublicQueryFactory:
@@ -22,26 +17,17 @@ class PublicQueryFactory:
     def create(self, user_id=None) -> PublicQueryData:
         with transaction.atomic():
             public_query = self._create_query(user_id=user_id)
-            questions = self._create_questions()
-            options = self._create_options()
-        public_query_data = self._to_dataclass(
-            public_query=public_query,
-            questions=questions,
-            options=options,
-        )
-        return public_query_data
+            self._create_questions()
+            self._create_options()
+        return PublicQueryReturner(identifier=public_query.id).get()
 
     def update(self) -> PublicQueryData:
         with transaction.atomic():
             public_query = self._update_query()
-            questions = self._update_questions()
-            options = self._update_options()
-        public_query_data = self._to_dataclass(
-            public_query=public_query,
-            questions=questions,
-            options=options,
-        )
-        return public_query_data
+            if query_can_edit_questions(public_query=public_query):
+                self._update_questions()
+                self._update_options()
+        return PublicQueryReturner(identifier=public_query.id).get()
 
     def _create_query(self, user_id) -> PublicQuery:
         public_query_kwargs = self._get_public_query_kwargs()
@@ -221,43 +207,4 @@ class PublicQueryFactory:
             )
         return question_option_providers.get_question_options_by_query_uuid(
             query_uuid=self.data.uuid
-        )
-
-    def _to_dataclass(
-        self,
-        public_query: PublicQuery,
-        questions: list[Question],
-        options: list[QuestionOption],
-    ) -> PublicQueryData:
-        options_by_question_uuid = defaultdict(list)
-        for option in options:
-            option_data = build_dataclass_from_model_instance(
-                klass=QuestionOptionData,
-                instance=option,
-                uuid=option.id,
-                question_uuid=option.question_id,
-            )
-            options_by_question_uuid[option.question_id].append(option_data)
-        question_data_list = []
-        for index, question in enumerate(questions):
-            question_data = build_dataclass_from_model_instance(
-                klass=QuestionData,
-                instance=question,
-                uuid=question.id,
-                query_uuid=question.query_id,
-                options=options_by_question_uuid.get(question.id),
-                index=index,
-            )
-            question_data_list.append(question_data)
-        public_query.refresh_from_db()
-        return build_dataclass_from_model_instance(
-            klass=PublicQueryData,
-            instance=public_query,
-            uuid=public_query.id,
-            questions=question_data_list,
-            status_verbose=None,
-            created_by_email=(
-                public_query.created_by.email if public_query.created_by else None
-            ),
-            total_responses=None,
         )

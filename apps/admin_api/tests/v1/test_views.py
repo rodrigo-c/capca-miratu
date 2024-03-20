@@ -102,6 +102,7 @@ class TestPublicQueryManager:
         )
 
     def test_update_success(self, api_client, user, ended_public_query):
+        ended_public_query.responses.all().delete()
         ended_public_query.created_by_id = user.id
         ended_public_query.save()
         api_client.force_login(user)
@@ -125,6 +126,7 @@ class TestPublicQueryManager:
     def test_update_error(
         self, mock_update_public_query, api_client, user, ended_public_query
     ):
+        ended_public_query.responses.all().delete()
         ended_public_query.created_by_id = user.id
         ended_public_query.save()
         api_client.force_login(user)

@@ -48,6 +48,7 @@ class PublicQueryData:
     status_verbose: dict | None = None
     created_by_email: str | None = None
     total_responses: int | None = None
+    can_edit_questions: bool | None = None
 
 
 @dataclass

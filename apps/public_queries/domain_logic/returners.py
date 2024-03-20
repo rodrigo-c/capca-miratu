@@ -4,6 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from django.utils import timezone
 
+from apps.public_queries.domain_logic.restrictions import query_can_edit_questions
 from apps.public_queries.lib.constants import PublicQueryConstants, QuestionConstants
 from apps.public_queries.lib.dataclasses import (
     PublicQueryData,
@@ -96,6 +97,7 @@ class PublicQueryReturner:
             status_verbose=status_verbose,
             created_by_email=instance.created_by.email if instance.created_by else None,
             total_responses=total_responses,
+            can_edit_questions=query_can_edit_questions(public_query=instance),
         )
 
     def _get_status_verbose(self, instance: PublicQuery) -> str:
