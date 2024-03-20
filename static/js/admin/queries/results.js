@@ -266,36 +266,52 @@ class QueryResultManager {
     }
     let dataset = []
     for (let item of this.data.dataset) {
-      let row = []
-      for (let i = 0; i < this.data.fields.length; i++) {
-        let field = this.data.fields[i]
-        let value = item[field]
-        if (field == "send_at") {
-          let sat = new Date(value)
-          let month = sat.getMonth() + 1
-          month = month < 10 ? `0${month}`: month
-          let day = sat.getDate() < 10 ? `0${sat.getDate()}`: sat.getDate()
-          value = `${sat.getFullYear()}-${month}-${day} `
-          value += `${sat.getHours()}:${sat.getMinutes()}:${sat.getSeconds()}`
-        }
-        if (field == "location" && value) {
-          let lat = `<div class="latitude"><span class="label">Latitud: </span><span class="value">${value.latitude}</span></div>`
-          let long = `<div class="latitude"><span class="label">Longitud: </span><span class="value">${value.longitude}</span></div>`
-          value = `${lat}${long}`
-        }
-        if (field.includes("pregunta_")) {
-          value = this._get_question_value(this.data.query.questions, field, value, item.uuid)
-        }
-        if (value == null) {
-          value = ""
-        }
-        row.push(value)
-      }
+      let row = this._get_row_from_item(item)
       dataset.push(row)
     }
     let config = {...this.data.simpletables_config}
     config.data.data = dataset
+    config.data.headings = this._get_datables_heading(config)
     this.data_table = new simpleDatatables.DataTable("#query-result-data-table", config)
+  }
+
+  _get_row_from_item(item) {
+    let row = []
+    for (let i = 0; i < this.data.fields.length; i++) {
+      let field = this.data.fields[i]
+      let value = item[field]
+      if (field == "send_at") {
+        let sat = new Date(value)
+        let month = sat.getMonth() + 1
+        month = month < 10 ? `0${month}`: month
+        let day = sat.getDate() < 10 ? `0${sat.getDate()}`: sat.getDate()
+        value = `${sat.getFullYear()}-${month}-${day} `
+        value += `${sat.getHours()}:${sat.getMinutes()}:${sat.getSeconds()}`
+      }
+      if (field == "location" && value) {
+        let lat = `<div class="latitude"><span class="label">Latitud: </span><span class="value">${value.latitude}</span></div>`
+        let long = `<div class="latitude"><span class="label">Longitud: </span><span class="value">${value.longitude}</span></div>`
+        value = `${lat}${long}`
+      }
+      if (field.includes("pregunta_")) {
+        value = this._get_question_value(this.data.query.questions, field, value, item.uuid)
+      }
+      if (value == null) {
+        value = ""
+      }
+      row.push(value)
+    }
+    return row
+  }
+
+  _get_datables_heading(config) {
+    let headings = []
+    for (let header of config.data.headings) {
+      let description = header.desc ? `<div class="dt-field-desc">${header.desc}</div>`: ""
+      let heading = `<div class="dt-field"><div class="dt-field-label">${header.label}</div>${description}</div>`
+      headings.push(heading)
+    }
+    return headings
   }
 
   _get_question_value(questions, field, value, response_uuid) {
