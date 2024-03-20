@@ -1,4 +1,12 @@
 <div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
+    <div class="result-actions">
+        <div class="primary-button" id="query-{{ view_type }}-download-button">
+            <i class="icon download"></i> Descargar resultados
+        </div>
+        <div class="dropdown-content hidden" id="query-{{ view_type }}-dropdown">
+            <div class="dropdown-item" id="query-{{ view_type }}-download-excel">Excel</div>
+        </div>
+    </div>
     <div class="query-result-container">
         <div class="result tab-links">
             <div class="tab-link {% if view_type == 'result' %}active{% endif %}"
@@ -53,14 +61,6 @@
                     <div class="data-table" id="query-result-data-table"></div>
                 </div>
             {% endif %}
-        </div>
-    </div>
-    <div class="result-actions">
-        <div class="primary-button" id="query-{{ view_type }}-download-button">
-            <i class="icon download"></i> Descargar resultados
-        </div>
-        <div class="dropdown-content hidden" id="query-{{ view_type }}-dropdown">
-            <div class="dropdown-item" id="query-{{ view_type }}-download-excel">Excel</div>
         </div>
     </div>
 </div>
