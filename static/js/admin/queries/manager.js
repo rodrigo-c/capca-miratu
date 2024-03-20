@@ -67,14 +67,14 @@ class QueryManager {
         <div class="sidebar-element${current == 'query-detail'?' current': ''}" to="query-detail">
           Ver consulta
         </div>
-        <div class="sidebar-element${current == 'query-update'?' current': ''}" to="query-update">
-          Editar
+        <div class="sidebar-element${result_views.includes(current)?' current': ''}" to="query-result">
+          Resultados
         </div>
         <div class="sidebar-element${current == 'query-share'?' current': ''}" to="query-share">
           Compartir
         </div>
-        <div class="sidebar-element${result_views.includes(current)?' current': ''}" to="query-result">
-          Resultados
+        <div class="sidebar-element${current == 'query-update'?' current': ''}" to="query-update">
+          Editar
         </div>
       `
       for (let element of sidebar.querySelectorAll(".sidebar-element")) {
