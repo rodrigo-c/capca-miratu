@@ -201,7 +201,9 @@ class PublicQueryManager(ViewSet):
 
     def _get_simpletables_config(self, public_query, fields) -> dict:
         columns = []
+        headings = []
         for index, (field, label) in enumerate(fields.items()):
+            heading = {"label": label}
             column = {"select": index, "type": "html", "cellClass": "cell"}
             if field == "send_at":
                 column["type"] = "date"
@@ -217,15 +219,17 @@ class PublicQueryManager(ViewSet):
                     column["cellClass"] = "cell-tooltip value-point"
                 if question["kind"] == QuestionConstants.KIND_SELECT:
                     column["cellClass"] = "cell-tooltip value-select"
+                heading["desc"] = question["name"]
             else:
                 column["cellClass"] = f"cell {field}"
+            headings.append(heading)
             columns.append(column)
         return {
             "locale": "es-cl",
             "perPageSelect": [5, 10, 50, 100],
             "columns": columns,
             "data": {
-                "headings": fields.values(),
+                "headings": headings,
                 "data": [],
             },
             "fixedColumns": True,
