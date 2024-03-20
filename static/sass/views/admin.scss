@@ -636,18 +636,10 @@
     padding: 4vh 4vw;
   }
 
-  .view.query-result,
-  .view.query-questions,
-  .view.query-map,
-  .view.query-data {
-    display: flex;
-
-    &.hidden {
-      display: none;
-    }
-  }
-
   .result-actions {
+    margin-bottom: 1vw;
+    padding: 0 1vw;
+
     .primary-button {
       font-weight: 500;
       padding: 1vh 1vw;
@@ -659,7 +651,6 @@
     border: 1px solid $shadow-ligth;
     border-radius: 4px;
     margin: 0 1vw;
-    max-width: 50vw;
     min-height: 60vh;
     padding: 1vh 1vw;
     padding-bottom: 3vw;
@@ -675,11 +666,6 @@
     .responses-total {
       margin-bottom: 4vh;
     }
-  }
-
-  .query-data .datatable-container {
-    max-height: 50vh;
-    width: 100%;
   }
 
   .query-data .data-result-container {
