@@ -7,16 +7,25 @@
   }
 
   .datatable-container {
-    max-height: 68vh;
-    overflow: scroll;
-    width: 100vw;
+    max-height: 100%;
+    overflow-x: scroll;
+    overflow-y: auto;
+    padding-bottom: 15%;
+    width: 100%;
 
     th {
       text-wrap: nowrap;
+      vertical-align: baseline;
     }
 
     .cell.rut {
       text-wrap: nowrap;
+    }
+
+    .dt-field-desc {
+      font-size: 1.5vh;
+      font-weight: 400;
+      text-wrap: balance;
     }
   }
 
