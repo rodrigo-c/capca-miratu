@@ -46,6 +46,12 @@ class QueryListManager {
       update_link.addEventListener(
         "click", this._click_query_update, false
       )
+      if (this.manager.engine.user.is_superuser && item.created_by_email) {
+        let email = document.createElement("div")
+        email.classList.add("query-item-created-by")
+        email.textContent = item.created_by_email
+        returned_query_item.appendChild(email)
+      }
       query_list.appendChild(returned_query_item)
     }
     this.manager._build_sidebar()
