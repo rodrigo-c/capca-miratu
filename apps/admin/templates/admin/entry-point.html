@@ -80,6 +80,7 @@
       csrf_token: '{{ csrf_token }}',
       focus: {% if cursor.focus %}'{{cursor.focus}}'{% else %}null{% endif %},
       key: {% if cursor.key %}'{{cursor.key}}'{% else %}null{% endif %},
+      user: {email: '{{user.email}}', is_superuser: {% if user.is_superuser%}true{% else %}false{% endif %}},
     });
     </script>
 {% endblock extra_js %}
