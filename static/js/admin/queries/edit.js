@@ -6,6 +6,7 @@ class QueryEditBase {
     this.inputs = {}
     this.errors = {}
     this.buttons = {}
+    this.can_edit_questions = true
 
     this._click_publish = this._click_publish.bind(this)
     this._dropdown_create_question = this._dropdown_create_question.bind(this)
@@ -172,6 +173,10 @@ class QueryEditBase {
       this.buttons.new_question.disabled = false
       this.buttons.new_question.classList.remove("disabled")
     }
+    if (!this.can_edit_questions) {
+      this.buttons.new_question.disabled = true
+      this.buttons.new_question.classList.add("disabled")
+    }
     if (
       Object.keys(this.errors).length === 0
       && this.errors.constructor === Object
@@ -262,12 +267,14 @@ class QueryEditBase {
 
   _dropdown_create_question(event) {
     let button = document.querySelector(`#query-${this.view_type}-create-question-button`)
-    let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
-    if (!button.disabled) {
-      if (dropdown.classList.contains("hidden")) {
-        dropdown.classList.remove("hidden")
-      } else {
-        dropdown.classList.add("hidden")
+    if (this.can_edit_questions) {
+      let dropdown = document.querySelector(`#query-${this.view_type}-create-question-kinds`)
+      if (!button.disabled) {
+        if (dropdown.classList.contains("hidden")) {
+          dropdown.classList.remove("hidden")
+        } else {
+          dropdown.classList.add("hidden")
+        }
       }
     }
   }
@@ -303,11 +310,16 @@ class QueryEditBase {
       let question = this._create_question_element(question_data, index)
       questions_container.appendChild(question)
       let delete_button = question.querySelector(".action-delete")
-      let click_delete = this._get_question_delete_callback()
-      delete_button.addEventListener("click", click_delete, false)
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
-      this._set_question_draggable(question)
-      this._set_question_error_containers(question)
+      if (this.can_edit_questions) {
+        let click_delete = this._get_question_delete_callback()
+        delete_button.addEventListener("click", click_delete, false)
+        this._set_question_draggable(question)
+        this._set_question_error_containers(question)
+      } else {
+        delete_button.remove()
+        this._set_disable_edit_questions(question)
+      }
       index += 1
     }
     this.validate_inputs()
@@ -414,7 +426,11 @@ class QueryEditBase {
       } else {
         element.value = question_data[field]
       }
-      element.addEventListener("input", this._change_input, false)
+      if (this.can_edit_questions) {
+        element.addEventListener("input", this._change_input, false)
+      } else {
+        element.setAttribute("disabled", true)
+      }
     }
   }
 
@@ -434,6 +450,12 @@ class QueryEditBase {
       this.error_containers.questions[question.index][field] = question.querySelector(
         `#query-${this.view_type}-question-${question.index}-${field}-error`
       )
+    }
+  }
+
+  _set_disable_edit_questions (question) {
+    for (let input of question.querySelectorAll("input")) {
+      input.setAttribute("disabled", true)
     }
   }
 
@@ -475,9 +497,12 @@ class QueryEditBase {
       input.value = option_data.name
       input.addEventListener("input", this._change_input, false)
       let delete_button = option.querySelector(".question-option-delete")
-      delete_button.index = question.index
-      delete_button.option_index = option_index
-      delete_button.addEventListener("click", this._click_question_remove_option, false)
+      if (this.can_edit_questions) {
+        delete_button.option_index = option_index
+        delete_button.addEventListener("click", this._click_question_remove_option, false)
+      } else {
+        delete_button.remove()
+      }
       option_index += 1
       option_list.appendChild(option)
     }
@@ -534,10 +559,12 @@ class QueryEditBase {
   _click_question_max_answers_menu(event) {
     let question = event.target.closest(".question-item")
     let dropdown = question.querySelector(".action-max-answers-dropdown")
-    if (dropdown.classList.contains("hidden")) {
-      dropdown.classList.remove("hidden")
-    } else {
-      dropdown.classList.add("hidden")
+    if (this.can_edit_questions) {
+      if (dropdown.classList.contains("hidden")) {
+        dropdown.classList.remove("hidden")
+      } else {
+        dropdown.classList.add("hidden")
+      }
     }
   }
 
@@ -821,6 +848,11 @@ class QueryUpdateManager extends QueryEditBase {
       } else {
         input.value = this.data[field]
       }
+    }
+    this.can_edit_questions = data.query.can_edit_questions
+    if (!this.can_edit_questions) {
+      this.buttons.new_question.disabled = true
+      this.buttons.new_question.classList.add("disabled")
     }
     this._build_question_from_data()
     this.manager._build_sidebar()

@@ -50,6 +50,7 @@ class PublicQuerySerializer(serializers.Serializer):
     )
     created_by_email = serializers.CharField(required=False)
     total_responses = serializers.IntegerField(required=False, allow_null=True)
+    can_edit_questions = serializers.BooleanField(required=False, allow_null=True)
 
 
 class AnswerSerializer(serializers.Serializer):

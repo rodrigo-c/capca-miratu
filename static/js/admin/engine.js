@@ -6,8 +6,9 @@ import {
 
 class AdminEngine {
   constructor (
-    { url_base = "" , csrf_token = "", focus = null, key = null}
+    { url_base = "" , csrf_token = "", focus = null, key = null, user = null}
   ) {
+    this.user = user
     this.csrf_token = csrf_token
     this.cursor = {focus: focus?focus:"query-list", key}
     this.url_base = url_base
