@@ -1,31 +1,40 @@
+function _show_without_image (input) {
+  let container = input.parentElement
+  container.style.backgroundImage = null
+  container.querySelector(".image-icon").classList.remove("hidden")
+  container.querySelector(".image-icon-description").classList.remove("hidden")
+  container.querySelector(".closed-icon").classList.add("hidden")
+}
+
+function _show_with_image (input, url) {
+  let container = input.parentElement
+  container.style.backgroundImage = `url(${url})`
+  container.querySelector(".image-icon").classList.add("hidden")
+  container.querySelector(".image-icon-description").classList.add("hidden")
+  container.querySelector(".closed-icon").classList.remove("hidden")
+}
 
 function set_image_preview (input) {
+  _show_without_image(input)
   let files = input.files
-  let input_container = input.parentElement
-  let input_add_icon = input_container.querySelector(".image-icon")
-  let input_add_icon_desc = input_container.querySelector(".image-icon-description")
-  let input_close_icon = input_container.querySelector(".closed-icon")
-  let payload = ""
-  for (var i = files.length - 1; i >= 0; i--) {
-    let url = URL.createObjectURL(files[i])
-    payload+=`url(${url})`
-    if (i > 0) {payload+=", "}
-  }
-  if (payload != "") {
-    input_container.style.backgroundImage = payload
-  } else {
-    input_container.style.backgroundImage = null
-  }
-
+  let reducer = new window.ImageBlobReduce({
+    pica: window.ImageBlobReduce.pica({ features: [ 'js', 'wasm', 'ww' ] })
+  });
   if (files.length > 0) {
-    input_add_icon.classList.add("hidden")
-    input_add_icon_desc.classList.add("hidden")
-    input_close_icon.classList.remove("hidden")
-
-  } else {
-    input_add_icon.classList.remove("hidden")
-    input_add_icon_desc.classList.remove("hidden")
-    input_close_icon.classList.add("hidden")
+    let file = files[0]
+    reducer.toBlob(
+      file, {max: 1000}
+    ).then(
+      blob => {
+        let url = URL.createObjectURL(blob)
+        let reduced_file = new File([blob], input.files[0].name, {type:"mime/type", lastModified:new Date().getTime()})
+        let files_container = new DataTransfer()
+        files_container.items.add(reduced_file)
+        _show_with_image(input, url)
+      }
+    ).catch(
+      error => {console.log(error)}
+    )
   }
 }
 
