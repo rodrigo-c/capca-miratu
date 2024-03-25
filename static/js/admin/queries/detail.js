@@ -72,8 +72,8 @@ class QueryDetailManager {
               <span class="option-value">${option.name}</span>
             </div>
           `
+          option_index += 1
         }
-        option_index += 1
       }
       questions.appendChild(question_container)
       index += 1
