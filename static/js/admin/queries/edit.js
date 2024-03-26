@@ -338,7 +338,7 @@ class QueryEditBase {
     question.index = index
     question.setAttribute("id", question_id)
     question.kind = question_data.kind
-    let kind_label = this._get_kind_label(question_data)
+    let kind_label = this.manager.get_kind_label(question_data)
     question.innerHTML = `
       <div class="question-move-previous"></div>
       <div class="question-container">
@@ -396,22 +396,6 @@ class QueryEditBase {
       this._set_question_max_answers(question, question_data)
     }
     return question
-  }
-
-  _get_kind_label(question_data) {
-    let kind_label = ""
-    if (question_data.kind === "TEXT" && question_data.text_max_length > 150) {
-      kind_label = "Texto largo"
-    } else if (question_data.kind === "TEXT" && question_data.text_max_length <= 150) {
-      kind_label = "Texto corto"
-    } else if (question_data.kind === "SELECT") {
-      kind_label = "Selección múltiple"
-    } else if (question_data.kind === "IMAGE") {
-      kind_label = "Imagen"
-    } else if (question_data.kind === "POINT") {
-      kind_label = "Ubicación"
-    }
-    return kind_label
   }
 
   _prepare_question_inputs(question, question_data, fields) {

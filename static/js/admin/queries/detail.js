@@ -56,8 +56,9 @@ class QueryDetailManager {
       question_container.classList.add("question-container")
       question_container.innerHTML = `
         <div class="subtitle">Pregunta ${index + 1}</div>
+        <div class="question-item-kind">${this.manager.get_kind_label(question)}</div>
         <div class="question-name">${question.name}</div>
-        <div class="question-description">${question.description}</div>
+        <div class="question-description">${question.description? question.description: ""}</div>
       `
       if (question.kind == "POINT") {
         question_container.innerHTML += "<div class='question-map map-bg'></div>"
