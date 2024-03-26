@@ -3,7 +3,6 @@ class QueryListManager {
     this.manager = manager
     this.data = []
     this._click_query_detail = this._click_query_detail.bind(this)
-    this._click_query_update = this._click_query_update.bind(this)
   }
 
   show_view(on_history) {
@@ -41,11 +40,6 @@ class QueryListManager {
       detail_link.addEventListener(
         "click", this._click_query_detail, false
       )
-      let update_link = returned_query_item.querySelector(".action-button.item-update-link")
-      update_link.query_uuid = item.uuid
-      update_link.addEventListener(
-        "click", this._click_query_update, false
-      )
       if (this.manager.engine.user.is_superuser && item.created_by_email) {
         let email = document.createElement("div")
         email.classList.add("query-item-created-by")
@@ -62,11 +56,6 @@ class QueryListManager {
   _click_query_detail (event) {
     this.manager.engine.cursor.key = event.currentTarget.query_uuid
     this.manager.engine.show_view("query-detail", true)
-  }
-
-  _click_query_update (event) {
-    this.manager.engine.cursor.key = event.currentTarget.query_uuid
-    this.manager.engine.show_view("query-update", true)
   }
 
 }

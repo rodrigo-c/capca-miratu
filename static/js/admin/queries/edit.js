@@ -32,7 +32,7 @@ class QueryEditBase {
         description: null,
         start_at: null,
         end_at: null,
-        active: false,
+        active: true,
         questions: [],
         auth_rut: "OPTIONAL",
         auth_email: "OPTIONAL",
@@ -62,6 +62,15 @@ class QueryEditBase {
   _clean_data() {
     this.data = this._get_default_data()
     this._build_question_from_data()
+    for (let field in this.inputs) {
+      let input = this.inputs[field]
+      if (["start_at", "end_at"].includes(field) && this.data[field]) {
+        input.value = new Date(this.data[field]).toISOString().split('T')[0]
+      } else {
+        input.value = this.data[field]
+      }
+    }
+    this.validate_inputs()
   }
 
   _set_query_inputs() {
@@ -338,7 +347,7 @@ class QueryEditBase {
     question.index = index
     question.setAttribute("id", question_id)
     question.kind = question_data.kind
-    let kind_label = this._get_kind_label(question_data)
+    let kind_label = this.manager.get_kind_label(question_data)
     question.innerHTML = `
       <div class="question-move-previous"></div>
       <div class="question-container">
@@ -396,22 +405,6 @@ class QueryEditBase {
       this._set_question_max_answers(question, question_data)
     }
     return question
-  }
-
-  _get_kind_label(question_data) {
-    let kind_label = ""
-    if (question_data.kind === "TEXT" && question_data.text_max_length > 150) {
-      kind_label = "Texto largo"
-    } else if (question_data.kind === "TEXT" && question_data.text_max_length <= 150) {
-      kind_label = "Texto corto"
-    } else if (question_data.kind === "SELECT") {
-      kind_label = "Selección múltiple"
-    } else if (question_data.kind === "IMAGE") {
-      kind_label = "Imagen"
-    } else if (question_data.kind === "POINT") {
-      kind_label = "Ubicación"
-    }
-    return kind_label
   }
 
   _prepare_question_inputs(question, question_data, fields) {

@@ -34,7 +34,12 @@ class QueryDetailManager {
   _set_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this.manager._create_query_item(this.data.query, query_item)
-    document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
+    if (this.data.query.is_active) {
+      document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
+      document.querySelector("#detail-action-submit").classList.remove("hidden")
+    } else {
+      document.querySelector("#detail-action-submit").classList.add("hidden")
+    }
     this._set_query_preview()
     this.manager._build_sidebar()
     this.manager.engine._hide_all_views()
@@ -56,8 +61,9 @@ class QueryDetailManager {
       question_container.classList.add("question-container")
       question_container.innerHTML = `
         <div class="subtitle">Pregunta ${index + 1}</div>
+        <div class="question-item-kind">${this.manager.get_kind_label(question)}</div>
         <div class="question-name">${question.name}</div>
-        <div class="question-description">${question.description}</div>
+        <div class="question-description">${question.description? question.description: ""}</div>
       `
       if (question.kind == "POINT") {
         question_container.innerHTML += "<div class='question-map map-bg'></div>"
@@ -72,8 +78,8 @@ class QueryDetailManager {
               <span class="option-value">${option.name}</span>
             </div>
           `
+          option_index += 1
         }
-        option_index += 1
       }
       questions.appendChild(question_container)
       index += 1
