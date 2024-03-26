@@ -32,7 +32,7 @@ class QueryEditBase {
         description: null,
         start_at: null,
         end_at: null,
-        active: false,
+        active: true,
         questions: [],
         auth_rut: "OPTIONAL",
         auth_email: "OPTIONAL",
