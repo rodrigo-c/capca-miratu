@@ -62,6 +62,15 @@ class QueryEditBase {
   _clean_data() {
     this.data = this._get_default_data()
     this._build_question_from_data()
+    for (let field in this.inputs) {
+      let input = this.inputs[field]
+      if (["start_at", "end_at"].includes(field) && this.data[field]) {
+        input.value = new Date(this.data[field]).toISOString().split('T')[0]
+      } else {
+        input.value = this.data[field]
+      }
+    }
+    this.validate_inputs()
   }
 
   _set_query_inputs() {
