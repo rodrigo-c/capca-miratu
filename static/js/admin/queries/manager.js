@@ -97,6 +97,23 @@ class QueryManager {
       this.engine.show_view(view, true)
     }
   }
+
+  get_kind_label(question_data) {
+    let kind_label = ""
+    if (question_data.kind === "TEXT" && question_data.text_max_length > 150) {
+      kind_label = "Texto largo"
+    } else if (question_data.kind === "TEXT" && question_data.text_max_length <= 150) {
+      kind_label = "Texto corto"
+    } else if (question_data.kind === "SELECT") {
+      kind_label = "Selección múltiple"
+    } else if (question_data.kind === "IMAGE") {
+      kind_label = "Imagen"
+    } else if (question_data.kind === "POINT") {
+      kind_label = "Ubicación"
+    }
+    return kind_label
+  }
+
 }
 
 export {
