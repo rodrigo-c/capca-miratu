@@ -34,7 +34,12 @@ class QueryDetailManager {
   _set_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this.manager._create_query_item(this.data.query, query_item)
-    document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
+    if (this.data.query.is_active) {
+      document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
+      document.querySelector("#detail-action-submit").classList.remove("hidden")
+    } else {
+      document.querySelector("#detail-action-submit").classList.add("hidden")
+    }
     this._set_query_preview()
     this.manager._build_sidebar()
     this.manager.engine._hide_all_views()
