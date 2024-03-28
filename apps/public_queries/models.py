@@ -12,6 +12,12 @@ from apps.public_queries.lib.constants import (
     ResponderConstants,
     ResponseConstants,
 )
+from apps.public_queries.storages import (
+    get_public_query_answer_image_path,
+    get_public_query_image_path,
+    get_public_query_question_image_path,
+    get_public_query_question_option_image_path,
+)
 from apps.utils.random import get_random_url_code
 
 
@@ -53,7 +59,9 @@ class PublicQuery(BaseModel):
         blank=True,
     )
     active = models.BooleanField(default=False)
-    image = models.ImageField(null=True, blank=True, upload_to="public_queries/images/")
+    image = models.ImageField(
+        null=True, blank=True, upload_to=get_public_query_image_path
+    )
     created_by = models.ForeignKey(
         "users.User",
         on_delete=models.SET_NULL,
@@ -134,6 +142,11 @@ class Question(BaseModel):
     text_max_length = models.IntegerField(default=255)
     max_answers = models.IntegerField(null=False, blank=False, default=1)
     min_answers = models.PositiveIntegerField(null=False, blank=False, default=1)
+    image = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=get_public_query_question_image_path,
+    )
 
     class Meta:
         ordering = ["order"]
@@ -160,6 +173,11 @@ class QuestionOption(BaseModel):
         null=False,
     )
     order = models.IntegerField(default=0)
+    image = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=get_public_query_question_option_image_path,
+    )
 
     class Meta:
         ordering = ["order"]
@@ -234,7 +252,9 @@ class Answer(BaseModel):
         null=True,
     )
     image = models.ImageField(
-        null=True, blank=True, upload_to="public_queries/answers/images/"
+        null=True,
+        blank=True,
+        upload_to=get_public_query_answer_image_path,
     )
     options = models.ManyToManyField(
         QuestionOption,
@@ -242,6 +262,7 @@ class Answer(BaseModel):
         limit_choices_to=models.Q(question_id=models.F("question_id")),
     )
     point = models.PointField(null=True, blank=True)
+    line = models.LineStringField(null=True, blank=True)
 
     class Meta:
         ordering = ["question__order"]
