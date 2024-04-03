@@ -121,10 +121,6 @@ class PublicQueryResultData:
     num_pages: int | None = None
     links: dict | None = None
 
-    @property
-    def has_pagination(self) -> bool:
-        return self.page_num and self.num_pages
-
 
 @dataclass
 class PointResultData:
