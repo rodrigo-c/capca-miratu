@@ -6,6 +6,8 @@ from uuid import uuid4
 import pytest
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
 
 from freezegun import freeze_time
@@ -28,6 +30,7 @@ from apps.public_queries.lib.exceptions import (
     CantSubmitPublicQueryError,
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
+    PublicQueryEarring,
     PublicQueryUpdateError,
     QuestionDoesNotExist,
 )
@@ -90,8 +93,9 @@ class TestGetPublicQuery:
             active=True, start_at=make_aware(datetime(2023, 1, 2))
         )
         with freeze_time("2023-01-01"):
-            with pytest.raises(PublicQueryDoesNotExist):
+            with pytest.raises(PublicQueryEarring) as error:
                 services.get_public_query(identifier=public_query.id, active=True)
+            assert error.value.public_query.id == public_query.id
 
     def test_out_of_end_time(self):
         public_query = public_query_recipe.make(
@@ -564,6 +568,14 @@ class TestCanSubmitPublicQuery:
 
 @pytest.mark.django_db
 def test_get_public_query_share_document(ended_public_query):
-    public_query = services.get_public_query(identifier=ended_public_query.id)
+    ended_public_query.start_at = timezone.make_aware(
+        parse_datetime("2023-01-01 00:00:00")
+    )
+    ended_public_query.end_at = timezone.make_aware(
+        parse_datetime("2023-03-01 00:00:00")
+    )
+    ended_public_query.save()
+    with freeze_time("2023-01-01"):
+        public_query = services.get_public_query(identifier=ended_public_query.id)
     file = services.get_public_query_share_document(public_query=public_query)
     assert isinstance(file, BytesIO)
