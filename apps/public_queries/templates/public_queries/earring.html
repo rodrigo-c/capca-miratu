@@ -1,0 +1,10 @@
+{% extends "public_queries/base.html" %}
+{% block navbar %}
+    {{ block.super }}
+    <div class="top-brand" id="top-brand">
+        <div class="logo-gs-cegir"></div>
+    </div>
+{% endblock navbar %}
+{% block content %}
+    {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+{% endblock content %}

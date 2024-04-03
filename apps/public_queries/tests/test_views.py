@@ -76,7 +76,8 @@ class TestPublicQuerySubmit:
         url = reverse(self.public_query_pattern, kwargs={"uuid": public_query.id})
         with freeze_time("2023-01-01"):
             response = client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == 200
+        assert response.template_name[0] == "public_queries/earring.html"
 
     def test_get_with_questions(self, client):
         public_query = public_query_recipe.make(active=True)
