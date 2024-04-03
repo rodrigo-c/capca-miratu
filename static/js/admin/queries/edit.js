@@ -15,7 +15,7 @@ class QueryEditBase {
     this._move_question_ondragend = this._move_question_ondragend.bind(this)
     this._move_question_ondrop = this._move_question_ondrop.bind(this)
     this._click_remove_question = this._click_remove_question.bind(this)
-
+    this._change_input = this._change_input.bind(this)
     this._click_question_add_option = this._click_question_add_option.bind(this)
     this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
@@ -81,7 +81,6 @@ class QueryEditBase {
     let active = document.querySelector(`#query-${this.view_type}-active`)
     let auth_email = document.querySelector(`#query-${this.view_type}-auth-email`)
     let auth_rut = document.querySelector(`#query-${this.view_type}-auth-rut`)
-    this._change_input = this._change_input.bind(this)
     for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut]) {
       input.field = input.getAttribute("field")
       input.addEventListener("input", this._change_input, false)
@@ -638,6 +637,16 @@ class QueryEditBase {
       index += 1
     }
   }
+
+  set_can_edit_active_status () {
+    let active = document.querySelector(`#query-${this.view_type}-active`)
+    let status_container = active.closest(".status")
+    if (!this.manager.engine.user.is_superuser) {
+       status_container.style.display = "none"
+    } else {
+       status_container.style.display = "flex"
+    }
+  }
 }
 
 
@@ -650,6 +659,7 @@ class QueryCreateManager extends QueryEditBase {
     this.manager.engine._hide_all_views()
     this.manager._build_sidebar()
     this._clean_data()
+    this.set_can_edit_active_status()
     this.manager.engine.views.query_create.classList.remove("hidden")
     if (on_history) {
       this.manager.engine._set_url_params("query-create", null)
@@ -842,6 +852,7 @@ class QueryUpdateManager extends QueryEditBase {
         input.value = this.data[field]
       }
     }
+    this.set_can_edit_active_status()
     this.can_edit_questions = data.query.can_edit_questions
     if (!this.can_edit_questions) {
       this.buttons.new_question.disabled = true
