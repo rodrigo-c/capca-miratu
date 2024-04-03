@@ -32,7 +32,7 @@ class PublicQuerySerializer(serializers.Serializer):
     uuid = serializers.UUIDField()
     kind = serializers.ChoiceField(choices=PublicQueryConstants.KIND_CHOICES)
     name = serializers.CharField()
-    active = serializers.BooleanField()
+    active = serializers.BooleanField(default=True)
     is_active = serializers.BooleanField()
     description = serializers.CharField(
         required=False, allow_null=True, allow_blank=True
