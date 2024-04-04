@@ -93,7 +93,7 @@
     </div>
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript" type="text">const manager = new project.QuerySubmitEngine(
+    <script type="text/javascript" type="text">const manager = new submit.QuerySubmitEngine(
       {focus:'{{focus}}', auth_url: '{{auth_url}}', csrf_token: '{{ csrf_token }}'});
     </script>
 {% endblock extra_js %}
