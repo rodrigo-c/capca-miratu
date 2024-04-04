@@ -1,0 +1,65 @@
+.admin-content {
+  .query-draft {
+    display: flex;
+    justify-content: center;
+
+    .query-item.update,
+    .query-item.create {
+      flex-basis: 70%;
+    }
+  }
+
+  .query-components {
+    display: flex;
+    justify-content: center;
+
+    .tabs {
+      flex-basis: 76%;
+    }
+
+    .subtitle {
+      font-family: Gotham;
+      font-size: 2.3vh;
+      font-weight: 600;
+      padding: 1vh 1vw;
+    }
+  }
+
+  .update-questions-tab,
+  .create-questions-tab {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .textarea-wrap {
+    display: grid;
+
+    &.name {
+      margin-bottom: 2vh;
+    }
+
+    &.question-item-name {
+      margin-left: 1vw;
+      margin-top: 1vh;
+    }
+
+    &.question-item-description {
+      margin-bottom: 1vh;
+      margin-left: 1vw;
+    }
+
+    &::after {
+      content: attr(data-replicated-value) ' ';
+      grid-area: 1 / 1 / 2 / 2;
+      visibility: hidden;
+      white-space: pre-wrap;
+    }
+
+    > textarea {
+      grid-area: 1 / 1 / 2 / 2;
+      overflow: hidden;
+      resize: none;
+    }
+  }
+}

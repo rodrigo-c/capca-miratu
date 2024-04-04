@@ -1,0 +1,42 @@
+.admin-content {
+  .view.query-share {
+    .icon {
+      margin-right: .5vw;
+      padding-right: 3vh;
+    }
+
+    .ok-simple {
+      padding-right: 1.6vh;
+    }
+
+    .share-container {
+      border: 1px solid $shadow-ligth;
+      border-radius: 4px;
+      max-width: 600px;
+      padding: 2vh 4vw;
+      padding-bottom: 3vh;
+    }
+
+    .subtitle {
+      margin-top: 2vh;
+    }
+
+    .action-container {
+      display: flex;
+      padding: 1vh 0;
+    }
+
+    .action-button {
+      padding: 1vh 1.3vw;
+    }
+
+    .action-success {
+      border: 1px solid $shadow-ligth;
+      border-radius: 4px;
+      color: $terciary;
+      font-size: 2vh;
+      margin: 0 1vw;
+      padding: .8vh 1.8vw;
+    }
+  }
+}
