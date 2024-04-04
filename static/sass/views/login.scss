@@ -1,3 +1,9 @@
+.login.admin-content {
+  align-items: center;
+  height: 80vh;
+}
+
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -6,6 +12,13 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+  }
+
+  .sidebar-button.login {
+    font-family: Open Sans;
+    font-size: 2.2vh;
+    margin-top: 2vh;
+    min-width: 50%;
   }
 
   .form-field {
@@ -22,25 +35,24 @@
     @include large {
       width: 20vw;
     }
+
+    &::placeholder {
+      color: $terciary;
+    }
+
+    input {
+      font-family: Open Sans;
+    }
+
   }
 
-  .main-title {
-    color: $primary;
-    font-family: Roboto;
-    font-feature-settings: 'clig' off, 'liga' off;
-    font-size: 36px;
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: .5px;
-    line-height: 80%;
-    padding-bottom: 5vh;
-    text-align: center;
-    user-select: none;
-    width: 100%;
-
-    b {
-      display: block;
-    }
+  .vision-ciudadana {
+    background-image: url('../images/logos/vision-ciudadana.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin-bottom: 4vh;
+    padding-bottom: 10vh;
   }
 
   .login-submit {
