@@ -89,7 +89,6 @@ class QuerySubmitEngine {
 
   set_loading () {
     this.hide_all()
-    this.comp.navbars.main.classList.remove("hidden")
     document.querySelector(".load.content-container").classList.remove("hidden")
   }
 
@@ -203,8 +202,6 @@ class QuerySubmitEngine {
   }
 
   hide_all () {
-    this.comp.navbars.main.classList.add(this.hidden_class_name)
-    this.comp.navbars.brand.classList.add(this.hidden_class_name)
     this.comp.containers.entry.classList.add(this.hidden_class_name)
     this.comp.containers.identifier.classList.add(this.hidden_class_name)
     this.comp.containers.detail.classList.add(this.hidden_class_name)
@@ -222,9 +219,6 @@ class QuerySubmitEngine {
     if (focus != "entry") {
       this.comp.buttons.back.classList.remove(this.hidden_class_name)
       this.comp.buttons.submit.classList.remove(this.hidden_class_name)
-      this.comp.navbars.main.classList.remove(this.hidden_class_name)
-    } else {
-      this.comp.navbars.brand.classList.remove(this.hidden_class_name)
     }
     if (Number.isInteger(focus)) {
       for (let input of this.comp.input_map.question_list[focus]) {
