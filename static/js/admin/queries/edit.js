@@ -69,7 +69,11 @@ class QueryEditBase {
       } else {
         input.value = this.data[field]
       }
+      if (["name"].includes(field)) {
+        input.parentNode.dataset.replicatedValue = this.data[field]
+      }
     }
+
     this.validate_inputs()
   }
 
@@ -139,6 +143,9 @@ class QueryEditBase {
       }
     } else {
       this.data[field] = value
+    }
+    if (event.target.parentNode.classList.contains("textarea-wrap")) {
+      event.target.parentNode.dataset.replicatedValue = value
     }
     this.validate_inputs()
     this._set_errors_message()
@@ -355,19 +362,23 @@ class QueryEditBase {
         </div>
         <div class="question-item-content">
           <div class="question-item-kind">${kind_label}</div>
-          <input class="question-item-name"
-                 id="query-${this.view_type}-${question_id}-name-input"
-                 type="text"
-                 field="name"
-                 placeholder="Escribe tu pregunta aquí">
-          </input>
+          <div class="textarea-wrap question-item-name">
+            <textarea class="question-item-name"
+                   id="query-${this.view_type}-${question_id}-name-input"
+                   field="name"
+                   rows="1"
+                   placeholder="Escribe tu pregunta aquí">
+            </textarea>
+          </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-name-error"></div>
-          <input class="question-item-description"
-                 id="query-${this.view_type}-${question_id}-description-input"
-                 type="text"
-                 field="description"
-                 placeholder="Agrega una descripción para esta pregunta (opcional)">
-          </input>
+          <div class="textarea-wrap question-item-description">
+            <textarea class="question-item-description"
+                   id="query-${this.view_type}-${question_id}-description-input"
+                   field="description"
+                   rows="1"
+                   placeholder="Agrega una descripción para esta pregunta (opcional)">
+            </textarea>
+          </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
         </div>
         <div class="question-item-actions">
@@ -423,6 +434,11 @@ class QueryEditBase {
       } else {
         element.setAttribute("disabled", true)
       }
+    }
+    for (let node of question.querySelectorAll(".textarea-wrap")) {
+      let input = node.querySelector("textarea")
+      let value = input.value? input.value: input.placeholder
+      node.dataset.replicatedValue = value
     }
   }
 
@@ -850,6 +866,9 @@ class QueryUpdateManager extends QueryEditBase {
         input.value = new Date(this.data[field]).toISOString().split('T')[0]
       } else {
         input.value = this.data[field]
+      }
+      if (["name"].includes(field)) {
+        input.parentNode.dataset.replicatedValue = this.data[field]
       }
     }
     this.set_can_edit_active_status()
