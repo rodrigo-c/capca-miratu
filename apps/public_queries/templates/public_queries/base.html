@@ -42,14 +42,14 @@
     </head>
     <body>
         <div class="main-container">
-            <div class="navigation">
-                {% block navbar %}
+            {% block navigation %}
+                <div class="navigation">
                     <div class="navbar" id="navbar">
                         <div class="logo-cegir"></div>
-                        <div class="logo-gs"></div>
+                        <div class="app-brand"></div>
                     </div>
-                {% endblock navbar %}
-            </div>
+                </div>
+            {% endblock navigation %}
             {% block content %}
             {% endblock content %}
         </div>

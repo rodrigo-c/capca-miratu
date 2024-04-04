@@ -1,10 +1,25 @@
 {% extends "public_queries/base.html" %}
-{% block navbar %}
-    {{ block.super }}
-    <div class="top-brand" id="top-brand">
-        <div class="logo-gs-cegir"></div>
-    </div>
-{% endblock navbar %}
 {% block content %}
-    {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+    <div class="entry content-container">
+        <div class="logo-gs entry"></div>
+        <div class="card no-image">
+            <div class="content">
+                <div class="earring-message">Pueder responder esta consulta a partir del {{ public_query.start_at|date:"d-m-y" }}</div>
+                <div class="subtitle">{{ public_query.name }}</div>
+                <div class="card-times">
+                    {% if public_query.start_at %}
+                        <div class="start-at">
+                            <span class="label">Desde:</span>{{ public_query.start_at|date:"d-m-y" }}
+                        </div>
+                    {% endif %}
+                    {% if public_query.end_at %}
+                        <div class="end-at">
+                            <span class="label">Hasta:</span>{{ public_query.end_at|date:"d-m-y" }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="earring-bye">¡Nos vemos!</div>
+    </div>
 {% endblock content %}
