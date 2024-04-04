@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es"
+      description="Administración Consulta Ciudadana"
+      keywords="consulta,ciudadana,chile">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="keywords" content="chile,consulta,ciudadana," />
+        <meta name="description" content="Consulta Ciudadana" />
+        <title>
+            {% block title %}
+                Consulta Ciudadana / Administración
+            {% endblock title %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+        {% block css %}
+            <link rel="icon"
+                  type="image/x-icon"
+                  href="{% static 'images/favicons/favicon.ico' %}">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap"
+                  rel="stylesheet">
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/cf-gotham-fonts@1.0.0/gotham-font.min.css">
+            <link href="{% static 'css/project.min.css' %}" rel="stylesheet">
+        {% endblock css %}
+        {% block extra_css %}
+        {% endblock extra_css %}
+    </head>
+    <body>
+        {% block modal %}
+        {% endblock modal %}
+        <div class="main-container">
+            <div class="admin-navigation">
+                <div class="menu-dropdown">
+                    {% block menu %}
+                    {% endblock menu %}
+                </div>
+                <div class="banner">
+                    <div class="left">
+                        <div class="admin-logo-gs"></div>
+                        <div class="admin-logo-cegir"></div>
+                        <div class="admin-logo-app"></div>
+                    </div>
+                    <div class="right">
+                        <div class="admin-logo-core"></div>
+                        <div class="admin-logo-uc"></div>
+                    </div>
+                </div>
+            </div>
+            {% block content %}
+            {% endblock content %}
+        </div>
+        {% block javascript %}
+            <script src="{% static 'js/admin.min.js' %}"></script>
+        {% endblock javascript %}
+        {% block extra_js %}
+        {% endblock extra_js %}
+    </body>
+</html>
