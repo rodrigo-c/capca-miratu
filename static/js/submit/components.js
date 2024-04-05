@@ -38,7 +38,6 @@ function get_components() {
   return {
     navbars: {
       main: document.getElementById("navbar"),
-      brand: document.getElementById("top-brand"),
     },
     containers: containers,
     buttons: {

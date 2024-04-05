@@ -53,8 +53,8 @@ class AdminEngine {
 
   _set_admin_menu() {
     this._click_menu_item = this._click_menu_item.bind(this)
-    let menu_button = document.querySelector("#navbar .menu-dropdown .menu-button")
-    let menu_content = document.querySelector("#navbar .menu-dropdown .menu-content")
+    let menu_button = document.querySelector("#menu-button")
+    let menu_content = document.querySelector("#menu-content")
     menu_button.addEventListener("click", (event) => {
       if (menu_content.classList.contains("hidden")) {
         menu_content.classList.remove("hidden")

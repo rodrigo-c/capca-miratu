@@ -6,6 +6,12 @@ class PublicQueryDoesNotExist(ObjectDoesNotExist):
     pass
 
 
+class PublicQueryEarring(Exception):
+    def __init__(self, public_query, *args, **kwargs):
+        self.public_query = public_query
+        super().__init__(*args, **kwargs)
+
+
 class ResponseDoesNotExist(ObjectDoesNotExist):
     pass
 

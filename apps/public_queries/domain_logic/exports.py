@@ -3,15 +3,12 @@ from io import BytesIO
 from django.urls import reverse
 
 import segno
-from reportlab.graphics import renderPDF
-from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
-from svglib.svglib import svg2rlg
 
 from apps.public_queries.lib.dataclasses import PublicQueryData
 
@@ -30,11 +27,19 @@ class PublicQueryExporter:
         registerFont(
             TTFont("Open Sans Bold", "./static/fonts/Open Sans/OpenSans-Bold.ttf")
         )
+        self.canvas_size = (1322, 1614)
+
+    @property
+    def width(self):
+        return self.canvas_size[0]
+
+    @property
+    def height(self):
+        return self.canvas_size[1]
 
     def get_share_pdf(self) -> BytesIO:
         pdf_file = BytesIO()
-        width, height = letter
-        canvas = Canvas(pdf_file, pagesize=letter)
+        canvas = Canvas(pdf_file, pagesize=self.canvas_size)
         self._add_header(canvas=canvas)
         self._add_rect_mark(canvas=canvas)
         query_name_height = self._add_query_title(canvas=canvas)
@@ -48,77 +53,82 @@ class PublicQueryExporter:
         return pdf_file
 
     def _add_header(self, canvas) -> None:
-        logo_gs = svg2rlg("./static/images/logos/gs.svg")
-        width, height = letter
-        logo_gs.scale(2, 2)
-        renderPDF.draw(logo_gs, canvas, 30, height - 70)
         canvas.drawImage(
-            "./static/images/logos/cegir.png",
-            width - 140,
-            height - 50,
-            width=85,
-            height=17,
+            "./static/images/logos/pdf-banner.png",
+            49,
+            self.height - 100,
+            mask=None,
+            width=1224,
+            height=72,
         )
-        canvas.setFont("Open Sans", size=15)
-        canvas.drawCentredString(int(width / 2), height - 65, "Consulta pública")
+        canvas.setFont("Open Sans Bold", size=36)
+        canvas.drawCentredString(
+            int(self.width / 2),
+            self.height - 200,
+            "Consulta pública",
+        )
 
     def _add_rect_mark(self, canvas) -> None:
-        width, height = letter
         canvas.setStrokeColor("#454546")
         canvas.roundRect(
-            50, 100, width=width - 100, height=height - 200, radius=10, stroke=1, fill=0
+            100,
+            200,
+            width=self.width - 200,
+            height=self.height - 450,
+            radius=20,
+            stroke=1,
+            fill=0,
         )
 
     def _add_query_title(self, canvas) -> None:
-        width, height = letter
         styleSheet = getSampleStyleSheet()
         style = styleSheet["BodyText"]
-        style.fontSize = 25
+        style.alignment = 1
+        style.fontSize = 48
         style.fontName = "Open Sans Bold"
-        style.leading = 30
+        style.leading = 52
         title = Paragraph(self.query_data.name, style)
-        w, h = title.wrap(int(width / 1.6), int(height / 2))
+        w, h = title.wrap(int(self.width / 1.6), int(self.height / 2))
         title.drawOn(
             canvas,
-            int(width / 4.5),
-            height - h - 130,
+            int(self.width / 5.1),
+            self.height - h - 350,
         )
         return h
 
     def _add_times(self, canvas) -> None:
-        width, height = letter
-        canvas.setFont("Open Sans", size=15)
+        canvas.setFont("Open Sans", size=24)
         if self.query_data.end_at:
             end_at = self.query_data.end_at.strftime("%d/%m/%y")
-            canvas.drawCentredString(int(width / 2), 45, f"Fecha término: {end_at}")
+            canvas.drawCentredString(
+                int(self.width / 2), 80, f"Fecha término: {end_at}"
+            )
         if self.query_data.start_at:
             start_at = self.query_data.start_at.strftime("%d/%m/%y")
-            label_height = 45 if not self.query_data.end_at else 65
+            label_height = 90 if not self.query_data.end_at else 110
             canvas.drawCentredString(
-                int(width / 2), label_height, f"Fecha inicio: {start_at}"
+                int(self.width / 2), label_height, f"Fecha inicio: {start_at}"
             )
 
     def _add_link(self, canvas) -> None:
-        canvas.setFont("Open Sans", size=12)
-        width, height = letter
+        canvas.setFont("Open Sans", size=36)
         canvas.drawCentredString(
-            int(width / 2),
-            150,
+            int(self.width / 2),
+            300,
             f"Link: {self.submit_link}",
         )
 
     def _add_qr(self, canvas, query_name_height: int) -> None:
-        width, height = letter
         qrcode = segno.make(self.submit_link)
         qrimage = BytesIO()
         qrcode.save(qrimage, scale=1, kind="png")
         qrimage.seek(0)
         image = ImageReader(qrimage)
-        qr_with, qr_height = 300, 300
+        qr_with, qr_height = 652, 652
         canvas.drawImage(
             image,
-            int(width / 2) - int(qr_with / 2),
-            height - query_name_height - qr_height - 150,
+            int(self.width / 2) - int(qr_with / 2),
+            self.height - query_name_height - qr_height - 400,
             width=qr_with,
             height=qr_height,
         )

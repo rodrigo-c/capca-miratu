@@ -22,8 +22,3 @@ class UUIDObjectURL:
 
     def get_url_service_extra_kwargs(self):
         return self.url_service_extra_kwargs or {}
-
-    def _get_page_num(self) -> int:
-        if "page_num" in self.request.GET and self.request.GET["page_num"].isdecimal():
-            return int(self.request.GET["page_num"])
-        return 1

@@ -15,7 +15,7 @@ class QueryEditBase {
     this._move_question_ondragend = this._move_question_ondragend.bind(this)
     this._move_question_ondrop = this._move_question_ondrop.bind(this)
     this._click_remove_question = this._click_remove_question.bind(this)
-
+    this._change_input = this._change_input.bind(this)
     this._click_question_add_option = this._click_question_add_option.bind(this)
     this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
@@ -69,7 +69,11 @@ class QueryEditBase {
       } else {
         input.value = this.data[field]
       }
+      if (["name"].includes(field)) {
+        input.parentNode.dataset.replicatedValue = this.data[field]
+      }
     }
+
     this.validate_inputs()
   }
 
@@ -81,7 +85,6 @@ class QueryEditBase {
     let active = document.querySelector(`#query-${this.view_type}-active`)
     let auth_email = document.querySelector(`#query-${this.view_type}-auth-email`)
     let auth_rut = document.querySelector(`#query-${this.view_type}-auth-rut`)
-    this._change_input = this._change_input.bind(this)
     for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut]) {
       input.field = input.getAttribute("field")
       input.addEventListener("input", this._change_input, false)
@@ -140,6 +143,9 @@ class QueryEditBase {
       }
     } else {
       this.data[field] = value
+    }
+    if (event.target.parentNode.classList.contains("textarea-wrap")) {
+      event.target.parentNode.dataset.replicatedValue = value
     }
     this.validate_inputs()
     this._set_errors_message()
@@ -356,19 +362,23 @@ class QueryEditBase {
         </div>
         <div class="question-item-content">
           <div class="question-item-kind">${kind_label}</div>
-          <input class="question-item-name"
-                 id="query-${this.view_type}-${question_id}-name-input"
-                 type="text"
-                 field="name"
-                 placeholder="Escribe tu pregunta aquí">
-          </input>
+          <div class="textarea-wrap question-item-name">
+            <textarea class="question-item-name"
+                   id="query-${this.view_type}-${question_id}-name-input"
+                   field="name"
+                   rows="1"
+                   placeholder="Escribe tu pregunta aquí">
+            </textarea>
+          </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-name-error"></div>
-          <input class="question-item-description"
-                 id="query-${this.view_type}-${question_id}-description-input"
-                 type="text"
-                 field="description"
-                 placeholder="Agrega una descripción para esta pregunta (opcional)">
-          </input>
+          <div class="textarea-wrap question-item-description">
+            <textarea class="question-item-description"
+                   id="query-${this.view_type}-${question_id}-description-input"
+                   field="description"
+                   rows="1"
+                   placeholder="Agrega una descripción para esta pregunta (opcional)">
+            </textarea>
+          </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
         </div>
         <div class="question-item-actions">
@@ -424,6 +434,11 @@ class QueryEditBase {
       } else {
         element.setAttribute("disabled", true)
       }
+    }
+    for (let node of question.querySelectorAll(".textarea-wrap")) {
+      let input = node.querySelector("textarea")
+      let value = input.value? input.value: input.placeholder
+      node.dataset.replicatedValue = value
     }
   }
 
@@ -638,6 +653,16 @@ class QueryEditBase {
       index += 1
     }
   }
+
+  set_can_edit_active_status () {
+    let active = document.querySelector(`#query-${this.view_type}-active`)
+    let status_container = active.closest(".status")
+    if (!this.manager.engine.user.is_superuser) {
+       status_container.style.display = "none"
+    } else {
+       status_container.style.display = "flex"
+    }
+  }
 }
 
 
@@ -650,6 +675,7 @@ class QueryCreateManager extends QueryEditBase {
     this.manager.engine._hide_all_views()
     this.manager._build_sidebar()
     this._clean_data()
+    this.set_can_edit_active_status()
     this.manager.engine.views.query_create.classList.remove("hidden")
     if (on_history) {
       this.manager.engine._set_url_params("query-create", null)
@@ -841,7 +867,11 @@ class QueryUpdateManager extends QueryEditBase {
       } else {
         input.value = this.data[field]
       }
+      if (["name"].includes(field)) {
+        input.parentNode.dataset.replicatedValue = this.data[field]
+      }
     }
+    this.set_can_edit_active_status()
     this.can_edit_questions = data.query.can_edit_questions
     if (!this.can_edit_questions) {
       this.buttons.new_question.disabled = true

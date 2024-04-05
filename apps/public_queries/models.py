@@ -114,6 +114,11 @@ class PublicQuery(BaseModel):
             return True
         return False
 
+    @property
+    def is_earring(self) -> bool:
+        now = timezone.now()
+        return self.active and self.start_at and self.start_at > now
+
 
 class Question(BaseModel):
     query = models.ForeignKey(

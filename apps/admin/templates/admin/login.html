@@ -1,8 +1,8 @@
-{% extends "public_queries/base.html" %}
+{% extends "admin/base.html" %}
 {% block content %}
-    <div class="login content-container">
+    <div class="login admin-content">
         <div class="login-form">
-            <div class="main-title">{{ app_context.MAIN_TITLE|safe }}</div>
+            <div class="vision-ciudadana"></div>
             <form method="post" id="login-form">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
@@ -15,7 +15,7 @@
                     {% if form.username.errors %}{{ form.username.errors }}{% endif %}
                     {% if form.password.errors %}{{ form.password.errors }}{% endif %}
                 </div>
-                <input class="login-submit" type="submit" value="Ingresar">
+                <input class="sidebar-button login" type="submit" value="Ingresar">
             </form>
         </div>
     </div>

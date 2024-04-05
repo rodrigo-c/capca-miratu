@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
@@ -10,6 +10,10 @@ from apps.public_queries.lib.constants import (
     PublicQueryConstants,
     QuestionConstants,
 )
+from apps.public_queries.lib.exceptions import (
+    PublicQueryDoesNotExist,
+    PublicQueryEarring,
+)
 from apps.public_queries.mixins import UUIDObjectURL
 from apps.public_queries.services import (
     get_response_by_uuid,
@@ -18,23 +22,30 @@ from apps.public_queries.services import (
 )
 
 
-class PublicQuerySubmit(UUIDObjectURL, TemplateView):
+class PublicQuerySubmit(TemplateView):
     template_name = "public_queries/submit.html"
     url_service = get_submit_public_query
 
-    def get_url_service_extra_kwargs(self):
-        return {
-            "email": self.request.GET.get("e"),
-            "secret_key": self.request.GET.get("k"),
-        }
+    def dispatch(self, request, uuid, *args, **kwargs) -> HttpResponse:
+        try:
+            public_query = get_submit_public_query(
+                identifier=uuid,
+                email=self.request.GET.get("e"),
+                secret_key=self.request.GET.get("k"),
+            )
+        except PublicQueryEarring as error:
+            self.template_name = "public_queries/earring.html"
+            return self.render_to_response({"public_query": error.public_query})
+        except PublicQueryDoesNotExist:
+            raise Http404
+        self.public_query = public_query
+        return super().dispatch(request, uuid, *args, **kwargs)
 
     def get(self, request, uuid) -> HttpResponse:
-        self.public_query = self.object
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
-        self.public_query = self.object
         response_form = self.get_response_form(
             data=request.POST,
         )

@@ -83,19 +83,40 @@ function styles() {
 }
 
 // Javascript minification
-function scripts() {
+
+// Submit JS
+function submitJS() {
   return rollup({
-    input: "./static/js/project.js",
+    input: "./static/js/submit/index.js",
     plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), nodeResolve()],
     cache: cache,
     output: {
       format: "iife",
       sourcemap: true,
-      name: "project",
+      name: "submit",
     }
   })
   .on("bundle", function (bundle) {cache = bundle})
-  .pipe(source('project.min.js'))
+  .pipe(source('submit.min.js'))
+  .pipe(buffer())
+  .pipe(dest('./static/js/'));
+}
+
+// Admin JS
+
+function adminJs() {
+  return rollup({
+    input: "./static/js/admin/index.js",
+    plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), nodeResolve()],
+    cache: cache,
+    output: {
+      format: "iife",
+      sourcemap: true,
+      name: "admin",
+    }
+  })
+  .on("bundle", function (bundle) {cache = bundle})
+  .pipe(source('admin.min.js'))
   .pipe(buffer())
   .pipe(dest('./static/js/'));
 }
@@ -159,7 +180,7 @@ function watchPaths() {
 }
 
 // Generate all assets
-const generateAssets = parallel(styles, scripts, vendorScripts, imgCompression);
+const generateAssets = parallel(styles, submitJS, adminJs, imgCompression);
 
 // Set up dev environment
 const dev = parallel(initBrowserSync, watchPaths);

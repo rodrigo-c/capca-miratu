@@ -11,7 +11,10 @@ from apps.public_queries.lib.dataclasses import (
     QuestionData,
     QuestionOptionData,
 )
-from apps.public_queries.lib.exceptions import PublicQueryDoesNotExist
+from apps.public_queries.lib.exceptions import (
+    PublicQueryDoesNotExist,
+    PublicQueryEarring,
+)
 from apps.public_queries.models import Answer, PublicQuery, Question, Response
 from apps.public_queries.providers import answer as answer_providers
 from apps.public_queries.providers import public_query as public_query_providers
@@ -35,6 +38,8 @@ class PublicQueryReturner:
             public_query = self._get_obj_by_url_code(url_code=identifier, **kwargs)
         else:
             public_query = self._get_obj_by_uuid(uuid=identifier, **kwargs)
+        if active and public_query.is_earring:
+            raise PublicQueryEarring(public_query=public_query)
         if active and not public_query.is_active:
             raise PublicQueryDoesNotExist
         self.public_query = public_query

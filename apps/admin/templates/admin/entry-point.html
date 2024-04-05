@@ -1,7 +1,4 @@
-{% extends "public_queries/base.html" %}
-{% block title %}
-    Consultas Ciudadanas
-{% endblock title %}
+{% extends "admin/base.html" %}
 {% block extra_css %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -18,42 +15,33 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
             type="text/javascript"></script>
 {% endblock extra_css %}
-{% block navbar %}
+{% block modal %}
     <div class="admin-modal hidden" id="admin-modal">
         <div class="admin-modal-content"></div>
     </div>
-    <div class="navbar" id="navbar">
-        <div class="right">
-            <div class="menu-dropdown">
-                <div class="menu-button"></div>
-                <div class="menu-content hidden">
-                    <div class="menu-item link" id="query-create-link">
-                        <icon class="icon plus"></icon>
-                        <div class="menu-label">Crear nueva consulta</div>
-                    </div>
-                    <div class="menu-item link" id="query-list-link">
-                        <icon class="icon list"></icon>
-                        <div class="menu-label">Todas las consultas</div>
-                    </div>
-                    <div class="menu-item">
-                        <icon class="icon user"></icon>
-                        <div class="menu-label">{{ user.email }}</div>
-                    </div>
-                    <div class="menu-divider"></div>
-                    <a class="menu-item link" href="{% url 'admin:logout' %}">
-                        <icon class="icon"></icon>
-                        <div class="menu-label">Cerrar sesión</div>
-                    </a>
-                </div>
-            </div>
-            <div class="logo-cegir"></div>
+{% endblock modal %}
+{% block menu %}
+    <div class="menu-button" id="menu-button"></div>
+    <div class="menu-content hidden" id="menu-content">
+        <div class="menu-item link" id="query-create-link">
+            <icon class="icon plus"></icon>
+            <div class="menu-label">Crear nueva consulta</div>
         </div>
-        <div class="nav-brand">
-            Visión <b>Ciudadana</b>
+        <div class="menu-item link" id="query-list-link">
+            <icon class="icon list"></icon>
+            <div class="menu-label">Todas las consultas</div>
         </div>
-        <div class="logo-gs"></div>
+        <div class="menu-item">
+            <icon class="icon user"></icon>
+            <div class="menu-label">{{ user.email }}</div>
+        </div>
+        <div class="menu-divider"></div>
+        <a class="menu-item link" href="{% url 'admin:logout' %}">
+            <icon class="icon"></icon>
+            <div class="menu-label">Cerrar sesión</div>
+        </a>
     </div>
-{% endblock navbar %}
+{% endblock menu %}
 {% block content %}
     <div class="admin-content">
         <div class="views">
@@ -75,7 +63,7 @@
     </div>
 {% endblock content %}
 {% block extra_js %}
-    <script type="text/javascript" type="text">const manager = new project.AdminEngine({
+    <script type="text/javascript" type="text">const manager = new admin.AdminEngine({
       url_base: '{{url_base}}',
       csrf_token: '{{ csrf_token }}',
       focus: {% if cursor.focus %}'{{cursor.focus}}'{% else %}null{% endif %},

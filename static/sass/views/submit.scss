@@ -1,6 +1,12 @@
 .entry.content-container {
   height: 65vh;
 
+  .logo-gs.entry {
+    margin: 5vh auto;
+    padding-bottom: 10vh;
+    padding-right: 50vw;
+  }
+
   .head-title,
   .main-title {
     color: $primary;
