@@ -422,6 +422,40 @@
   background-size: contain;
 }
 
+.icon.right {
+  background-image: url('../images/icons/right.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.back {
+  background-image: url('../images/icons/back.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.switch-on {
+  background-image: url('../images/icons/switch-on.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.switch-off {
+  background-image: url('../images/icons/switch-off.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.map-marker {
+  background-image: url('../images/icons/map-marker.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 
 .map-bg {
   background-image: url('../images/geomap.svg');
