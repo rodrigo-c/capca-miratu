@@ -37,11 +37,11 @@ class QueryMapResultReturner(ServiceBase):
         )
 
     def _get_point_list(self) -> list[PointResultData]:
-        point_question_uuids = [
-            question.uuid
+        point_question_map = {
+            question.uuid: question
             for question in self.public_query.questions
             if question.kind == QuestionConstants.KIND_POINT
-        ]
+        }
         responses_queryset = response_providers.get_responses_by_query_uuid(
             query_uuid=self.public_query.uuid
         )
@@ -58,7 +58,7 @@ class QueryMapResultReturner(ServiceBase):
             partial_point_list = self._get_point_data_list_from_response(
                 response=response,
                 answers=answers,
-                point_question_uuids=point_question_uuids,
+                point_question_map=point_question_map,
             )
             point_list.extend(partial_point_list)
         return point_list
@@ -67,38 +67,33 @@ class QueryMapResultReturner(ServiceBase):
         self,
         response: Response,
         answers: list[Answer],
-        point_question_uuids: list[UUID],
+        point_question_map: dict,
     ) -> list[PointResultData]:
         filtered_answers = [
-            answer
-            for answer in answers
-            if answer.question_id not in point_question_uuids
+            answer for answer in answers if answer.question_id not in point_question_map
         ]
         response_data = self._to_response_dataclass(
             instance=response, answers=filtered_answers
         )
-        if not point_question_uuids:
+        if not point_question_map:
             point_data = PointResultData(
                 response=response_data,
                 location=response.location,
                 related_label=QueryMapResultConstants.LOCATION,
+                question_index=None,
             )
             return [point_data]
         answers_by_question_uuid = {answer.question_id: answer for answer in answers}
-        question_name_by_question_uuid = {
-            question.uuid: question.name
-            for question in self.public_query.questions
-            if question.kind == QuestionConstants.KIND_POINT
-        }
         point_data_list = []
-        for point_question_uuid in point_question_uuids:
+        for point_question_uuid in point_question_map:
+            question = point_question_map[point_question_uuid]
             answer = answers_by_question_uuid.get(point_question_uuid)
             if answer:
-                related_label = question_name_by_question_uuid[point_question_uuid]
                 point_data = PointResultData(
                     response=response_data,
                     location=answer.point,
-                    related_label=related_label,
+                    related_label=question.name,
+                    question_index=question.index,
                 )
                 point_data_list.append(point_data)
         return point_data_list
