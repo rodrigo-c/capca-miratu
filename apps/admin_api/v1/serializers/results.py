@@ -37,6 +37,7 @@ class PointResultSerializer(serializers.Serializer):
     response = ResponseSerializer()
     location = PointField()
     related_label = serializers.CharField()
+    question_index = serializers.IntegerField(allow_null=True)
 
 
 class QueryMapResultSerializer(serializers.Serializer):
