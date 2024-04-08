@@ -50,6 +50,13 @@
                 </div>
             {% endif %}
             {% if view_type == "map" %}
+                <div class="map-shapes-control" id="map-shapes-control">
+                    <div class="map-shapes-button">
+                        <div class="map-shapes-main-label">Capas</div>
+                        <div class="icon right"></div>
+                    </div>
+                    <div class="map-shapes-list hidden" id="map-shapes-control-list"></div>
+                </div>
                 <div class="map map-result" id="query-result-map"></div>
                 <div class="fetch-meta">
                     <div class="range-responses"></div>
