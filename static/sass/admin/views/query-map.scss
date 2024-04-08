@@ -1,0 +1,90 @@
+.map-shapes-control {
+  background-color: $white;
+  border-radius: 6px;
+  box-shadow: 0 0 5.3px 0 $shadow, 0 2px 4px 0 $shadow-ligth;
+  font-size: 2vh;
+  padding: 1vh 1vw;
+  position: absolute;
+  z-index: 1000;
+
+  .icon {
+    padding-bottom: 2vh;
+    padding-right: 2vw;
+
+    &.back {
+      padding-bottom: 3vh;
+    }
+  }
+
+  .map-shapes-button {
+    cursor: pointer;
+    display: flex;
+    font-family: Open Sans;
+    font-weight: 600;
+    justify-content: space-between;
+    user-select: none;
+  }
+
+  .map-shapes-list {
+    padding-top: 2vh;
+  }
+
+  .map-shape-element {
+    display: flex;
+    font-family: Open Sans;
+    font-weight: 400;
+    margin-bottom: 1vh;
+
+    .map-shape-icon {
+      cursor: pointer;
+    }
+  }
+
+  .marker-preview-icon {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-bottom: 2vh;
+    padding-right: 2vw;
+
+    &[counter="0"] {
+      background-image: url('../images/icons/marker-0.svg');
+    }
+
+    &[counter="1"] {
+      background-image: url('../images/icons/marker-1.svg');
+    }
+
+    &[counter="2"] {
+      background-image: url('../images/icons/marker-2.svg');
+    }
+  }
+
+  .map-shape-label {
+    padding: 0 1vw;
+  }
+}
+
+.query-result-to-map {
+  background-color: $white;
+  border-radius: 6px;
+  filter: drop-shadow(0 0 3px $shadow);
+  width: max-content;
+
+  .query-result-to-map-link {
+    display: flex;
+    padding: 1.5vh .5vw;
+    text-decoration: none;
+  }
+
+  .to-map-link-label {
+    color: $secondary;
+    font-family: Open Sans;
+    user-select: none;
+  }
+
+  .icon {
+    padding-bottom: 2vh;
+    padding-right: 2vw;
+  }
+}
