@@ -134,6 +134,9 @@ class AdminEngine {
       query_params.delete("k")
       this.cursor.key = null
     }
+    if (focus !== "query-map") {
+      query_params.delete("r")
+    }
     history.pushState(this.cursor, null, "?" + query_params.toString())
   }
 
