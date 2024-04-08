@@ -127,6 +127,7 @@ class PointResultData:
     response: ResponseData
     location: Point
     related_label: str
+    question_index: int | None = None
 
 
 @dataclass
