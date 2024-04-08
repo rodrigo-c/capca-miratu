@@ -12,6 +12,10 @@ class QueryResultManager {
     this._set_pre_in_view()
     this.map = null
     this.data_table = null
+    this.marker_focus = null
+    this.map_markers = {}
+    this._click_map_shapes_button = this._click_map_shapes_button.bind(this)
+    this._click_map_shape_action = this._click_map_shape_action.bind(this)
   }
 
   _set_pre_in_view () {
@@ -175,12 +179,21 @@ class QueryResultManager {
     for (let question of this.data.query.questions) {
       question_by_uuid[question.uuid] = question
     }
+    let shapes = new Set()
+    this.marker_focus = null
     for (let point_data of this.data.point_list) {
-      if (point_data.location) {
+      if (point_data.location && point_data.question_index !== null) {
+        shapes.add(point_data.question_index)
         this._set_marker(map, question_by_uuid, point_data)
       }
     }
-
+    if (this.marker_focus) {
+      let marker = this.marker_focus
+      setTimeout(function () {
+        marker.openPopup();
+      }, 100);
+    }
+    this._set_map_shapes(Array.from(shapes))
     this._set_fetch_meta()
   }
 
@@ -195,6 +208,7 @@ class QueryResultManager {
       maxZoom: 19,
     }).addTo(map);
     map.attributionControl.setPrefix("")
+    map.zoomControl.setPosition("bottomright")
     setTimeout(function () {
       window.dispatchEvent(new Event('resize'));
     }, 100);
@@ -202,9 +216,81 @@ class QueryResultManager {
     return map
   }
 
+  _set_map_shapes (shapes) {
+    let shape_bottom = document.querySelector("#map-shapes-control .map-shapes-button")
+    shape_bottom.active = false
+    shape_bottom.addEventListener("click", this._click_map_shapes_button)
+    let shape_list = document.querySelector("#map-shapes-control-list")
+    shape_list.innerHTML = ""
+    let counter = 0
+    for (let shape of shapes) {
+      let shape_element = document.createElement("div")
+      shape_element.classList.add("map-shape-element")
+      let icon_counter = counter < 3 ? counter: 0
+      shape_element.innerHTML = `
+        <div class="marker-preview-icon" counter="${icon_counter}"></div>
+        <div class="map-shape-label">Pregunta ${counter + 1}</div>
+        <div class="map-shape-icon icon switch-on"></div>
+      `
+      shape_list.appendChild(shape_element)
+      shape_element.question_index = shape
+      shape_element.active = true
+      shape_element.querySelector(".icon").addEventListener("click", this._click_map_shape_action)
+      counter += 1
+    }
+  }
+
+  _click_map_shapes_button(event) {
+    let shape_list = document.querySelector("#map-shapes-control-list")
+    let shape_bottom = document.querySelector("#map-shapes-control .map-shapes-button")
+    let bottom_icon = shape_bottom.querySelector(".icon")
+    if (shape_bottom.active) {
+      shape_bottom.active = false
+      shape_list.classList.add("hidden")
+      bottom_icon.classList.remove("back")
+      bottom_icon.classList.add("right")
+    } else {
+      shape_bottom.active = true
+      shape_list.classList.remove("hidden")
+      bottom_icon.classList.remove("right")
+      bottom_icon.classList.add("back")
+    }
+  }
+
+  _click_map_shape_action (event) {
+    let shape_element = event.target.closest(".map-shape-element")
+    let action_icon = shape_element.querySelector(".map-shape-icon")
+    if (shape_element.active) {
+      shape_element.active = false
+      action_icon.classList.remove("switch-on")
+      action_icon.classList.add("switch-off")
+      this._set_map_shape_visibility(shape_element.question_index, false)
+    } else {
+      shape_element.active = true
+      action_icon.classList.remove("switch-off")
+      action_icon.classList.add("switch-on")
+      this._set_map_shape_visibility(shape_element.question_index, true)
+    }
+  }
+
+  _set_map_shape_visibility(question_index, show) {
+    if (this.map_markers[question_index]) {
+      for (let marker of this.map_markers[question_index]) {
+        if (show) {
+          marker.setOpacity(1)
+        } else {
+          marker.setOpacity(0)
+        }
+      }
+    }
+  }
+
   _set_marker(map, question_by_uuid, point_data) {
+    let icon = this._get_marker_icon(point_data, question_by_uuid)
     let marker = L.marker(
-      [point_data.location.latitude, point_data.location.longitude]
+      [point_data.location.latitude, point_data.location.longitude], {
+        icon: icon,
+      }
     ).addTo(map)
     let message = "<div class='marker-content'>"
     message += this._set_html_message("Fecha de envío", new Date(point_data.response.send_at).toLocaleString())
@@ -217,9 +303,34 @@ class QueryResultManager {
     message += this._get_answers_message(point_data, question_by_uuid)
     message += '</div>'
     marker.bindPopup(message)
-    if (this.focus == point_data.response.uuid) {
-      marker.openPopup()
+    let current_markers = this.map_markers[point_data.question_index] ? this.map_markers[point_data.question_index]: []
+    this.map_markers[point_data.question_index] = [...current_markers, marker]
+    let param = new URLSearchParams(window.location.search).get("r")
+    if (param && param == point_data.response.uuid) {
+      this.marker_focus = marker
     }
+  }
+
+  _get_marker_icon(point_data, question_by_uuid) {
+    let counter = 0
+    for (let question_uuid in question_by_uuid) {
+      let question = question_by_uuid[question_uuid]
+      if (point_data.question_index === question.index) {
+        break
+      }
+      if (question.kind === "POINT") {
+        counter += 1
+      }
+      if (counter > 2) {
+        break
+      }
+    }
+    let icon_counter = counter < 3 ? counter: 0
+    let icon_url = `/static/images/icons/marker-${icon_counter}.svg`
+    let icon = L.icon({
+      iconUrl: icon_url, iconSize: [20, 30],
+    })
+    return icon
   }
 
   _set_html_message(field, value, class_list) {
@@ -325,10 +436,15 @@ class QueryResultManager {
       final_value = `<img class="tooltip-image" src="${value}">`
       tooltip_content += `<a href="${value}" target="_blank">${final_value}</a>`
     } else if (question.kind == "POINT" && value) {
-      let lat = `<div class="latitude"><span class="label">Latitud: </span><span class="value">${value.latitude}</span></div>`
-      let long = `<div class="latitude"><span class="label">Longitud: </span><span class="value">${value.longitude}</span></div>`
-      final_value = `${lat}${long}`
-      tooltip_content += `<div class="link-tabs"><a class="link-tab" href="${this.map_url}?f=${response_uuid}">Ver en mapa</a></div>`
+      let query_url_code = this.data.query.url_code
+      final_value = `
+        <div class="query-result-to-map">
+          <a class="query-result-to-map-link" href="?f=query-map&k=${query_url_code}&r=${response_uuid}">
+            <div class="icon map-marker"></div>
+            <div class="to-map-link-label">Ver en el mapa</div>
+          </a>
+        </div>
+      `
     } else if (question.kind == "SELECT" && value) {
       final_value = "<ul>"
       for (let opt of value) {
