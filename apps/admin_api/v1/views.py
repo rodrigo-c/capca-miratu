@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.viewsets import ViewSet
 
+from geojson import Feature, FeatureCollection, Point
 from openpyxl import Workbook
 
 from apps.admin_api.lib.constants import PublicQueryDataResultConstants
@@ -138,6 +139,17 @@ class PublicQueryManager(ViewSet):
             ),
         )
 
+    @action(detail=True, methods=["get"])
+    def geojson(self, request, pk) -> Response:
+        public_query_result = self.get_public_query_map_result(identifier=pk)
+        geojson = self._get_gsojson_file(public_query_result=public_query_result)
+        filename = f"consulta-{public_query_result.query.url_code}-geo.json"
+        response = FileResponse(
+            geojson, filename=filename, content_type="application/force-download"
+        )
+        response["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+
     def filter_by_user(
         self,
         public_queries: list,
@@ -255,3 +267,45 @@ class PublicQueryManager(ViewSet):
         wb.save(excel_file)
         excel_file.seek(0)
         return excel_file
+
+    def _get_gsojson_file(self, public_query_result: QueryMapResultData) -> BytesIO:
+        query = public_query_result.query
+        query_properties = {
+            "name": query.name,
+            "description": query.description,
+            "start_at": str(query.start_at),
+            "end_at": str(query.end_at),
+            "questions": {
+                question.index: {
+                    "name": question.name,
+                    "description": question.description,
+                }
+                for question in query.questions
+                if question.kind == QuestionConstants.KIND_POINT
+            },
+        }
+        features = []
+        for point_data in public_query_result.point_list:
+            if point_data.question_index:
+                point = Point(point_data.location)
+                response = point_data.response
+                feature_properties = {
+                    "question_index": point_data.question_index,
+                    "response": {
+                        "send_at": str(response.send_at) if response.send_at else None,
+                        "rut": str(response.rut) if response.rut else None,
+                        "email": str(response.email) if response.email else None,
+                    },
+                }
+                feature = Feature(
+                    id=f"{response.uuid}::{point_data.question_index}",
+                    geometry=point,
+                    properties=feature_properties,
+                )
+                features.append(feature)
+        feature_collection = FeatureCollection(
+            features,
+            id=query.url_code,
+            properties=query_properties,
+        )
+        return str(feature_collection)
