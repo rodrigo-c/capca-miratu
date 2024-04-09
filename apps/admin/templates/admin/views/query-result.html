@@ -1,10 +1,12 @@
 <div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
-    <div class="result-actions">
+    <div class="result-actions dropdown-wrapper">
         <div class="primary-button" id="query-{{ view_type }}-download-button">
             <i class="icon download"></i> Descargar resultados
         </div>
-        <div class="dropdown-content hidden" id="query-{{ view_type }}-dropdown">
+        <div class="dropdown-content hidden dd-content"
+             id="query-{{ view_type }}-dropdown">
             <div class="dropdown-item" id="query-{{ view_type }}-download-excel">Excel</div>
+            <div class="dropdown-item" id="query-{{ view_type }}-download-geojson">GeoJSON</div>
         </div>
     </div>
     <div class="query-result-container">

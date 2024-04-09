@@ -21,25 +21,27 @@
     </div>
 {% endblock modal %}
 {% block menu %}
-    <div class="menu-button" id="menu-button"></div>
-    <div class="menu-content hidden" id="menu-content">
-        <div class="menu-item link" id="query-create-link">
-            <icon class="icon plus"></icon>
-            <div class="menu-label">Crear nueva consulta</div>
+    <div class="dropdown-wrapper">
+        <div class="menu-button" id="menu-button"></div>
+        <div class="menu-content hidden dd-content" id="menu-content">
+            <div class="menu-item link" id="query-create-link">
+                <icon class="icon plus"></icon>
+                <div class="menu-label">Crear nueva consulta</div>
+            </div>
+            <div class="menu-item link" id="query-list-link">
+                <icon class="icon list"></icon>
+                <div class="menu-label">Todas las consultas</div>
+            </div>
+            <div class="menu-item">
+                <icon class="icon user"></icon>
+                <div class="menu-label">{{ user.email }}</div>
+            </div>
+            <div class="menu-divider"></div>
+            <a class="menu-item link" href="{% url 'admin:logout' %}">
+                <icon class="icon"></icon>
+                <div class="menu-label">Cerrar sesión</div>
+            </a>
         </div>
-        <div class="menu-item link" id="query-list-link">
-            <icon class="icon list"></icon>
-            <div class="menu-label">Todas las consultas</div>
-        </div>
-        <div class="menu-item">
-            <icon class="icon user"></icon>
-            <div class="menu-label">{{ user.email }}</div>
-        </div>
-        <div class="menu-divider"></div>
-        <a class="menu-item link" href="{% url 'admin:logout' %}">
-            <icon class="icon"></icon>
-            <div class="menu-label">Cerrar sesión</div>
-        </a>
     </div>
 {% endblock menu %}
 {% block content %}
