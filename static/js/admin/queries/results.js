@@ -429,12 +429,11 @@ class QueryResultManager {
     let num = parseInt(field.match(/\d+/)[0])
     let index = num - 1
     let question = questions[index]
-    let tooltip_content = `<div class="tooltip-title"><b>Pregunta ${num}: </b>${question.name}</div>`
     let final_value = value
 
     if (question.kind == "IMAGE" && value) {
-      final_value = `<img class="tooltip-image" src="${value}">`
-      tooltip_content += `<a href="${value}" target="_blank">${final_value}</a>`
+      final_value = `<div class="query-datable-image" style="background-image: url('${value}')"></div>`
+      final_value = `<a href="${value}" target="_blank">${final_value}</a>`
     } else if (question.kind == "POINT" && value) {
       let query_url_code = this.data.query.url_code
       final_value = `
@@ -452,7 +451,7 @@ class QueryResultManager {
       }
       final_value += "</ul>"
     }
-    return `${final_value}<div class="tooltip">${tooltip_content}</div>`
+    return final_value
   }
 
 }
