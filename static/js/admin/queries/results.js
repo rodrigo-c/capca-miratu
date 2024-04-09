@@ -9,13 +9,15 @@ class QueryResultManager {
     this.data = {}
     this.kind = kind
     this.charts = {summary: null, questions: []}
-    this._set_pre_in_view()
     this.map = null
     this.data_table = null
     this.marker_focus = null
     this.map_markers = {}
+    this._click_download_link = this._click_download_link.bind(this)
+    this._click_download_dropdown = this._click_download_dropdown.bind(this)
     this._click_map_shapes_button = this._click_map_shapes_button.bind(this)
     this._click_map_shape_action = this._click_map_shape_action.bind(this)
+    this._set_pre_in_view()
   }
 
   _set_pre_in_view () {
@@ -28,12 +30,14 @@ class QueryResultManager {
   }
 
   _set_download_links () {
-    this._click_excel_link = this._click_excel_link.bind(this)
-    this._click_download_dropdown = this._click_download_dropdown.bind(this)
     let dropdown_button = document.querySelector(`#query-${this.kind}-download-button`)
     dropdown_button.addEventListener("click", this._click_download_dropdown, false)
     let excel_link = document.querySelector(`#query-${this.kind}-download-excel`)
-    excel_link.addEventListener("click", this._click_excel_link, false)
+    excel_link.kind = "excel"
+    excel_link.addEventListener("click", this._click_download_link, false)
+    let geojson_link = document.querySelector(`#query-${this.kind}-download-geojson`)
+    geojson_link.kind = "geojson"
+    geojson_link.addEventListener("click", this._click_download_link, false)
   }
 
   _click_download_dropdown (event) {
@@ -45,15 +49,10 @@ class QueryResultManager {
     }
   }
 
-  _click_excel_link (event) {
-    let excel_link = this._get_excel_link()
-    window.open(excel_link)
-    let dropdown_content = document.querySelector(`#query-${this.kind}-dropdown`)
-    dropdown_content.classList.add("hidden")
-  }
-
-  _get_excel_link () {
-    return `${this.manager.url_base}${this.manager.engine.cursor.key}/excel/`
+  _click_download_link (event) {
+    let link = `${this.manager.url_base}${this.manager.engine.cursor.key}/${event.target.kind}/`
+    window.open(link)
+    document.querySelector(`#query-${this.kind}-dropdown`).classList.add("hidden")
   }
 
   show_view(on_history) {
