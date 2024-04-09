@@ -30,6 +30,7 @@ function set_image_preview (input) {
         let reduced_file = new File([blob], input.files[0].name, {type:"mime/type", lastModified:new Date().getTime()})
         let files_container = new DataTransfer()
         files_container.items.add(reduced_file)
+        input.files = files_container.files
         _show_with_image(input, url)
       }
     ).catch(
