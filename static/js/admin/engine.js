@@ -28,6 +28,8 @@ class AdminEngine {
       "query_share",
     ]
     this.views = {}
+    this._general_click = this._general_click.bind(this)
+    document.querySelector("body > .main-container").addEventListener("click", this._general_click, false)
   }
 
   ready() {
@@ -37,6 +39,16 @@ class AdminEngine {
     this._set_views()
     this._set_modal()
     this.show_view(this.cursor.focus, true)
+  }
+
+  _general_click (event) {
+    let dropdown_class = "dropdown-wrapper"
+    let current_wrapper = event.target.classList.contains(dropdown_class)? event.target : event.target.closest(`.${dropdown_class}`)
+    for (let wrapper of document.querySelectorAll(`.${dropdown_class}`)) {
+      if (wrapper !== current_wrapper) {
+        wrapper.querySelector(".dd-content").classList.add("hidden")
+      }
+    }
   }
 
   _onpopstate (event) {

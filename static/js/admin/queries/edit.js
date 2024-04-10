@@ -527,11 +527,11 @@ class QueryEditBase {
   _set_question_max_answers (question, question_data) {
     let actions = question.querySelector(".question-item-actions .actions-bottom")
     actions.innerHTML = `
-      <div class="action-max-answers">
+      <div class="action-max-answers dropdown-wrapper">
         <div class="action-max-answers-button">
           <span class="action-label">Cantidad de respuestas</span> <i class="icon bottom"></i>
         </div>
-        <div class="action-max-answers-dropdown hidden"></div>
+        <div class="action-max-answers-dropdown hidden dd-content"></div>
       </div>
     ` + actions.innerHTML
     let button = actions.querySelector(".action-max-answers-button")
