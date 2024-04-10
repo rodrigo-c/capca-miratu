@@ -1,7 +1,8 @@
 <div class="view query-{{ view_type }} hidden" id="query-{{ view_type }}">
     <div class="query-{{ view_type }}-content">
         <div class="query-draft">
-            <div class="query-item {{ view_type }}" id="query-{{ view_type }}-item">
+            <div class="query-box-item {{ view_type }}"
+                 id="query-{{ view_type }}-item">
                 <div class="textarea-wrap name">
                     <textarea class="name input" type="text" field="name" rows="1" placeholder="Escribe un título para la consulta..." id="query-{{ view_type }}-name">
                   </textarea>
@@ -70,19 +71,19 @@
             </div>
             <div class="rightbar">
                 <div class="elements-top">
-                    <div class="sidebar-button" id="{{ view_type }}-query-button">
+                    <div class="primary-button" id="{{ view_type }}-query-button">
                         {% if view_type == "create" %}<i class="icon upload"></i>Publicar consulta{% endif %}
                         {% if view_type == "update" %}<i class="icon folder"></i> Guardar{% endif %}
                     </div>
                     {% if view_type == "update" %}
-                        <div class="sidebar-button" id="update-query-delete-button">
+                        <div class="primary-button" id="update-query-delete-button">
                             <i class="icon delete"></i> Borrar
                         </div>
                     {% endif %}
                 </div>
                 <div class="elements-bottom">
                     <div class="dropdown dropdown-wrapper">
-                        <div class="sidebar-button"
+                        <div class="primary-button"
                              id="query-{{ view_type }}-create-question-button">
                             <i class="icon plus"></i> Añadir pregunta
                         </div>
