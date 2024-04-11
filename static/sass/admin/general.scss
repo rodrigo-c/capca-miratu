@@ -42,34 +42,6 @@
     }
   }
 
-  //todo: change sidebar to other else
-  .sidebar-button {
-    background-color: $cegir-primary;
-    border-radius: 6px;
-    box-shadow: 0 0 2px 0 $shadow;
-    color: $white;
-    cursor: pointer;
-    font-family: Gotham;
-    font-size: 1.8vh;
-    font-weight: 600;
-    padding: 1.8vh 1vw;
-    user-select: none;
-
-    .icon {
-      padding-right: 2vw;
-    }
-
-    &:hover {
-      opacity: .7;
-      transition: opacity .3s;
-    }
-
-    &.disabled {
-      cursor: auto;
-      opacity: .4;
-    }
-  }
-
   .views {
     padding: 5vh 5vw;
     width: 70vw;
@@ -99,7 +71,6 @@
     }
   }
 
-
   .rightbar {
     align-items: flex-end;
     display: flex;
@@ -111,7 +82,7 @@
     position: fixed;
     right: 0;
 
-    .sidebar-button {
+    .primary-button {
       margin-bottom: 1vh;
       min-width: 8vw;
       width: max-content;
