@@ -16,8 +16,7 @@ htmlcov/
 .DS_Store
 _*/
 node_modules/
-project.css
-project.min.css
+*.css
 vendors.js
 *.min.js
 *.min.js.map
