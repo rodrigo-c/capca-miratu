@@ -34,7 +34,7 @@ class QueryDetailManager {
   _set_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this.manager._create_query_item(this.data.query, query_item)
-    if (this.data.query.is_active) {
+    if (this.data.query.is_active || this.data.query.is_earring) {
       document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
       document.querySelector("#detail-action-submit").classList.remove("hidden")
     } else {
