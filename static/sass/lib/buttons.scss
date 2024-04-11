@@ -1,0 +1,69 @@
+.button {
+  align-self: center;
+  background-color: $cegir-primary;
+  border-radius: 6px;
+  color: $white;
+  cursor: pointer;
+  font-family: Open Sans;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 1rem;
+  padding: .8rem;
+
+  @include small {
+    font-size: 1rem;
+  }
+
+  &[disabled] {
+    background-color: $terciary;
+    cursor: not-allowed;
+    opacity: .3;
+  }
+}
+
+.primary-button {
+  background-color: $cegir-primary;
+  border-radius: 6px;
+  box-shadow: 0 0 2px 0 $shadow;
+  color: $white;
+  cursor: pointer;
+  font-family: Gotham;
+  font-size: 1.8vh;
+  font-weight: 600;
+  padding: 1.8vh 1vw;
+  user-select: none;
+
+  .icon {
+    padding-right: 2vw;
+  }
+
+  &:hover {
+    opacity: .7;
+    transition: opacity .3s;
+  }
+
+  &.disabled {
+    cursor: auto;
+    opacity: .4;
+  }
+}
+
+.secondary-button {
+  background-color: $secondary;
+  border-radius: 6px;
+  box-shadow: 0 0 2px 0 $shadow;
+  color: $white;
+  cursor: pointer;
+  font-family: Open Sans;
+  font-size: 2vh;
+  font-weight: 600;
+  margin: 0 .5vw;
+  padding: .7vh 1vw;
+  text-decoration: none;
+  user-select: none;
+
+  &:hover {
+    opacity: .7;
+    transition: opacity .3s;
+  }
+}
