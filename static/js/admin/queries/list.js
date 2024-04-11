@@ -35,7 +35,7 @@ class QueryListManager {
     for (let item of this.data) {
       let query_item = template.cloneNode(true)
       let returned_query_item = this.manager._create_query_item(item, query_item)
-      let detail_link = returned_query_item.querySelector(".action-button.item-detail-link")
+      let detail_link = returned_query_item.querySelector(".secondary-button.item-detail-link")
       detail_link.query_uuid = item.uuid
       detail_link.addEventListener(
         "click", this._click_query_detail, false
