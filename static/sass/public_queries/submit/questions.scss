@@ -1,0 +1,126 @@
+.form-field.field-error .image-input {
+  border: .5px solid $error;
+}
+
+.form-field.field-error textarea {
+  border: .5px solid $error;
+}
+
+.form-field .image-input {
+  background: $white;
+  background-position: center;
+  background-size: cover;
+  border: .5px solid $terciary;
+  border-radius: 4px;
+  margin-top: 3vh;
+  width: 100%;
+
+  @include small {
+    font-size: 1rem;
+  }
+
+  &.error {
+    border: .5px solid $error;
+  }
+
+  .image-icon {
+    background-image: url('../images/icons/image.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-bottom: 8vh;
+    padding-right: 12vw;
+  }
+
+  .delete.closed-icon {
+    background-image: url('../images/icons/close.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-bottom: 8vh;
+    padding-right: 12vw;
+    position: fixed;
+    right: 10vw;
+
+    @include small {
+      right: 20vw;
+    }
+  }
+
+  label {
+    align-items: center;
+    display: inline-flex;
+    flex-direction: column;
+    height: 30vh;
+    justify-content: center;
+    width: 100%;
+  }
+
+}
+
+.form-field > .options-field {
+  display: flex;
+  flex-direction: column;
+  font-family: Open Sans;
+  font-size: 13px;
+  font-weight: 400;
+  justify-content: space-evenly;
+  margin-top: 1vh;
+  width: 100%;
+
+
+  strong {
+    text-transform: uppercase;
+  }
+
+  label {
+    border: .5px solid $terciary;
+    border-radius: 4px;
+    color: $secondary;
+    display: inline-block;
+    margin: 1vh 1vw;
+    padding: 2vh 2vw;
+    text-align: center;
+
+    &.checked {
+      border: 2px solid $cegir-primary;
+      color: $cegir-primary;
+      font-weight: 600;
+    }
+  }
+
+  input {
+    display: none;
+  }
+}
+
+.dj_map_wrapper { // scss-lint:disable SelectorFormat
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .clear_features a { // scss-lint:disable SelectorFormat
+    color: $terciary;
+    display: inline-block;
+    font-family: Open Sans;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
+    text-decoration: solid;
+    width: 100%;
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  .dj_map { // scss-lint:disable SelectorFormat
+    height: 35vh;
+    width: 100%;
+  }
+
+  .ol-viewport {
+    border-radius: 6px;
+  }
+}

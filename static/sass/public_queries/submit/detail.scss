@@ -1,0 +1,15 @@
+.detail.content-container {
+  justify-content: start;
+  margin-bottom: 3vh;
+  padding-top: 5vh;
+
+  .card {
+    margin-bottom: 3vh;
+  }
+
+  .section.title,
+  .section.text-content {
+    align-self: center;
+    width: 80%;
+  }
+}
