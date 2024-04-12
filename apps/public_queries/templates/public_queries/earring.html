@@ -1,7 +1,23 @@
 {% extends "public_queries/base.html" %}
+{% block navigation %}
+    <div class="navbar dark">
+        <div class="banner">
+            <div class="left">
+                <div class="logo-gs-white"></div>
+                <div class="logo-cegir-white"></div>
+                <div class="logo-app-white"></div>
+            </div>
+            <div class="right">
+                <div class="logo-core-white"></div>
+                <div class="logo-uc-white"></div>
+            </div>
+        </div>
+    </div>
+{% endblock navigation %}
 {% block content %}
-    <div class="entry content-container">
-        <div class="logo-gs entry"></div>
+    <div class="earring content-container">
+        <div class="welcome-app">Bienvenido a</div>
+        <div class="vision-ciudadana"></div>
         <div class="card no-image">
             <div class="content">
                 <div class="earring-message">Pueder responder esta consulta a partir del {{ public_query.start_at|date:"d-m-y" }}</div>
