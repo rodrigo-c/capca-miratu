@@ -1,5 +1,13 @@
 .submit-content {
-  margin-top: 6vh;
+  margin-top: 7vh;
+
+  @include small {
+    margin-top: 6vh;
+  }
+
+  @include large {
+    margin-top: 5vh;
+  }
 }
 
 .content-container {
@@ -16,7 +24,11 @@
   }
 
   @include medium {
-    max-width: 60%;
+    max-width: 50%;
+  }
+
+  @include large {
+    max-width: 40%;
   }
 
   &.hidden {
@@ -88,13 +100,13 @@
     width: 100%;
 
     .subtitle {
-      font-size: 12px;
+      font-size: 2vh;
       font-weight: 700;
       line-height: 108%;
-      padding: .8rem;
+      padding: 2vh 3vw;
 
       @include small {
-        font-size: 1rem;
+        font-size: 2vh;
       }
     }
   }
@@ -107,25 +119,17 @@
 .card-times {
   display: flex;
   justify-content: space-between;
-  margin-bottom: .8rem;
-  padding: 0 .8rem;
+  margin-bottom: 2vh;
+  padding: 0 3vw;
 
   .start-at,
   .end-at {
-    font-size: 8px;
+    font-size: 1.8vh;
     letter-spacing: .5px;
     line-height: 1rem;
 
-    @include small {
-      font-size: .8rem;
-    }
-
     .label {
-      font-size: 9px;
-
-      @include small {
-        font-size: .9rem;
-      }
+      font-size: 2vh;
     }
   }
 }
@@ -146,7 +150,7 @@
     cursor: pointer;
     display: flex;
     font-family: Open Sans;
-    font-size: 14px;
+    font-size: 2.2vh;
     font-weight: 600;
     user-select: none;
 
