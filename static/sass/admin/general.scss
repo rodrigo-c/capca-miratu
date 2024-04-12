@@ -2,7 +2,15 @@
 .admin-content {
   display: flex;
   justify-content: center;
-  margin-top: 6vh;
+  margin-top: 7vh;
+
+  @include small {
+    margin-top: 6vh;
+  }
+
+  @include large {
+    margin-top: 5vh;
+  }
 
   .sidebar {
     font-family: Open Sans;
