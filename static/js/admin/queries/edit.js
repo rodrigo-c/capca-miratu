@@ -403,16 +403,11 @@ class QueryEditBase {
       <div class="question-move-next"></div>
     `
     let question_content = question.querySelector(".question-item-content")
-    if (question_data.kind === "TEXT") {
-      let type = question_data.text_max_length > 150 ? "largo": "corto"
-      question_content.innerHTML += `<div class="kind-text">Respuesta de texto ${type} (${question_data.text_max_length} caracteres)</div>`
-    } else if (question_data.kind === "IMAGE") {
-      question_content.innerHTML += `<div class="kind-image">Respuesta de imagen o foto</div>`
-    } else if (question_data.kind === "POINT") {
-      question_content.innerHTML += `<div class="kind-point"></div>`
-    } else if (question_data.kind === "SELECT") {
+    if (question_data.kind === "SELECT") {
       this._set_question_options(question, question_data)
       this._set_question_max_answers(question, question_data)
+    } else {
+      question_content.innerHTML += this.manager._get_question_kind_html(question_data)
     }
     return question
   }
