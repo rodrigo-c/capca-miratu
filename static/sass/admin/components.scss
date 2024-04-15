@@ -8,9 +8,10 @@
 
   .name {
     font-family: Roboto;
-    font-size: 2.5vh;
+    font-size: 2vh;
     font-weight: 700;
     line-height: 140%;
+    margin-bottom: 2vh;
   }
 
   .content {
@@ -18,9 +19,14 @@
     justify-content: space-between;
   }
 
+  .attributes {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
   .times {
     display: flex;
-    font-size: 2vh;
     margin-bottom: 1vh;
   }
 
@@ -32,7 +38,11 @@
   .end-at {
     align-items: baseline;
     display: flex;
-    font-size: 1.8vh;
+    font-size: 1.5vh;
+
+    &.hidden {
+      display: none;
+    }
   }
 
   .status {
@@ -41,8 +51,9 @@
   }
 
   .status-label {
-    font-size: 2vh;
-    margin-right: 3vw;
+    font-size: 1.5vh;
+    margin-right: 1vw;
+    min-width: fit-content;
   }
 
   .actions {
@@ -52,7 +63,7 @@
   }
 
   .total-responses {
-    font-size: 1.8vh;
+    font-size: 1.5vh;
     margin-bottom: 1vh;
     margin-right: .5vw;
   }
@@ -67,18 +78,19 @@
 
   .query-item-created-by {
     font-size: 1.5vh;
-    padding: 0 1vw;
+    padding-top: 1vh;
   }
 
 
   .status-value {
     background: none;
     border: 1px solid $terciary;
-    border-radius: 3px;
+    border-radius: 6px;
     font-family: Open Sans;
-    font-size: 1.7vh;
-    font-weight: 500;
-    padding: .2vh 1.5vw;
+    font-size: 1.3vh;
+    font-weight: 600;
+    text-align: center;
+    width: 10vh;
 
     &.active {
       border: 2px solid $cegir-primary;
