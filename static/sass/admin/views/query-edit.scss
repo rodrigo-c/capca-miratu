@@ -25,6 +25,22 @@
   padding: 4vh 0;
   width: 80vw;
 
+  @include minimal {
+    .rightbar {
+      right: 2vw;
+    }
+
+    .primary-button {
+      font-size: 0;
+      text-align: center;
+      width: min-content;
+
+      .icon {
+        font-size: 2vh;
+      }
+    }
+  }
+
   @include small {
     margin-left: 18vw;
     width: 60vw;
@@ -57,19 +73,7 @@
     }
   }
 
-  .rightbar {
-    right: 2vw;
-  }
 
-  .primary-button {
-    font-size: 0;
-    text-align: center;
-    width: min-content;
-
-    .icon {
-      font-size: 2vh;
-    }
-  }
 
   .query-components {
     display: flex;
