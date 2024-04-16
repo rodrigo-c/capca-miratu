@@ -34,6 +34,7 @@ class PublicQuerySerializer(serializers.Serializer):
     name = serializers.CharField()
     active = serializers.BooleanField(default=True)
     is_active = serializers.BooleanField()
+    is_earring = serializers.BooleanField(required=False, allow_null=True)
     description = serializers.CharField(
         required=False, allow_null=True, allow_blank=True
     )

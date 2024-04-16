@@ -34,7 +34,7 @@ class QueryDetailManager {
   _set_in_view () {
     let query_item = document.querySelector("#query-detail-item")
     let returned_query_item = this.manager._create_query_item(this.data.query, query_item)
-    if (this.data.query.is_active) {
+    if (this.data.query.is_active || this.data.query.is_earring) {
       document.querySelector("#detail-action-submit").setAttribute("href", this.data.links.submit)
       document.querySelector("#detail-action-submit").classList.remove("hidden")
     } else {
@@ -51,7 +51,12 @@ class QueryDetailManager {
   }
 
   _set_query_preview () {
-    document.querySelector("#query-detail .query-preview-description").textContent = this.data.query.description
+    let description_element = document.querySelector("#query-detail .query-preview-description")
+    if (this.data.query.description) {
+      description_element.textContent = this.data.query.description
+    } else {
+      description_element.textContent = "*Sin descripción configurada"
+    }
     let questions = document.querySelector("#query-detail .query-preview-questions")
     questions.innerHTML = ""
     let index = 0
@@ -65,9 +70,7 @@ class QueryDetailManager {
         <div class="question-name">${question.name}</div>
         <div class="question-description">${question.description? question.description: ""}</div>
       `
-      if (question.kind == "POINT") {
-        question_container.innerHTML += "<div class='question-map map-bg'></div>"
-      } else if (question.kind == "SELECT") {
+      if (question.kind == "SELECT") {
         question_container.innerHTML += `<div class="question-options"></div>`
         let options_container = question_container.querySelector(".question-options")
         let option_index = 0
@@ -80,6 +83,8 @@ class QueryDetailManager {
           `
           option_index += 1
         }
+      } else {
+        question_container.innerHTML += this.manager._get_question_kind_html(question)
       }
       questions.appendChild(question_container)
       index += 1

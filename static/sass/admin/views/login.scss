@@ -3,7 +3,6 @@
   height: 80vh;
 }
 
-
 .login-form {
   display: flex;
   flex-direction: column;
@@ -14,7 +13,7 @@
     flex-direction: column;
   }
 
-  .sidebar-button.login {
+  .primary-button {
     font-family: Open Sans;
     font-size: 2.2vh;
     margin-top: 2vh;
@@ -47,10 +46,6 @@
   }
 
   .vision-ciudadana {
-    background-image: url('../images/logos/vision-ciudadana.svg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
     margin-bottom: 4vh;
     padding-bottom: 10vh;
   }

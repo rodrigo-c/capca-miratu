@@ -37,15 +37,35 @@ class QueryManager {
     return query_item
   }
 
+  _get_question_kind_html (question_data) {
+    let html_text = ""
+    if (question_data.kind === "TEXT") {
+      let type = question_data.text_max_length > 150 ? "largo": "corto"
+      html_text += `<div class="query-question-kind-text">Respuesta de texto ${type} (${question_data.text_max_length} caracteres)</div>`
+    } else if (question_data.kind === "IMAGE") {
+      html_text += `<div class="query-question-kind-image">Respuesta de imagen o foto</div>`
+    } else if (question_data.kind === "POINT") {
+      html_text += `<div class="query-question-kind-point"></div>`
+    }
+    return html_text
+  }
+
   _set_times(item, query_item) {
     query_item.querySelector(".times").classList.remove("hidden")
     if (item.start_at) {
       let start_at = new Date(item.start_at).toLocaleString().split(",")[0]
       query_item.querySelector(".start-at").textContent = `Desde: ${start_at}`
+    } else {
+      query_item.querySelector(".start-at").classList.add("hidden")
     }
     if (item.end_at) {
       let end_at = new Date(item.end_at).toLocaleString().split(",")[0]
       query_item.querySelector(".end-at").textContent = `Hasta: ${end_at}`
+    } else {
+      query_item.querySelector(".end-at").classList.add("hidden")
+    }
+    if (item.start_at && item.end_at) {
+      query_item.querySelector(".times").style["justify-content"] = "space-between"
     }
   }
 

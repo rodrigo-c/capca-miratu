@@ -65,34 +65,51 @@
   }
 }
 
-.query-result-to-map {
-  background-color: $white;
-  border-radius: 6px;
-  filter: drop-shadow(0 0 3px $shadow);
-  width: max-content;
-
-  .query-result-to-map-link {
-    display: flex;
-    padding: 1.5vh .5vw;
-    text-decoration: none;
-  }
-
-  .to-map-link-label {
-    color: $secondary;
-    font-family: Open Sans;
-    user-select: none;
-  }
-
-  .icon {
-    padding-bottom: 2vh;
-    padding-right: 2vw;
-  }
+.query-map .map.map-result {
+  height: 70vh;
+  margin: 0;
 }
 
-.query-datable-image {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 10vw;
-  width: 10vw;
+.map.map-result {
+  margin: 0;
+  max-height: 75vh;
+}
+
+.fetch-meta {
+  font-family: Open Sans;
+  font-size: 1.8vh;
+  padding: 1vh 1vw;
+}
+
+.marker-content {
+  display: flex;
+  flex-direction: column;
+  font-family: Open Sans;
+  font-size: 9px;
+
+  .responses-list .item {
+    padding: .4vh 0;
+  }
+
+  .item {
+    display: flex;
+
+    .field {
+      font-weight: 600;
+      min-width: 30%;
+    }
+
+    .image {
+      background-color: $inactive;
+      width: 50%;
+    }
+  }
+
+  .responses-title {
+    border-bottom: solid .3px $secondary;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 1vh;
+    padding: .5vh 0;
+  }
 }

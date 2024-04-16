@@ -67,7 +67,32 @@ function styles() {
     cssnano({ preset: 'default' }), // minify result
   ];
 
-  return src(`${paths.sass}/project.scss`)
+  return src(`${paths.sass}/submit.scss`)
+    .pipe(
+      sass({
+        importer: tildeImporter,
+        includePaths: [paths.sass],
+      }).on('error', sass.logError),
+    )
+    .pipe(plumber()) // Checks for errors
+    .pipe(postcss(processCss))
+    .pipe(dest(paths.css))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(postcss(minifyCss)) // Minifies the result
+    .pipe(dest(paths.css));
+}
+
+function adminStyles() {
+  const processCss = [
+    autoprefixer(), // adds vendor prefixes
+    pixrem(), // add fallbacks for rem units
+  ];
+
+  const minifyCss = [
+    cssnano({ preset: 'default' }), // minify result
+  ];
+
+  return src(`${paths.sass}/admin.scss`)
     .pipe(
       sass({
         importer: tildeImporter,
@@ -180,7 +205,7 @@ function watchPaths() {
 }
 
 // Generate all assets
-const generateAssets = parallel(styles, submitJS, adminJs, imgCompression);
+const generateAssets = parallel(styles, adminStyles, submitJS, adminJs, imgCompression);
 
 // Set up dev environment
 const dev = parallel(initBrowserSync, watchPaths);

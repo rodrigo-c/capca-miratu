@@ -1,0 +1,202 @@
+.query-box-item {
+  background-color: $white;
+  border-radius: 6px;
+  box-shadow: 0 1px 1px 0 $shadow-ligth, 0 0 5.3px 0 $shadow;
+  font-family: Open Sans;
+  margin: 2vh 1vw;
+  padding: 2vh 2vw;
+
+  .name {
+    font-family: Roboto;
+    font-size: 2.3vh;
+    font-weight: 700;
+    line-height: 140%;
+    margin-bottom: 2vh;
+  }
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .attributes {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .times {
+    display: flex;
+    margin-bottom: 1vh;
+  }
+
+  .start-at {
+    margin-right: 2vw;
+  }
+
+  .start-at,
+  .end-at {
+    align-items: baseline;
+    display: flex;
+    font-size: 1.5vh;
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  .status {
+    align-items: center;
+    display: flex;
+  }
+
+  .status-label {
+    font-size: 1.5vh;
+    margin-right: 1vw;
+    min-width: fit-content;
+  }
+
+  .actions {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .total-responses {
+    font-size: 1.5vh;
+    margin-bottom: 1vh;
+    margin-right: .5vw;
+    width: max-content;
+  }
+
+  .field {
+    margin-right: 1vw;
+  }
+
+  .value {
+    font-weight: 600;
+  }
+
+  .query-item-created-by {
+    font-size: 1.5vh;
+    padding-top: 1vh;
+  }
+
+
+  .status-value {
+    background: none;
+    border: 1px solid $terciary;
+    border-radius: 6px;
+    font-family: Open Sans;
+    font-size: 1.3vh;
+    font-weight: 600;
+    text-align: center;
+    width: 10vh;
+
+    &.active {
+      border: 2px solid $cegir-primary;
+      color: $cegir-primary;
+    }
+
+    &.finished {
+      border: 2px solid $error;
+      color: $error;
+    }
+
+    &.earring,
+    &.draft {
+      border: 2px solid $secondary;
+      color: $secondary;
+    }
+
+    &.input {
+      background: none;
+      user-select: none;
+    }
+  }
+}
+
+
+.tab-links {
+  display: flex;
+  font-family: Gotham;
+  font-size: 2vh;
+  padding: 2vh 1vw;
+  user-select: none;
+
+  .tab-link {
+    border-bottom: 1px solid $inactive;
+    color: $inactive;
+    cursor: pointer;
+    margin-right: 2vw;
+    width: 15vw;
+
+    &.active { // scss-lint:disable NestingDepth
+      border-bottom: 1px solid $secondary;
+      color: $secondary;
+    }
+  }
+}
+
+
+.dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.dropdown-content {
+  background: $white;
+  box-shadow: 0 1px 1px 0 $shadow-ligth, 0 0 5.3px 0 $shadow;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+
+  &.hidden {
+    display: none;
+  }
+
+  .dropdown-item {
+    box-shadow: 0 2px 3px -2px $shadow;
+    cursor: pointer;
+    font-family: Gotham;
+    font-size: 2vh;
+    margin: 0 1vw;
+    padding: 1vh 1vw;
+    user-select: none;
+
+    &:hover {
+      background-color: $inactive;
+    }
+
+    &:last-child {
+      box-shadow: none;
+    }
+  }
+}
+
+.query-question-kind-image,
+.query-question-kind-point,
+.query-question-kind-text {
+  background-color: $white;
+  border: .4px solid $inactive;
+  border-radius: 4px;
+  font-size: 1.5vh;
+  padding: 1vh 1vw;
+  width: 90%;
+}
+
+.query-question-kind-point {
+  background-image: url('../images/geomap.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 4vh;
+}
+
+.question-item-kind {
+  font-family: 'Open Sans';
+  font-size: 1.8vh;
+  font-style: italic;
+}

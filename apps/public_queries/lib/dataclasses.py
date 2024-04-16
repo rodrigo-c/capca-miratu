@@ -36,6 +36,7 @@ class PublicQueryData:
     name: str
     active: bool
     is_active: bool | None = None
+    is_earring: bool | None = None
     description: str | None = None
     start_at: datetime | None = None
     end_at: datetime | None = None

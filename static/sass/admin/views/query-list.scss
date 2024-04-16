@@ -1,0 +1,21 @@
+.view.query-list {
+  margin: 0 auto;
+  padding: 3vh 0;
+  width: 90vw;
+
+  @include small {
+    width: 60vw;
+  }
+
+  @include medium {
+    width: 50vw;
+  }
+
+  @include large {
+    width: 45vw;
+  }
+
+  .main-label {
+    margin-left: 1vw;
+  }
+}

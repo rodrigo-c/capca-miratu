@@ -1,16 +1,46 @@
 
 .admin-content {
   display: flex;
-  justify-content: center;
-  margin-top: 6vh;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 7vh;
+
+  @include small {
+    margin-top: 6vh;
+  }
+
+  @include large {
+    margin-top: 5vh;
+  }
 
   .sidebar {
+    display: flex;
     font-family: Open Sans;
-    font-size: 2.2vh;
+    font-size: 1.5vh;
+    justify-content: center;
     left: 0;
-    padding: 3vh 1vw;
-    position: fixed;
+    padding: 1vh 1vw;
+    width: 100%;
     z-index: 0;
+
+    @include small {
+      flex-direction: column;
+      font-size: 1.8vh;
+      justify-content: flex-start;
+      padding: 3vh 1vw;
+      position: fixed;
+      width: 15vw;
+    }
+
+    @include medium {
+      font-size: 2vh;
+      width: 15vw;
+    }
+
+    @include large {
+      font-size: 1.8vh;
+      width: 12vw;
+    }
   }
 
   .sidebar-element {
@@ -42,49 +72,10 @@
     }
   }
 
-  //todo: change sidebar to other else
-  .sidebar-button {
-    background-color: $cegir-primary;
-    border-radius: 6px;
-    box-shadow: 0 0 2px 0 $shadow;
-    color: $white;
-    cursor: pointer;
-    font-family: Gotham;
-    font-size: 1.8vh;
-    font-weight: 600;
-    padding: 1.8vh 1vw;
-    user-select: none;
-
-    .icon {
-      padding-right: 2vw;
-    }
-
-    &:hover {
-      opacity: .7;
-      transition: opacity .3s;
-    }
-
-    &.disabled {
-      cursor: auto;
-      opacity: .4;
-    }
-  }
-
-  .views {
-    padding: 5vh 5vw;
-    width: 70vw;
-  }
-
-  .view.query-list,
-  .view.query-detail {
-    margin: auto;
-    max-width: 600px;
-  }
-
   .main-label {
     display: inline-block;
     font-family: Gotham;
-    font-size: 2vh;
+    font-size: 1.9vh;
     font-weight: 500;
     padding-bottom: 2vh;
 
@@ -99,7 +90,6 @@
     }
   }
 
-
   .rightbar {
     align-items: flex-end;
     display: flex;
@@ -111,7 +101,7 @@
     position: fixed;
     right: 0;
 
-    .sidebar-button {
+    .primary-button {
       margin-bottom: 1vh;
       min-width: 8vw;
       width: max-content;
