@@ -23,6 +23,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    width: 100%;
   }
 
   .times {
@@ -66,6 +67,7 @@
     font-size: 1.5vh;
     margin-bottom: 1vh;
     margin-right: .5vw;
+    width: max-content;
   }
 
   .field {
@@ -180,9 +182,9 @@
   background-color: $white;
   border: .4px solid $inactive;
   border-radius: 4px;
-  font-size: 1.7vh;
+  font-size: 1.5vh;
   padding: 1vh 1vw;
-  width: 35vh;
+  width: 90%;
 }
 
 .query-question-kind-point {
@@ -191,4 +193,10 @@
   background-repeat: no-repeat;
   background-size: cover;
   height: 4vh;
+}
+
+.question-item-kind {
+  font-family: 'Open Sans';
+  font-size: 1.8vh;
+  font-style: italic;
 }
