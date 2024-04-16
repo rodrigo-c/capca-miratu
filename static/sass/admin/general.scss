@@ -1,7 +1,8 @@
 
 .admin-content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   margin-top: 7vh;
 
   @include small {
@@ -13,12 +14,33 @@
   }
 
   .sidebar {
+    display: flex;
     font-family: Open Sans;
-    font-size: 2.2vh;
+    font-size: 1.5vh;
+    justify-content: center;
     left: 0;
-    padding: 3vh 1vw;
-    position: fixed;
+    padding: 1vh 1vw;
+    width: 100%;
     z-index: 0;
+
+    @include small {
+      flex-direction: column;
+      font-size: 1.8vh;
+      justify-content: flex-start;
+      padding: 3vh 1vw;
+      position: fixed;
+      width: 15vw;
+    }
+
+    @include medium {
+      font-size: 2vh;
+      width: 15vw;
+    }
+
+    @include large {
+      font-size: 1.8vh;
+      width: 12vw;
+    }
   }
 
   .sidebar-element {
@@ -48,11 +70,6 @@
     &.current:hover {
       opacity: 1;
     }
-  }
-
-  .view.query-detail {
-    margin: auto;
-    max-width: 600px;
   }
 
   .main-label {
