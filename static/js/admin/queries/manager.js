@@ -54,18 +54,17 @@ class QueryManager {
     query_item.querySelector(".times").classList.remove("hidden")
     if (item.start_at) {
       let start_at = new Date(item.start_at).toLocaleString().split(",")[0]
+      query_item.querySelector(".start-at").classList.remove("hidden")
       query_item.querySelector(".start-at").textContent = `Desde: ${start_at}`
     } else {
       query_item.querySelector(".start-at").classList.add("hidden")
     }
     if (item.end_at) {
+      query_item.querySelector(".end-at").classList.remove("hidden")
       let end_at = new Date(item.end_at).toLocaleString().split(",")[0]
       query_item.querySelector(".end-at").textContent = `Hasta: ${end_at}`
     } else {
       query_item.querySelector(".end-at").classList.add("hidden")
-    }
-    if (item.start_at && item.end_at) {
-      query_item.querySelector(".times").style["justify-content"] = "space-between"
     }
   }
 
