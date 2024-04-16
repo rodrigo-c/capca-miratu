@@ -1,12 +1,44 @@
-.responses-total {
-  display: flex;
-  font-family: Open Sans;
-  font-size: 2vh;
-  padding: 1vh 1vw;
+.view.query-data,
+.view.query-map,
+.view.query-questions,
+.view.query-result {
+  margin-left: 5vw;
+  padding: 4vh 0;
+  width: 90vw;
 
-  .total-label {
-    font-weight: 600;
-    margin-right: 1vw;
+  @include small {
+    margin-left: 15vw;
+    width: 80vw;
+
+    .tab-links {
+      font-size: 2vh;
+    }
+  }
+
+  @include medium {
+    margin-left: 15vw;
+    width: 80vw;
+  }
+
+  @include large {
+    margin-left: 15vw;
+    width: 80vw;
+  }
+
+  .tab-links {
+    font-size: 1.6vh;
+  }
+
+  .responses-total {
+    display: flex;
+    font-family: Open Sans;
+    font-size: 2vh;
+    padding: 1vh 1vw;
+
+    .total-label {
+      font-weight: 600;
+      margin-right: 1vw;
+    }
   }
 }
 
@@ -66,14 +98,13 @@
   margin: 0 1vw;
   min-height: 60vh;
   padding: 1vh 1vw;
-  padding-bottom: 3vw;
 }
 
 .query-result-content {
   padding: 2vh 3vw;
 
   .summary {
-    max-height: 40vh;
+    width: 45vw;
   }
 
   .responses-total {
