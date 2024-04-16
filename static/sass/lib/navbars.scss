@@ -110,7 +110,7 @@
     border-left: 1px solid $white;
     height: fit-content;
     margin-left: 1vw;
-    padding-bottom: 5vh;
+    padding-bottom: 2vh;
     padding-right: 11vw;
 
     @include small {
@@ -119,8 +119,8 @@
     }
 
     @include medium {
-      padding-bottom: 3vh;
-      padding-right: 8vw;
+      padding-bottom: 2.5vh;
+      padding-right: 10vw;
     }
 
     @include large {
