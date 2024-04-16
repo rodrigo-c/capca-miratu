@@ -114,13 +114,13 @@
     padding-right: 11vw;
 
     @include small {
-      padding-bottom: 5vh;
+      padding-bottom: 3vh;
       padding-right: 8vw;
     }
 
     @include medium {
       padding-bottom: 2.5vh;
-      padding-right: 10vw;
+      padding-right: 8vw;
     }
 
     @include large {
