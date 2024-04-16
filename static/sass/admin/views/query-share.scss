@@ -1,42 +1,59 @@
-.admin-content {
-  .view.query-share {
-    .icon {
-      margin-right: .5vw;
-      padding-right: 3vh;
-    }
 
-    .ok-simple {
-      padding-right: 1.6vh;
-    }
+.view.query-share {
+  margin-left: 5vw;
+  padding: 4vh 0;
+  width: 90vw;
 
-    .share-container {
-      border: 1px solid $shadow-ligth;
-      border-radius: 4px;
-      max-width: 600px;
-      padding: 2vh 4vw;
-      padding-bottom: 3vh;
-    }
+  @include small {
+    margin-left: 20vw;
+    width: 60vw;
+  }
 
-    .subtitle {
-      margin-top: 2vh;
-    }
+  @include medium {
+    margin-left: 25vw;
+    width: 50vw;
+  }
 
-    .action-container {
-      display: flex;
-      padding: 1vh 0;
-    }
+  @include large {
+    margin-left: 30vw;
+    width: 40vw;
+  }
 
-    .secondary-button {
-      padding: 1vh 1.3vw;
-    }
+  .icon {
+    margin-right: .5vw;
+    padding-right: 3vh;
+  }
 
-    .action-success {
-      border: 1px solid $shadow-ligth;
-      border-radius: 4px;
-      color: $terciary;
-      font-size: 2vh;
-      margin: 0 1vw;
-      padding: .8vh 1.8vw;
-    }
+  .ok-simple {
+    padding-right: 1.6vh;
+  }
+
+  .share-container {
+    border: 1px solid $shadow-ligth;
+    border-radius: 4px;
+    padding: 2vh 4vw;
+    padding-bottom: 3vh;
+  }
+
+  .subtitle {
+    margin-top: 2vh;
+  }
+
+  .action-container {
+    display: flex;
+    padding: 1vh 0;
+  }
+
+  .secondary-button {
+    padding: 1vh 1.3vw;
+  }
+
+  .action-success {
+    border: 1px solid $shadow-ligth;
+    border-radius: 4px;
+    color: $terciary;
+    font-size: 2vh;
+    margin: 0 1vw;
+    padding: .8vh 1.8vw;
   }
 }
