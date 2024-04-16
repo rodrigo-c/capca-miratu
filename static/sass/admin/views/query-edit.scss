@@ -4,13 +4,13 @@
 
   .query-box-item.update,
   .query-box-item.create {
-    flex-basis: 70%;
+    width: 100%;
   }
 
   .start-at-input,
   .end-at-input {
     border: 0;
-    font-size: 2vh;
+    font-size: 1.6vh;
     padding: 0 .5vw;
 
     &:focus-visible {
@@ -19,19 +19,67 @@
   }
 }
 
-.admin-content {
+.view.query-create,
+.view.query-update {
+  margin-left: 5vw;
+  padding: 4vh 0;
+  width: 80vw;
+
+  @include small {
+    margin-left: 18vw;
+    width: 60vw;
+
+    .primary-button {
+      font-size: 1.8vh;
+    }
+
+    .rightbar {
+      right: 3vw;
+    }
+  }
+
+  @include medium {
+    margin-left: 25vw;
+    width: 50vw;
+
+    .primary-button {
+      font-size: 2vh;
+      width: max-content;
+    }
+  }
+
+  @include large {
+    margin-left: 27vw;
+    width: 45vw;
+
+    .primary-button {
+      font-size: 1.8vh;
+    }
+  }
+
+  .rightbar {
+    right: 2vw;
+  }
+
+  .primary-button {
+    font-size: 0;
+    text-align: center;
+    width: min-content;
+
+    .icon {
+      font-size: 2vh;
+    }
+  }
 
   .query-components {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-
-    .tabs {
-      flex-basis: 76%;
-    }
+    padding: 1vh 1vw;
 
     .subtitle {
       font-family: Gotham;
-      font-size: 2.3vh;
+      font-size: 2vh;
       font-weight: 600;
       padding: 1vh 1vw;
     }
@@ -46,10 +94,6 @@
 
   .textarea-wrap {
     display: grid;
-
-    &.name {
-      margin-bottom: 2vh;
-    }
 
     &.question-item-name {
       margin-left: 1vw;
@@ -77,6 +121,7 @@
 
   .name.input {
     border: 0;
+    margin-bottom: 0;
     padding: 0;
     width: 100%;
 
@@ -103,18 +148,19 @@
   }
 
   .attribute {
-    font-size: 2vh;
+    font-size: 1.6vh;
     padding: 1vh 0;
     width: 80%;
 
     &.with-label {
       display: flex;
       justify-content: space-between;
+      width: 60%;
     }
   }
 
   .attribute-textarea {
-    font-size: 2vh;
+    font-size: 1.6vh;
     width: 100%;
 
     &:focus-visible {
@@ -163,7 +209,6 @@
     font-family: 'Open Sans';
     font-size: 1.8vh;
     font-style: italic;
-    padding: 0 1vw;
   }
 
   .question-item-content {
@@ -171,6 +216,10 @@
     flex-direction: column;
     padding: 2vh 1vw;
     width: 100%;
+
+    .textarea-wrap.question-item-name {
+      margin-bottom: 1vh;
+    }
 
     .question-item-name {
       font-family: Roboto;
@@ -183,30 +232,10 @@
 
     .question-item-description {
       font-family: Roboto;
-      font-size: 2vh;
+      font-size: 1.8vh;
       font-weight: 400;
       line-height: 144%;
       padding: 0;
-    }
-
-    .kind-image,
-    .kind-point,
-    .kind-text {
-      background-color: $white;
-      border: .4px solid $inactive;
-      border-radius: 4px;
-      font-size: 1.7vh;
-      padding: 1vh 1vw;
-    }
-
-    .kind-point {
-      background-image: url('../images/geomap.svg');
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      margin: 0 1vw;
-      padding: 3.5vh 0;
-      width: 100%;
     }
   }
 
@@ -254,7 +283,9 @@
     user-select: none;
 
     .action-label {
+      font-size: 1.5vh;
       margin-right: .5vw;
+
     }
   }
 
@@ -272,7 +303,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     padding-bottom: 3vh;
-    padding-right: 2vw;
+    padding-right: 2.5vh;
   }
 
   .action-required {
@@ -294,7 +325,7 @@
   .action-max-answers {
     display: inline-block;
     font-family: Gotham;
-    font-size: 1.6vh;
+    font-size: 1.5vh;
     margin-bottom: 2vh;
     position: relative;
   }
@@ -351,6 +382,7 @@
     font-size: 2vh;
     margin-bottom: 2vh;
     padding: .6vh 2vw;
+    width: 90%;
 
     .question-option-label {
       font-size: 2vh;
@@ -370,6 +402,7 @@
     font-family: Gotham;
     font-size: 1.8vh;
     padding: .5vh .5vw;
+    width: 100%;
 
     &:focus-visible {
       outline: none;
@@ -384,7 +417,7 @@
     color: $terciary;
     cursor: pointer;
     font-family: Gotham;
-    font-size: 1.8vh;
+    font-size: 1.6vh;
     padding: 1vh 1vw;
     user-select: none;
     width: fit-content;
@@ -397,7 +430,7 @@
   .question-option-delete {
     cursor: pointer;
     font-family: Gotham;
-    font-size: 2.7vh;
+    font-size: 2vh;
     font-weight: 700;
     user-select: none;
   }
