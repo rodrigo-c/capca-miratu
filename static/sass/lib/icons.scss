@@ -15,6 +15,13 @@
   padding-right: 2vw;
 }
 
+.icon.plus-dark {
+  background-image: url('../images/icons/add-dark.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .icon.close {
   background-image: url('../images/icons/close.svg');
   background-position: center;
@@ -63,6 +70,20 @@
 
 .icon.copy {
   background-image: url('../images/icons/copy.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.search {
+  background-image: url('../images/icons/search.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon.bottom {
+  background-image: url('../images/icons/bottom.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
