@@ -1,5 +1,26 @@
 <div class="view query-list hidden" id="query-list">
-    <div class="main-label">Todas las consultas</div>
+    <div class="filters-controler">
+        <div class="header">
+            <div class="main-label">Todas las consultas</div>
+            <div class="status-filter dropdown dropdown-wrapper">
+                <div class="status-filter-button">
+                    <span class="current">Filtrar</span><i class="icon bottom"></i>
+                </div>
+                <div class="status-filter-dropdown dropdown-content hidden dd-content">
+                    <div class="dropdown-item active">Todas</div>
+                    <div class="dropdown-item" code="active">Activa</div>
+                    <div class="dropdown-item" code="finished">Finalizada</div>
+                </div>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="icon search"></div>
+            <input class="search-input"
+                   id="query-list-search-input"
+                   type="text"
+                   placeholder="Buscar">
+        </div>
+    </div>
     <div class="query-box-item hidden" id="query-item-template">
         <div class="name"></div>
         <div class="content">
@@ -21,6 +42,13 @@
                     <div class="secondary-button item-detail-link">Ver detalles</div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="query-list-empty hidden" id="query-list-empty-content">
+        <div class="main-label">No hay consultas configuradas.</div>
+        <div class="query-list-create" id="query-list-create-query">
+            <div class="icon plus-dark"></div>
+            <div class="query-create-label">Crear nueva consulta</div>
         </div>
     </div>
     <div class="query-item-list"></div>
