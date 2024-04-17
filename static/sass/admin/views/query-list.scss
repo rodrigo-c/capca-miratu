@@ -16,7 +16,7 @@
   }
 
   .main-label {
-    padding: 0;
+    padding: 1vh 0;
   }
 
   .filters-controler {
@@ -44,6 +44,7 @@
     cursor: pointer;
     filter: drop-shadow(0 0 3px $shadow);
     font-family: Open Sans;
+    font-size: 2vh;
     font-weight: 600;
     padding: .5vh 1vw;
     user-select: none;
