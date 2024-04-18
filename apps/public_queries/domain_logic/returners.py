@@ -85,6 +85,7 @@ class PublicQueryReturner:
                     uuid=question.id,
                     query_uuid=instance.id,
                     index=index,
+                    image=question.image.url if question.image else None,
                     options=self._get_options_data(question=question),
                 )
                 for index, question in enumerate(question_queryset)
