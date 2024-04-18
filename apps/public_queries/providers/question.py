@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import QuerySet
 
 from apps.public_queries.models import Question
@@ -49,6 +50,13 @@ def bulk_update_questions(data_list: list[dict]) -> list[Question]:
         instance = Question(**instance_kwargs)
         instances.append(instance)
     return Question.objects.bulk_update(objs=instances, fields=list(fields_for_update))
+
+
+def update_question_image(question_uuid: UUID, image: InMemoryUploadedFile) -> str:
+    instance = Question.objects.get(id=question_uuid)
+    instance.image = image
+    instance.save(update_fields=["image"])
+    return instance.image.url
 
 
 def delete_question_by_uuids(uuids: list[UUID]) -> None:
