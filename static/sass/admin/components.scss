@@ -117,6 +117,29 @@
   }
 }
 
+.question-item-image-preview-content {
+  display: flex;
+  justify-content: right;
+  width: fit-content;
+
+  .question-item-image-preview {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 6px;
+    height: 20vh;
+  }
+
+  .icon.close {
+    cursor: pointer;
+    height: 2.5vh;
+    margin: 1vh;
+    padding: 0;
+    position: absolute;
+    width: 2.5vh;
+  }
+}
+
 
 .tab-links {
   display: flex;
