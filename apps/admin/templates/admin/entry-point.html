@@ -14,10 +14,13 @@
           type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
             type="text/javascript"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/image-blob-reduce@4.1.0/dist/image-blob-reduce.min.js "></script>
 {% endblock extra_css %}
 {% block modal %}
     <div class="admin-modal hidden" id="admin-modal">
-        <div class="admin-modal-content"></div>
+        <div class="admin-modal-content">
+            <div class="admin-modal-close icon close-dark" id="admin-modal-close"></div>
+        </div>
     </div>
 {% endblock modal %}
 {% block menu %}
