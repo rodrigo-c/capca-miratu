@@ -26,6 +26,7 @@ class QuestionSerializer(serializers.Serializer):
     )
     options = serializers.ListField(child=QuestionOptionSerializer())
     index = serializers.IntegerField()
+    image = serializers.CharField(required=False, allow_null=True)
 
 
 class PublicQuerySerializer(serializers.Serializer):
@@ -40,7 +41,6 @@ class PublicQuerySerializer(serializers.Serializer):
     )
     start_at = serializers.DateTimeField(required=False, allow_null=True)
     end_at = serializers.DateTimeField(required=False, allow_null=True)
-    image = serializers.CharField(required=False)
     questions = serializers.ListField(child=QuestionSerializer())
     url_code = serializers.CharField()
     auth_email = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)

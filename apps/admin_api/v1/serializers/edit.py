@@ -125,3 +125,8 @@ class UpdateQuestionSerializer(CreateQuestionSerializer):
 class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
     uuid = serializers.UUIDField(required=True)
     questions = serializers.ListField(child=UpdateQuestionSerializer(), min_length=1)
+
+
+class UpdateQuestionSerializer(serializers.Serializer):
+    question_uuid = serializers.UUIDField(required=True)
+    image = serializers.ImageField(required=False, allow_null=True)

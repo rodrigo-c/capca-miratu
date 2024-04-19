@@ -46,3 +46,13 @@ def test_bulk_update_questions(question):
     )
     question.refresh_from_db()
     assert question.name == name
+
+
+@pytest.mark.django_db
+def test_update_question_image(question, uploaded_image):
+    assert not question.image
+    returned_url = question_providers.update_question_image(
+        question_uuid=question.id, image=uploaded_image
+    )
+    question.refresh_from_db()
+    assert returned_url == question.image.url

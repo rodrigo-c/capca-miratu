@@ -1,6 +1,8 @@
 from io import BytesIO
 from uuid import UUID
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
 from apps.public_queries.domain_logic.auth import CanSubmitPublicQuery
 from apps.public_queries.domain_logic.exports import PublicQueryExporter
 from apps.public_queries.domain_logic.factories import PublicQueryFactory
@@ -26,10 +28,12 @@ from apps.public_queries.lib.exceptions import (
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
     PublicQueryUpdateError,
+    QuestionDoesNotExist,
     ResponseDoesNotExist,
 )
-from apps.public_queries.models import Response
+from apps.public_queries.models import Question, Response
 from apps.public_queries.providers import public_query as public_query_providers
+from apps.public_queries.providers import question as question_providers
 from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
@@ -63,6 +67,18 @@ def update_public_query(query_data: PublicQueryData) -> PublicQueryData:
     except Exception as error:
         raise PublicQueryUpdateError(error)
     return created_query
+
+
+def update_question_image(
+    question_uuid: UUID, image: InMemoryUploadedFile | None = None
+) -> str:
+    try:
+        image_url = question_providers.update_question_image(
+            question_uuid=question_uuid, image=image
+        )
+    except Question.DoesNotExist:
+        raise QuestionDoesNotExist
+    return image_url
 
 
 def delete_public_query(uuid: str | UUID) -> bool:

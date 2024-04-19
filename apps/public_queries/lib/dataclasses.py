@@ -27,6 +27,7 @@ class QuestionData:
     description: str | None = None
     options: list | None = None
     index: int | None = None
+    image: str | None = None
 
 
 @dataclass

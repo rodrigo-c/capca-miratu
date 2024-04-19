@@ -3,6 +3,7 @@ class QueryEditBase {
     this.manager = manager
     this.required_fields = ["name"]
     this.data = this._get_default_data()
+    this.question_images = {}
     this.inputs = {}
     this.errors = {}
     this.buttons = {}
@@ -20,6 +21,10 @@ class QueryEditBase {
     this._click_question_max_answers_menu = this._click_question_max_answers_menu.bind(this)
     this._click_question_max_answers_set = this._click_question_max_answers_set.bind(this)
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
+    this._click_question_image_modal = this._click_question_image_modal.bind(this)
+    this._click_question_image_rm = this._click_question_image_rm.bind(this)
+
+    this._change_input_question_image = this._change_input_question_image.bind(this)
     this._set_initial()
     this._set_publish_button()
     this._set_create_question_button()
@@ -61,6 +66,7 @@ class QueryEditBase {
 
   _clean_data() {
     this.data = this._get_default_data()
+    this.question_images = {}
     this._build_question_from_data()
     for (let field in this.inputs) {
       let input = this.inputs[field]
@@ -323,6 +329,7 @@ class QueryEditBase {
     let index = 0
     for (let question_data of this.data.questions) {
       let question = this._create_question_element(question_data, index)
+      this._set_question_image(question, question_data)
       questions_container.appendChild(question)
       let delete_button = question.querySelector(".action-delete")
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
@@ -380,6 +387,9 @@ class QueryEditBase {
             </textarea>
           </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
+          <div class="question-item-image-preview-content">
+            <img class="question-item-image-preview hidden"><div class="icon close" id="question-item-image-preview-${index}-rm"></div>
+          </div>
         </div>
         <div class="question-item-actions">
           <div class="actions-top">
@@ -410,6 +420,104 @@ class QueryEditBase {
       question_content.innerHTML += this.manager._get_question_kind_html(question_data)
     }
     return question
+  }
+
+  _set_question_image(question, question_data) {
+    let actions = question.querySelector(".question-item-actions .actions-bottom")
+    let action_image = document.createElement("div")
+    action_image.classList.add("action-question-image", "icon", "image")
+    action_image.setAttribute("id", `action-question-image-${question.index}`)
+    action_image.question_index = question.index
+    let question_image_input = document.createElement("input")
+    question_image_input.setAttribute("id", `action-question-image-${question.index}-input`)
+    question_image_input.setAttribute("type", "file")
+    question_image_input.classList.add("hidden")
+    actions.insertBefore(action_image, actions.firstChild)
+    actions.appendChild(question_image_input)
+    action_image.addEventListener("click", this._click_question_image_modal, false)
+
+    let image_preview = question.querySelector(".question-item-image-preview")
+    if (this.question_images[question.index] && this.question_images[question.index].url) {
+      image_preview.setAttribute("src", this.question_images[question.index].url)
+      image_preview.classList.remove("hidden")
+    } else if (question_data.image){
+      image_preview.setAttribute("src", question_data.image)
+      image_preview.classList.remove("hidden")
+    }
+    let rm_button = question.querySelector(`#question-item-image-preview-${question.index}-rm`)
+    rm_button.question_index = question.index
+    rm_button.addEventListener("click", this._click_question_image_rm, false)
+  }
+
+  _click_question_image_modal(event) {
+    let html_element = document.createElement("div")
+    html_element.innerHTML = `
+      <div class="question-image-upload-content">
+        <div class="question-image-button">
+          <label for="question-image-upload-input"><div class="primary-button">Adjuntar imagen</div></label>
+          <input type="file" accept="image/*" maxlength="1" class="hidden" id="question-image-upload-input">
+        </div>
+      </div>
+    `
+    let config = {
+      class: "query-question-upload-image",
+      html_element: html_element,
+    }
+    let image_input = html_element.querySelector("#question-image-upload-input")
+    image_input.question_index = event.target.question_index
+    image_input.addEventListener(
+      "input", this._change_input_question_image, false
+    )
+    this.manager.engine.show_modal(config)
+  }
+
+  _click_question_image_rm (event) {
+    let question_index = event.target.question_index
+    let question = this.data.questions[question_index]
+    if (question.image) {
+      this.question_images[question_index] = {
+        question_uuid: question.uuid,
+        file: null,
+      }
+    } else if (this.question_images[question_index]) {
+      delete this.question_images[question_index]
+    }
+    this.data.questions[question_index].image = null
+    this._build_question_from_data()
+  }
+
+  _change_input_question_image(event) {
+    let question_index = event.target.question_index
+    if (event.target.files.length > 0) {
+      let reducer = new window.ImageBlobReduce({
+        pica: window.ImageBlobReduce.pica({ features: [ 'js', 'wasm', 'ww' ] })
+      });
+      reducer.toBlob(
+        event.target.files[0], {max: 1000}
+      ).then(
+        blob => {
+          let url = URL.createObjectURL(blob)
+          let reduced_file = new File([blob], event.target.files[0].name, {type:"mime/type", lastModified:new Date().getTime()})
+          let data_transfer = new DataTransfer()
+          data_transfer.items.add(reduced_file)
+          let question = this.data.questions[question_index]
+          let question_image = {
+            url: url,
+            file: null,
+            question_uuid: question.uuid,
+          }
+          this.question_images[question_index] = question_image
+          this._build_question_from_data()
+          let question_image_input = document.querySelector(`#action-question-image-${question_index}-input`)
+          question_image_input.files = data_transfer.files
+          this.question_images[question_index].file = question_image_input.files[0]
+          this.manager.engine.hide_modal()
+        }
+      )
+      .catch(
+        error => {console.log(error)}
+      )
+    }
   }
 
   _prepare_question_inputs(question, question_data, fields) {
@@ -658,6 +766,24 @@ class QueryEditBase {
        status_container.style.display = "flex"
     }
   }
+
+  async _upload_question_images() {
+    for (let question_index in this.question_images) {
+      let question_image = this.question_images[question_index]
+      let question_uuid = question_image.question_uuid? question_image.question_uuid: this.data.questions[question_index].uuid
+      let data = new FormData()
+      data.append("question_uuid", question_uuid)
+      if (question_image.file) {
+        data.append("image", question_image.file)
+      }
+      await fetch(this.manager.url_base + "update_question_image/", {
+        method: "POST",
+        body: data,
+        headers: {"X-CSRFToken": this.manager.engine.csrf_token},
+        credentials: "same-origin"
+      })
+    }
+  }
 }
 
 
@@ -689,9 +815,17 @@ class QueryCreateManager extends QueryEditBase {
         response.json()
         .then((data)=> {
           if (data.uuid) {
-            this.manager.engine.cursor.key = data.uuid
-            this.manager.engine.show_view("query-detail", true)
-            this._clean_data()
+            if (Object.keys(this.question_images).length === 0) {
+              this.manager.engine.cursor.key = data.uuid
+              this.manager.engine.show_view("query-detail", true)
+              this._clean_data()
+            } else {
+              this._upload_question_images().then(o =>{
+                this.manager.engine.cursor.key = data.uuid
+                this.manager.engine.show_view("query-detail", true)
+                this._clean_data()
+              })
+            }
           } else {
             console.log(data)
           }
@@ -776,7 +910,7 @@ class QueryUpdateManager extends QueryEditBase {
   }
 
   _click_remove_question(event) {
-    let modal_data = event.target.closest("#admin-modal").data
+    let modal_data = event.target.closest("#admin-modal").config.data
     let question_index = modal_data.question_index
     this.data.questions.splice(question_index, 1)
     this._build_question_from_data()
@@ -818,9 +952,18 @@ class QueryUpdateManager extends QueryEditBase {
         response.json()
         .then((data)=> {
           if (data.uuid) {
-            this.manager.engine.cursor.key = data.uuid
-            this.manager.engine.show_view("query-detail", true)
-            this._clean_data()
+            if (Object.keys(this.question_images).length === 0) {
+              this.manager.engine.cursor.key = data.uuid
+              this.manager.engine.show_view("query-detail", true)
+              this._clean_data()
+            } else {
+              this._upload_question_images().then(a=> {
+                this.manager.engine.cursor.key = data.uuid
+                this.manager.engine.show_view("query-detail", true)
+                this._clean_data()
+              })
+            }
+
           } else {
             console.log(data)
           }
@@ -886,6 +1029,7 @@ class QueryUpdateManager extends QueryEditBase {
       description: question.description,
       required: question.required,
       order: question.order,
+      image: question.image,
     }
     if (question.kind == "TEXT") {
       cleaned_question.text_max_length = question.text_max_length
