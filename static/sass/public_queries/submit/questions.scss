@@ -1,3 +1,14 @@
+
+.question-image-content {
+  border-radius: 4px;
+  height: 35%;
+  margin-bottom: 1vh;
+
+  .question-image-img {
+    height: 100%;
+  }
+}
+
 .form-field.field-error .image-input {
   border: .5px solid $error;
 }
