@@ -52,11 +52,13 @@ def bulk_update_questions(data_list: list[dict]) -> list[Question]:
     return Question.objects.bulk_update(objs=instances, fields=list(fields_for_update))
 
 
-def update_question_image(question_uuid: UUID, image: InMemoryUploadedFile) -> str:
+def update_question_image(
+    question_uuid: UUID, image: InMemoryUploadedFile
+) -> str | None:
     instance = Question.objects.get(id=question_uuid)
     instance.image = image
     instance.save(update_fields=["image"])
-    return instance.image.url
+    return instance.image.url if instance.image else None
 
 
 def delete_question_by_uuids(uuids: list[UUID]) -> None:
