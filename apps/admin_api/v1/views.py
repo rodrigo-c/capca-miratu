@@ -18,6 +18,7 @@ from apps.admin_api.lib.constants import PublicQueryDataResultConstants
 from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
     UpdatePublicQuerySerializer,
+    UpdateQuestionSerializer,
 )
 from apps.admin_api.v1.serializers.generic import PublicQuerySerializer
 from apps.admin_api.v1.serializers.results import (
@@ -31,6 +32,7 @@ from apps.public_queries.lib.exceptions import (
     PublicQueryCreateError,
     PublicQueryDoesNotExist,
     PublicQueryUpdateError,
+    QuestionDoesNotExist,
 )
 
 
@@ -92,6 +94,22 @@ class PublicQueryManager(ViewSet):
             if public_queries_services.delete_public_query(uuid=public_query.uuid):
                 return Response({}, status=response_status.HTTP_202_ACCEPTED)
         return Response({}, status=response_status.HTTP_406_NOT_ACCEPTABLE)
+
+    @action(detail=False, methods=["post"])
+    def update_question_image(self, request) -> Response:
+        serializer = UpdateQuestionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            image_url = public_queries_services.update_question_image(
+                **serializer.validated_data
+            )
+        except QuestionDoesNotExist:
+            raise Http404
+        success_data = {
+            "question_uuid": serializer.validated_data["question_uuid"],
+            "image_url": image_url,
+        }
+        return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
 
     @action(detail=True, methods=["get"])
     def map(self, request, pk) -> Response:
