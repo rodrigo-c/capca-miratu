@@ -101,7 +101,7 @@ class AdminEngine {
   }
 
   _click_out_modal_content(event) {
-    if (event.target.getAttribute("id") === "admin-modal") {
+    if (["admin-modal", "admin-modal-close"].includes(event.target.getAttribute("id"))) {
       this.hide_modal()
     }
   }
@@ -154,23 +154,29 @@ class AdminEngine {
 
   show_modal(config) {
     let modal = document.querySelector("#admin-modal")
-    let html_element = document.createElement("div")
-    html_element.classList.add(config.class)
-    html_element.innerHTML = `
-      <div class="modal-icon-${config.icon}"></div>
-      <div class="modal-title">${config.title}</div>
-      <div class="modal-content">${config.content}</div>
-      <div class="modal-actions"></div>
-    `
-    modal.data = config.data
-    let actions = html_element.querySelector(".modal-actions")
-    for (let action of config.actions) {
-      let button = document.createElement("div")
-      button.classList.add("primary-button")
-      button.innerText = action.name
-      button.addEventListener("click", action.click, false)
-      actions.appendChild(button)
+    modal.config = config
+    let html_element = null
+    if (config.html_element) {
+      html_element = config.html_element
     }
+    else {
+      html_element = document.createElement("div")
+      html_element.innerHTML = `
+        <div class="modal-icon-${config.icon}"></div>
+        <div class="modal-title">${config.title}</div>
+        <div class="modal-content">${config.content}</div>
+        <div class="modal-actions"></div>
+      `
+      let actions = html_element.querySelector(".modal-actions")
+      for (let action of config.actions) {
+        let button = document.createElement("div")
+        button.classList.add("primary-button")
+        button.innerText = action.name
+        button.addEventListener("click", action.click, false)
+        actions.appendChild(button)
+      }
+    }
+    html_element.classList.add(config.class)
     modal.querySelector(".admin-modal-content").appendChild(html_element)
     modal.classList.remove("hidden")
   }
@@ -178,7 +184,7 @@ class AdminEngine {
   hide_modal() {
     let modal = document.querySelector("#admin-modal")
     modal.classList.add("hidden")
-    modal.querySelector(".admin-modal-content").innerHTML = ""
+    modal.querySelector(`.${modal.config.class}`).remove()
   }
 }
 
