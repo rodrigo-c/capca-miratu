@@ -217,11 +217,8 @@ class QuerySubmitEngine {
     this.hide_all()
     this.focus = focus
     if (focus != "entry") {
-      this.comp.navbars.main.classList.remove("flat")
       this.comp.buttons.back.classList.remove(this.hidden_class_name)
       this.comp.buttons.submit.classList.remove(this.hidden_class_name)
-    } else {
-      this.comp.navbars.main.classList.add("flat")
     }
     if (Number.isInteger(focus)) {
       for (let input of this.comp.input_map.question_list[focus]) {
