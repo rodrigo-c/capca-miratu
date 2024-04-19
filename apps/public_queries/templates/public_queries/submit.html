@@ -11,7 +11,8 @@
           enctype="multipart/form-data">
         {% csrf_token %}
         <div class="entry content-container hidden" id="entry-container">
-            <div class="logo-gs entry"></div>
+            <div class="welcome-app">Bienvenido a</div>
+            <div class="vision-ciudadana"></div>
             {% include "public_queries/components/public-query-card.html" with noimage="true" %}
             <div class="button" id="start-button">{{ app_context.QUERY_RESPONSE }}</div>
         </div>
@@ -48,6 +49,12 @@
                 <div class="question-name">{{ answer_form.question_data.name }}</div>
                 {% if answer_form.question_data.description %}
                     <div class="question-description text-content">{{ answer_form.question_data.description }}</div>
+                {% endif %}
+                {% if answer_form.question_data.image %}
+                    <div class="question-image-content">
+                        <!-- djlint:off --><img class="question-image-img"
+                        src="{{ answer_form.question_data.image }}"><!-- djlint:on -->
+                    </div>
                 {% endif %}
                 {% for field in answer_form.hidden_fields %}{{ field }}{% endfor %}
                 {% for field in answer_form.visible_fields %}
