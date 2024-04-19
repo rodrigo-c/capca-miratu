@@ -70,6 +70,9 @@ class QueryDetailManager {
         <div class="question-name">${question.name}</div>
         <div class="question-description">${question.description? question.description: ""}</div>
       `
+      if (question.image) {
+        question_container.innerHTML += `<div class="question-item-image-preview-content"><img class="question-item-image-preview" src="${question.image}"></div>`
+      }
       if (question.kind == "SELECT") {
         question_container.innerHTML += `<div class="question-options"></div>`
         let options_container = question_container.querySelector(".question-options")
