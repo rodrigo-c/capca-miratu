@@ -387,8 +387,8 @@ class QueryEditBase {
             </textarea>
           </div>
           <div class="error-label" id="query-${this.view_type}-question-${index}-description-error"></div>
-          <div class="question-item-image-preview-content">
-            <img class="question-item-image-preview hidden"><div class="icon close" id="question-item-image-preview-${index}-rm"></div>
+          <div class="question-item-image-preview-content hidden">
+            <img class="question-item-image-preview"><div class="icon close" id="question-item-image-preview-${index}-rm"></div>
           </div>
         </div>
         <div class="question-item-actions">
@@ -437,12 +437,13 @@ class QueryEditBase {
     action_image.addEventListener("click", this._click_question_image_modal, false)
 
     let image_preview = question.querySelector(".question-item-image-preview")
+    let image_preview_content = question.querySelector(".question-item-image-preview-content")
     if (this.question_images[question.index] && this.question_images[question.index].url) {
       image_preview.setAttribute("src", this.question_images[question.index].url)
-      image_preview.classList.remove("hidden")
+      image_preview_content.classList.remove("hidden")
     } else if (question_data.image){
       image_preview.setAttribute("src", question_data.image)
-      image_preview.classList.remove("hidden")
+      image_preview_content.classList.remove("hidden")
     }
     let rm_button = question.querySelector(`#question-item-image-preview-${question.index}-rm`)
     rm_button.question_index = question.index
@@ -815,6 +816,9 @@ class QueryCreateManager extends QueryEditBase {
         response.json()
         .then((data)=> {
           if (data.uuid) {
+            for (let index in data.questions) {
+              this.data.questions[index].uuid = data.questions[index].uuid
+            }
             if (Object.keys(this.question_images).length === 0) {
               this.manager.engine.cursor.key = data.uuid
               this.manager.engine.show_view("query-detail", true)
