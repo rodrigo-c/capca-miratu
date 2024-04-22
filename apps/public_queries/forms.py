@@ -65,7 +65,9 @@ class OptionFieldInput(forms.CheckboxSelectMultiple):
 class AnswerForm(forms.Form):
     text = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={"placeholder": "Agregar comentarios"}),
+        widget=forms.Textarea(
+            attrs={"placeholder": "Agregar comentarios", "rows": "5"}
+        ),
     )
     image = forms.ImageField(
         required=False,
