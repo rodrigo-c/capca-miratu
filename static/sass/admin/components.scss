@@ -138,6 +138,11 @@
     position: absolute;
     width: 2.5vh;
   }
+
+  &.hidden {
+    display: none;
+  }
+
 }
 
 
