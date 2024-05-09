@@ -33,6 +33,7 @@ from apps.public_queries.lib.exceptions import (
     PublicQueryEarring,
     PublicQueryUpdateError,
     QuestionDoesNotExist,
+    ResponseDoesNotExist,
 )
 from apps.public_queries.tests.recipes import (
     public_query_recipe,
@@ -589,3 +590,27 @@ def test_get_public_query_share_document(ended_public_query):
         public_query = services.get_public_query(identifier=ended_public_query.id)
     file = services.get_public_query_share_document(public_query=public_query)
     assert isinstance(file, BytesIO)
+
+
+@pytest.mark.django_db
+class TestUpdateResponseVisiblity:
+    def test_success(self, response):
+        assert response.visible is True
+        assert (
+            services.update_response_visibility(
+                response_uuid=response.id, visible=False
+            )
+            is False
+        )
+        response.refresh_from_db()
+        assert response.visible is False
+        assert (
+            services.update_response_visibility(response_uuid=response.id, visible=True)
+            is True
+        )
+        response.refresh_from_db()
+        assert response.visible is True
+
+    def test_not_found(self):
+        with pytest.raises(ResponseDoesNotExist):
+            services.update_response_visibility(response_uuid=uuid4(), visible=False)
