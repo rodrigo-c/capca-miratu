@@ -42,3 +42,10 @@ def count_responses_by_query_and_rut(query_uuid: UUID, rut: str) -> int:
 
 def count_responses_by_query_and_email(query_uuid: UUID, email: str) -> int:
     return Response.objects.filter(query_id=query_uuid, email=email).count()
+
+
+def update_response_visibility(response_uuid: UUID, visible: bool) -> bool:
+    response = Response.objects.get(id=response_uuid)
+    response.visible = visible
+    response.save(update_fields=["visible"])
+    return visible

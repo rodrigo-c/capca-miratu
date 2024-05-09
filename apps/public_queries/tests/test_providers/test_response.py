@@ -68,3 +68,24 @@ def test_count_responses_by_query_and_email(response):
         )
         == 1
     )
+
+
+@pytest.mark.django_db
+def test_update_response_visibility(response):
+    assert response.visible is True
+    assert (
+        response_providers.update_response_visibility(
+            response_uuid=response.id, visible=False
+        )
+        is False
+    )
+    response.refresh_from_db()
+    assert response.visible is False
+    assert (
+        response_providers.update_response_visibility(
+            response_uuid=response.id, visible=True
+        )
+        is True
+    )
+    response.refresh_from_db()
+    assert response.visible is True
