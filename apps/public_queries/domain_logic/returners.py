@@ -132,7 +132,7 @@ class PublicQueryReturner:
             f"pregunta_{index + 1}": question
             for index, question in enumerate(questions)
         }
-        instance_fields = ["send_at", "email", "rut", "location"]
+        instance_fields = ["send_at", "email", "rut", "location", "visible"]
         fields = instance_fields + sorted(list(questions_by_field))
         for response_id, response in responses_map.items():
             response_data = self._get_response_data(
