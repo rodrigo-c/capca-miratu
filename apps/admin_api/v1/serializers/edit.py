@@ -130,3 +130,8 @@ class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
 class UpdateQuestionSerializer(serializers.Serializer):
     question_uuid = serializers.UUIDField(required=True)
     image = serializers.ImageField(required=False, allow_null=True)
+
+
+class UpdateResponseVisiblity(serializers.Serializer):
+    response_uuid = serializers.UUIDField(required=True)
+    visible = serializers.BooleanField(required=True)
