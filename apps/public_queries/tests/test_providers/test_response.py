@@ -48,6 +48,12 @@ def test_get_responses_by_query_uuid(response):
         query_uuid=response.query_id
     )
     assert response.id == returned_instances[0].id
+    response.visible = False
+    response.save(update_fields=["visible"])
+    returned_instances = response_providers.get_responses_by_query_uuid(
+        query_uuid=response.query_id, visible=False
+    )
+    assert response.id == returned_instances[0].id
 
 
 @pytest.mark.django_db
