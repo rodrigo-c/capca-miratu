@@ -19,6 +19,7 @@ from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
     UpdatePublicQuerySerializer,
     UpdateQuestionSerializer,
+    UpdateResponseVisiblity,
 )
 from apps.admin_api.v1.serializers.generic import PublicQuerySerializer
 from apps.admin_api.v1.serializers.results import (
@@ -108,6 +109,22 @@ class PublicQueryManager(ViewSet):
         success_data = {
             "question_uuid": serializer.validated_data["question_uuid"],
             "image_url": image_url,
+        }
+        return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=["post"])
+    def update_response_visibility(self, request) -> Response:
+        serializer = UpdateResponseVisiblity(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            visible = public_queries_services.update_response_visibility(
+                **serializer.validated_data
+            )
+        except QuestionDoesNotExist:
+            raise Http404
+        success_data = {
+            "response_uuid": serializer.validated_data["response_uuid"],
+            "visible": visible,
         }
         return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
 

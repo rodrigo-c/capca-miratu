@@ -208,6 +208,16 @@ class TestPublicQueryManager:
         question.refresh_from_db()
         assert question.image.url is not None
 
+    def test_update_response_visibility(self, api_client, user, ended_public_query):
+        api_client.force_login(user)
+        url = reverse(f"{self.base_pattern}-update-response-visibility")
+        response = ended_public_query.responses.first()
+        data = {"response_uuid": response.id, "visible": False}
+        http_response = api_client.post(url, data=data)
+        assert http_response.status_code == 202
+        response.refresh_from_db()
+        assert response.visible is False
+
     def test_get_map(self, api_client, user, ended_public_query):
         ended_public_query.created_by_id = user.id
         ended_public_query.save()
