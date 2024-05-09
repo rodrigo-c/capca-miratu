@@ -43,7 +43,7 @@ class QueryMapResultReturner(ServiceBase):
             if question.kind == QuestionConstants.KIND_POINT
         }
         responses_queryset = response_providers.get_responses_by_query_uuid(
-            query_uuid=self.public_query.uuid
+            query_uuid=self.public_query.uuid, visible=True
         )
         answers_queryset = answer_providers.get_answers_by_query_uuid(
             query_uuid=self.public_query.uuid
