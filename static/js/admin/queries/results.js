@@ -17,6 +17,8 @@ class QueryResultManager {
     this._click_download_dropdown = this._click_download_dropdown.bind(this)
     this._click_map_shapes_button = this._click_map_shapes_button.bind(this)
     this._click_map_shape_action = this._click_map_shape_action.bind(this)
+    this._click_response_visibility = this._click_response_visibility.bind(this)
+    this._set_row_callback = this._set_row_callback.bind(this)
     this._set_pre_in_view()
   }
 
@@ -380,9 +382,55 @@ class QueryResultManager {
       dataset.push(row)
     }
     let config = {...this.data.simpletables_config}
+    config.rowRender = this._set_row_callback
     config.data.data = dataset
     config.data.headings = this._get_datables_heading(config)
     this.data_table = new simpleDatatables.DataTable("#query-result-data-table", config)
+    this._set_cell_options()
+
+  }
+  _set_cell_options () {
+    for (let button of document.querySelectorAll(".cell-options-button")) {
+      button.addEventListener("click", function () {
+        let content = this.nextElementSibling
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden")
+        } else {
+          content.classList.add("hidden")
+        }
+      })
+    }
+    for (let button of document.querySelectorAll(".dropdown-item.visiblity")) {
+      button.addEventListener("click", this._click_response_visibility, false)
+    }
+  }
+
+  _click_response_visibility (event) {
+    this.manager.engine._set_loading()
+    let response_uuid = event.target.getAttribute("response")
+    let current_visibility = event.target.getAttribute("visible")
+    if (response_uuid == null) {
+      let dropdown_item = event.target.closest(".dropdown-item.visiblity")
+      response_uuid = dropdown_item.getAttribute("response")
+      current_visibility = dropdown_item.getAttribute("visible")
+    }
+    current_visibility = current_visibility === "true"
+    let data = {
+      response_uuid, visible: !current_visibility
+    }
+    fetch (`${this.manager.url_base}update_response_visibility/`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {"Content-Type": "application/json", "X-CSRFToken": this.manager.engine.csrf_token},
+      credentials: "same-origin"
+    })
+    .then((response)=>{
+      this.show_view()
+    })
+  }
+
+  _set_row_callback (rowValue, tr, index) {
+    tr.attributes.class = "row-response"
   }
 
   _get_row_from_item(item) {
@@ -404,12 +452,43 @@ class QueryResultManager {
         value = `${lat}${long}`
       }
       if (field.includes("pregunta_")) {
-        value = this._get_question_value(this.data.query.questions, field, value, item.uuid)
+        value = this._get_question_value(this.data.query.questions, field, value, item)
       }
       if (value == null) {
         value = ""
       }
+      if (field == "visible") {
+        let visible = value === "True"
+        let label = visible ? "Ocultar respuestas": "Mostrar respuestas"
+        value = `
+          <div class="dropdown-wrapper">
+            <div class="cell-options-button icon options"></div>
+            <div class="dropdown-content cell-options-content hidden dd-content">
+              <div class="dropdown-item visiblity" response="${item.uuid}" visible="${visible}">
+                <div class="icon ${visible? 'hide': 'show'}"></div>
+                <div class="dropdown-item-value">${label}</div>
+              </div>
+            </div>
+          </div>
+        `
+      }
       row.push(value)
+    }
+    if (item.visible === "False") {
+      row[1] = `
+        <div class="response-hidden-alert">
+          <div class="icon hide"></div>
+          <div class="response-hidden-alert-message">
+            <div class="response-hidden-title">
+              Respuestas en modo oculto
+            </div>
+            <div class="response-hidden-subtitle">
+              Las respuesta de esta persona no serán consideradas en los resultados de esta consulta.
+            </div>
+          </div>
+        </div>
+        <div class="response-hidden-alert-spacer"></div>
+      `
     }
     return row
   }
@@ -424,7 +503,7 @@ class QueryResultManager {
     return headings
   }
 
-  _get_question_value(questions, field, value, response_uuid) {
+  _get_question_value(questions, field, value, item) {
     let num = parseInt(field.match(/\d+/)[0])
     let index = num - 1
     let question = questions[index]
@@ -435,9 +514,12 @@ class QueryResultManager {
       final_value = `<a href="${value}" target="_blank">${final_value}</a>`
     } else if (question.kind == "POINT" && value) {
       let query_url_code = this.data.query.url_code
+      console.log(item)
+      let link = item.visible === "True"? `href="?f=query-map&k=${query_url_code}&r=${item.uuid}"`: ""
+      console.log(link)
       final_value = `
         <div class="query-result-to-map">
-          <a class="query-result-to-map-link" href="?f=query-map&k=${query_url_code}&r=${response_uuid}">
+          <a class="query-result-to-map-link" ${link}>
             <div class="icon map-marker"></div>
             <div class="to-map-link-label">Ver en el mapa</div>
           </a>
