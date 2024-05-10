@@ -112,7 +112,7 @@
   }
 
   .response-hidden-alert-spacer {
-    min-height: 7vh;
+    min-height: 8vh;
   }
 
   .response-hidden-alert {
@@ -120,10 +120,15 @@
     display: flex;
     font-family: Open Sans;
     margin-top: -1vh;
-    max-width: 25vw;
+    max-width: 45vw;
     padding: 1vh 1vw;
     position: absolute;
     z-index: 1;
+
+
+    @include small {
+      max-width: 25vw;
+    }
 
     .icon {
       height: 4vh;
