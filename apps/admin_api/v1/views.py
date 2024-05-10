@@ -255,17 +255,21 @@ class PublicQueryManager(ViewSet):
             if field == "send_at":
                 column["type"] = "date"
                 column["format"] = "MYSQL"
+            if field == "visible":
+                heading["label"] = ""
+                column["searchable"] = False
+                column["sort"] = True
             if "pregunta_" in field:
                 index = int(re.search(r"\d+", field)[0]) - 1
                 question = public_query["questions"][index]
                 if question["kind"] == QuestionConstants.KIND_TEXT:
-                    column["cellClass"] = "cell-tooltip value-text"
+                    column["cellClass"] = "cell value-text"
                 if question["kind"] == QuestionConstants.KIND_IMAGE:
-                    column["cellClass"] = "cell-tooltip value-image"
+                    column["cellClass"] = "cell value-image"
                 if question["kind"] == QuestionConstants.KIND_POINT:
-                    column["cellClass"] = "cell-tooltip value-point"
+                    column["cellClass"] = "cell value-point"
                 if question["kind"] == QuestionConstants.KIND_SELECT:
-                    column["cellClass"] = "cell-tooltip value-select"
+                    column["cellClass"] = "cell value-select"
                 heading["desc"] = question["name"]
             else:
                 column["cellClass"] = f"cell {field}"
