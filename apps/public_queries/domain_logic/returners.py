@@ -133,7 +133,6 @@ class PublicQueryReturner:
             for index, question in enumerate(questions)
         }
         instance_fields = ["send_at", "email", "rut", "location", "visible"]
-        fields = instance_fields + sorted(list(questions_by_field))
         for response_id, response in responses_map.items():
             response_data = self._get_response_data(
                 response=response, fields=instance_fields
@@ -150,6 +149,7 @@ class PublicQueryReturner:
             )
             responses_data.append(response_data)
         query = self._get_query_data()
+        fields = instance_fields[:-1] + sorted(list(questions_by_field)) + ["visible"]
         return {
             "query": query,
             "fields": list(fields),
@@ -185,7 +185,7 @@ class PublicQueryReturner:
                 )
             else:
                 value = getattr(response, field)
-                response_data[field] = str(value) if value else None
+                response_data[field] = str(value) if value is not None else None
         return response_data
 
     def _get_answer_data_value(self, question: Question, answers: list[Answer]) -> str:
