@@ -226,6 +226,7 @@ class Response(BaseModel):
     allowed_responder = models.ForeignKey(
         AllowedResponder, on_delete=models.SET_NULL, null=True
     )
+    visible = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["send_at"]

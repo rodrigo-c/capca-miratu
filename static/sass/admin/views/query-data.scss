@@ -54,7 +54,11 @@
       vertical-align: baseline;
     }
 
-    .cell.rut {
+    .cell {
+      vertical-align: middle;
+    }
+
+    .rut {
       text-wrap: nowrap;
     }
 
@@ -62,6 +66,79 @@
       font-size: 1.5vh;
       font-weight: 400;
       text-wrap: balance;
+    }
+
+    .cell-options-button {
+      cursor: pointer;
+      padding: 1vh;
+    }
+
+    .dropdown-item {
+      display: flex;
+      margin: 0;
+    }
+  }
+
+  .cell-options-content {
+    right: 5vw;
+
+    .icon {
+      margin-right: 1vh;
+      padding: 1vh;
+    }
+
+    .dropdown-item-value {
+      font-family: Roboto;
+      font-size: 1.5vh;
+      font-weight: 400;
+    }
+  }
+
+  .row-response:has(.response-hidden-alert) {
+    background-color: $disabled;
+
+    .cell {
+      opacity: .5;
+    }
+
+    .cell.email,
+    .cell.visible {
+      opacity: 1;
+    }
+
+    .query-result-to-map-link {
+      cursor: not-allowed;
+    }
+  }
+
+  .response-hidden-alert-spacer {
+    min-height: 8vh;
+  }
+
+  .response-hidden-alert {
+    background: $disabled;
+    display: flex;
+    font-family: Open Sans;
+    margin-top: -1vh;
+    max-width: 45vw;
+    padding: 1vh 1vw;
+    position: absolute;
+    z-index: 1;
+
+
+    @include small {
+      max-width: 25vw;
+    }
+
+    .icon {
+      height: 4vh;
+      margin-right: 1vh;
+      width: 4vh;
+    }
+
+    .response-hidden-title {
+      font-size: 1.6vh;
+      font-weight: 600;
     }
   }
 

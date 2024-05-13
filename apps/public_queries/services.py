@@ -81,6 +81,16 @@ def update_question_image(
     return image_url
 
 
+def update_response_visibility(response_uuid: UUID, visible: bool) -> bool:
+    try:
+        is_visible = response_providers.update_response_visibility(
+            response_uuid=response_uuid, visible=visible
+        )
+    except Response.DoesNotExist:
+        raise ResponseDoesNotExist
+    return is_visible
+
+
 def delete_public_query(uuid: str | UUID) -> bool:
     obj_deleted, detail = public_query_providers.delete_public_query(uuid=uuid)
     return detail.get("public_queries.PublicQuery") == 1

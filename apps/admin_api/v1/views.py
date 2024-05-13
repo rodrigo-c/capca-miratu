@@ -19,6 +19,7 @@ from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
     UpdatePublicQuerySerializer,
     UpdateQuestionSerializer,
+    UpdateResponseVisiblity,
 )
 from apps.admin_api.v1.serializers.generic import PublicQuerySerializer
 from apps.admin_api.v1.serializers.results import (
@@ -108,6 +109,22 @@ class PublicQueryManager(ViewSet):
         success_data = {
             "question_uuid": serializer.validated_data["question_uuid"],
             "image_url": image_url,
+        }
+        return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=["post"])
+    def update_response_visibility(self, request) -> Response:
+        serializer = UpdateResponseVisiblity(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            visible = public_queries_services.update_response_visibility(
+                **serializer.validated_data
+            )
+        except QuestionDoesNotExist:
+            raise Http404
+        success_data = {
+            "response_uuid": serializer.validated_data["response_uuid"],
+            "visible": visible,
         }
         return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
 
@@ -238,17 +255,21 @@ class PublicQueryManager(ViewSet):
             if field == "send_at":
                 column["type"] = "date"
                 column["format"] = "MYSQL"
+            if field == "visible":
+                heading["label"] = ""
+                column["searchable"] = False
+                column["sort"] = True
             if "pregunta_" in field:
                 index = int(re.search(r"\d+", field)[0]) - 1
                 question = public_query["questions"][index]
                 if question["kind"] == QuestionConstants.KIND_TEXT:
-                    column["cellClass"] = "cell-tooltip value-text"
+                    column["cellClass"] = "cell value-text"
                 if question["kind"] == QuestionConstants.KIND_IMAGE:
-                    column["cellClass"] = "cell-tooltip value-image"
+                    column["cellClass"] = "cell value-image"
                 if question["kind"] == QuestionConstants.KIND_POINT:
-                    column["cellClass"] = "cell-tooltip value-point"
+                    column["cellClass"] = "cell value-point"
                 if question["kind"] == QuestionConstants.KIND_SELECT:
-                    column["cellClass"] = "cell-tooltip value-select"
+                    column["cellClass"] = "cell value-select"
                 heading["desc"] = question["name"]
             else:
                 column["cellClass"] = f"cell {field}"
