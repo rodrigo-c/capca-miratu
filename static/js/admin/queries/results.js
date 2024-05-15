@@ -2,7 +2,6 @@ import {
   get_chart
 } from "../charts.js"
 
-
 class QueryResultManager {
   constructor ({manager = null, kind = null}) {
     this.manager = manager
@@ -36,10 +35,13 @@ class QueryResultManager {
     dropdown_button.addEventListener("click", this._click_download_dropdown, false)
     let excel_link = document.querySelector(`#query-${this.kind}-download-excel`)
     excel_link.kind = "excel"
-    excel_link.addEventListener("click", this._click_download_link, false)
     let geojson_link = document.querySelector(`#query-${this.kind}-download-geojson`)
     geojson_link.kind = "geojson"
-    geojson_link.addEventListener("click", this._click_download_link, false)
+    let images_link = document.querySelector(`#query-${this.kind}-download-images`)
+    images_link.kind = "images-zip"
+    for (let element of [excel_link, geojson_link, images_link]) {
+      element.addEventListener("click", this._click_download_link, false)
+    }
   }
 
   _click_download_dropdown (event) {
@@ -52,9 +54,56 @@ class QueryResultManager {
   }
 
   _click_download_link (event) {
-    let link = `${this.manager.url_base}${this.manager.engine.cursor.key}/${event.target.kind}/`
-    window.open(link)
+    let kind = event.target.kind
+    if (["geojson", "excel"].includes(kind)) {
+      let link = `${this.manager.url_base}${this.manager.engine.cursor.key}/${event.target.kind}/`
+      window.open(link)
+    }
+    if (kind === "images-zip") {
+      this._donwload_images()
+    }
     document.querySelector(`#query-${this.kind}-dropdown`).classList.add("hidden")
+  }
+
+  _donwload_images () {
+    fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}/data/`, {
+      method: "GET",
+      headers: {"Content-Type": "application/json"},
+      credentials: "same-origin"
+    })
+    .then(response=> {
+      if (response.ok) {
+        response.json()
+        .then((data)=> {
+          let images_fields = []
+          for (let question of data.query.questions) {
+            if (question.kind === "IMAGE") {
+              let field = `pregunta_${question.index + 1}`
+              images_fields.push(field)
+            }
+          }
+          if (images_fields.length === 0) {
+            return
+          }
+          let response_images = []
+          let zip = new JSZip()
+          let folder = zip.folder("images")
+          for (let response of data.dataset) {
+            for (let field of images_fields) {
+              let image_url = response[field] === ""? null: response[field]
+              if (image_url && response.visible === "True") {
+                let extension = image_url.slice(image_url.length - 3)
+                let image_blob = fetch(image_url).then(response => response.blob());
+                folder.file(`${response.send_at}-${field}-${response.uuid}.${extension}`, image_blob)
+              }
+            }
+          }
+          folder.generateAsync({type: "blob"}).then(content => saveAs(content, `consulta-imagenes-${data.query.url_code}-${new Date().toLocaleDateString()}`))
+        })
+      } else {
+        console.log(response)
+      }
+    })
   }
 
   show_view(on_history) {
@@ -514,9 +563,7 @@ class QueryResultManager {
       final_value = `<a href="${value}" target="_blank">${final_value}</a>`
     } else if (question.kind == "POINT" && value) {
       let query_url_code = this.data.query.url_code
-      console.log(item)
       let link = item.visible === "True"? `href="?f=query-map&k=${query_url_code}&r=${item.uuid}"`: ""
-      console.log(link)
       final_value = `
         <div class="query-result-to-map">
           <a class="query-result-to-map-link" ${link}>
