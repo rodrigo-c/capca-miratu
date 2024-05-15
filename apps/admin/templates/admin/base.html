@@ -57,6 +57,7 @@
             {% endblock content %}
         </div>
         {% block javascript %}
+            <script src="{% static 'js/vendors.min.js' %}"></script>
             <script src="{% static 'js/admin.min.js' %}"></script>
         {% endblock javascript %}
         {% block extra_js %}
