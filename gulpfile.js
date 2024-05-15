@@ -37,8 +37,8 @@ function pathsConfig(appName) {
 
   return {
     vendorsJs: [
-      `${vendorsRoot}/@popperjs/core/dist/umd/popper.js`,
-      `${vendorsRoot}/bootstrap/dist/js/bootstrap.js`,
+      `${vendorsRoot}/file-saver/dist/FileSaver.js`,
+      `${vendorsRoot}/jszip/dist/jszip.js`,
     ],
     app: this.app,
     templates: `${this.app}/templates`,
@@ -205,7 +205,7 @@ function watchPaths() {
 }
 
 // Generate all assets
-const generateAssets = parallel(styles, adminStyles, submitJS, adminJs, imgCompression);
+const generateAssets = parallel(styles, adminStyles, vendorScripts, submitJS, adminJs, imgCompression);
 
 // Set up dev environment
 const dev = parallel(initBrowserSync, watchPaths);
