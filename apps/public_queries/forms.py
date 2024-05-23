@@ -148,6 +148,19 @@ class AnswerForm(forms.Form):
     def _set_point_answer(self):
         field = self.fields["point"]
         field.required = self.question_data.required
+        default_lon = (
+            self.question_data.default_point[0]
+            if self.question_data.default_point
+            else -70.668423
+        )
+        default_lat = (
+            self.question_data.default_point[1]
+            if self.question_data.default_point
+            else -33.447869
+        )
+        field.widget.attrs["default_lat"] = default_lat
+        field.widget.attrs["default_lon"] = default_lon
+        field.widget.attrs["default_zoom"] = self.question_data.default_zoom or 9
         self._hide_fields(exclude=["point"])
 
     def get_validated_dataclass(self) -> AnswerData:
