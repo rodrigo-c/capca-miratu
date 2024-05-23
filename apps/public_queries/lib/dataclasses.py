@@ -28,6 +28,8 @@ class QuestionData:
     options: list | None = None
     index: int | None = None
     image: str | None = None
+    default_point: Point | None = None
+    default_zoom: int | None = None
 
 
 @dataclass
