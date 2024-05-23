@@ -3,9 +3,6 @@ class SubmitMapWidget extends MapWidget {
   constructor (options) {
     super(options)
     document.getElementById(options.map_id).style = null;
-    this.map.getView().setCenter(
-      ol.proj.transform([-70.668423, -33.447869], 'EPSG:4326', 'EPSG:3857')
-    )
     this.interactions.modify.setActive(false)
     this.map.getView().on(
       "change:center", (event) => {
