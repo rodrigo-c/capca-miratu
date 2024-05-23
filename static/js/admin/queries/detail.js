@@ -5,6 +5,7 @@ class QueryDetailManager {
     this.charts = {
       summary: null
     }
+    this.map_pointers = []
     this._click_query_edit = this._click_query_edit.bind(this)
   }
 
@@ -59,6 +60,10 @@ class QueryDetailManager {
     }
     let questions = document.querySelector("#query-detail .query-preview-questions")
     questions.innerHTML = ""
+    for (let i in this.map_pointers) {
+      this.map_pointers[i].remove()
+    }
+    this.map_pointers = []
     let index = 0
     for (let answer_result of this.data.answer_results) {
       let question = answer_result.question
@@ -90,6 +95,29 @@ class QueryDetailManager {
         question_container.innerHTML += this.manager._get_question_kind_html(question)
       }
       questions.appendChild(question_container)
+      if (question.kind === "POINT") {
+        if (question.default_point == null) {
+          question.default_point = {latitude: -33.447869, longitude: -70.668423}
+        }
+        let latitude = question.default_point.latitude? question.default_point.latitude: -33.447869
+        let longitude = question.default_point.longitude? question.default_point.longitude: -70.668423
+        let zoom = question.default_zoom? question.default_zoom: 9
+        let latlng = L.latLng(latitude, longitude)
+        let map = L.map(`map-pointer-${question.uuid}`).setView(latlng, zoom)
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          zoomControl: false,
+        }).addTo(map);
+        map.attributionControl.setPrefix("")
+        map.zoomControl.remove()
+        map.dragging.disable()
+        map.doubleClickZoom.disable()
+        map.scrollWheelZoom.disable()
+        setTimeout(function () {
+          window.dispatchEvent(new Event('resize'));
+        }, 100);
+        this.map_pointers.push(map)
+      }
       index += 1
     }
   }
