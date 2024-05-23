@@ -45,7 +45,7 @@ class QueryManager {
     } else if (question_data.kind === "IMAGE") {
       html_text += `<div class="query-question-kind-image">Respuesta de imagen o foto</div>`
     } else if (question_data.kind === "POINT") {
-      html_text += `<div class="query-question-kind-point"></div>`
+      html_text += `<div class="query-map-pointer" id="map-pointer-${question_data.uuid}"></div>`
     }
     return html_text
   }
