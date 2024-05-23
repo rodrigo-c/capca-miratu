@@ -8,6 +8,7 @@ class QueryEditBase {
     this.errors = {}
     this.buttons = {}
     this.can_edit_questions = true
+    this.map_pointers = []
 
     this._click_publish = this._click_publish.bind(this)
     this._dropdown_create_question = this._dropdown_create_question.bind(this)
@@ -23,6 +24,7 @@ class QueryEditBase {
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
     this._click_question_image_modal = this._click_question_image_modal.bind(this)
     this._click_question_image_rm = this._click_question_image_rm.bind(this)
+    this._change_map_pointer = this._change_map_pointer.bind(this)
 
     this._change_input_question_image = this._change_input_question_image.bind(this)
     this._set_initial()
@@ -315,6 +317,11 @@ class QueryEditBase {
       }
     } else if (event.target.kind == "SELECT") {
       question.options = []
+    } else if (event.target.kind === "POINT") {
+      question.default_point = {
+        latitude: -33.447869, longitude: -70.668423
+      }
+      question.default_zoom = 9
     }
     this.data.questions.push(question)
     this._build_question_from_data()
@@ -326,6 +333,10 @@ class QueryEditBase {
   _build_question_from_data() {
     let questions_container = document.querySelector(`#query-${this.view_type}-questions-tab`)
     questions_container.innerHTML = ""
+    for (let i in this.map_pointers) {
+      this.map_pointers[i].remove()
+    }
+    this.map_pointers = []
     let index = 0
     for (let question_data of this.data.questions) {
       let question = this._create_question_element(question_data, index)
@@ -333,6 +344,9 @@ class QueryEditBase {
       questions_container.appendChild(question)
       let delete_button = question.querySelector(".action-delete")
       this._prepare_question_inputs(question, question_data, ["name", "description", "required"])
+      if (question_data.kind === "POINT") {
+        this._set_map_pointer(question, question_data)
+      }
       if (this.can_edit_questions) {
         let click_delete = this._get_question_delete_callback()
         delete_button.addEventListener("click", click_delete, false)
@@ -345,6 +359,34 @@ class QueryEditBase {
       index += 1
     }
     this.validate_inputs()
+  }
+
+  _set_map_pointer(question, question_data) {
+    let latitude = question_data.default_point.latitude? question_data.default_point.latitude: -33.447869
+    let longitude = question_data.default_point.longitude? question_data.default_point.longitude: -70.668423
+    let zoom = question_data.default_zoom? question_data.default_zoom: 9
+    let latlng = L.latLng(latitude, longitude)
+    let map = L.map(`map-pointer-question-edit-${question.index}`).setView(latlng, zoom)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+    map.attributionControl.setPrefix("")
+    map.question_index = question.index
+    map.addEventListener("moveend", this._change_map_pointer, false)
+    map.zoomControl.setPosition("bottomright")
+    setTimeout(function () {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+    this.map_pointers.push(map)
+  }
+
+  _change_map_pointer(event) {
+    let question_index = event.target.question_index
+    let center = event.target.getCenter()
+    this.data.questions[question_index].default_point = {
+      latitude: center.lat, longitude: center.lng
+    }
+    this.data.questions[question_index].default_zoom = event.target.getZoom()
   }
 
   _get_question_delete_callback() {
@@ -416,6 +458,8 @@ class QueryEditBase {
     if (question_data.kind === "SELECT") {
       this._set_question_options(question, question_data)
       this._set_question_max_answers(question, question_data)
+    } else if (question_data.kind === "POINT") {
+      question_content.innerHTML += `<div class="query-map-pointer" id="map-pointer-question-edit-${index}"></div>`
     } else {
       question_content.innerHTML += this.manager._get_question_kind_html(question_data)
     }
@@ -1037,10 +1081,15 @@ class QueryUpdateManager extends QueryEditBase {
     }
     if (question.kind == "TEXT") {
       cleaned_question.text_max_length = question.text_max_length
-    }
-    if (question.kind == "SELECT") {
+    } else if (question.kind == "SELECT") {
       cleaned_question.max_answers = question.max_answers
       cleaned_question.options = question.options
+    } else if (question.kind == "POINT") {
+      let default_point = {
+        latitude: -33.447869, longitude: -70.668423
+      }
+      cleaned_question.default_point = question.default_point? question.default_point: default_point
+      cleaned_question.default_zoom = question.default_zoom? question.default_zoom: 9
     }
     return cleaned_question
   }
