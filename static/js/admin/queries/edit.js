@@ -865,11 +865,13 @@ class QueryCreateManager extends QueryEditBase {
             }
             if (Object.keys(this.question_images).length === 0) {
               this.manager.engine.cursor.key = data.uuid
+              this.manager.engine.set_navbar_message("Consulta creada correctamente", 4000)
               this.manager.engine.show_view("query-detail", true)
               this._clean_data()
             } else {
               this._upload_question_images().then(o =>{
                 this.manager.engine.cursor.key = data.uuid
+                this.manager.engine.set_navbar_message("Consulta creada correctamente", 4000)
                 this.manager.engine.show_view("query-detail", true)
                 this._clean_data()
               })
@@ -928,6 +930,7 @@ class QueryUpdateManager extends QueryEditBase {
       if (response.ok) {
         response.json()
         .then((data)=> {
+          this.manager.engine.set_navbar_message("Consulta borrada correctamente", 4000)
           this.manager.engine.show_view("query-list", true)
         })
       } else {
@@ -1002,11 +1005,13 @@ class QueryUpdateManager extends QueryEditBase {
           if (data.uuid) {
             if (Object.keys(this.question_images).length === 0) {
               this.manager.engine.cursor.key = data.uuid
+              this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
               this.manager.engine.show_view("query-detail", true)
               this._clean_data()
             } else {
               this._upload_question_images().then(a=> {
                 this.manager.engine.cursor.key = data.uuid
+                this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
                 this.manager.engine.show_view("query-detail", true)
                 this._clean_data()
               })
