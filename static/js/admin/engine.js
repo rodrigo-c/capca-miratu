@@ -186,6 +186,17 @@ class AdminEngine {
     modal.classList.add("hidden")
     modal.querySelector(`.${modal.config.class}`).remove()
   }
+
+  set_navbar_message(message, timeout) {
+    let container = document.querySelector(".navbar .navbar-message-container")
+    container.querySelector(".navbar-message-text").innerText = message
+    if (timeout) {
+      container.classList.remove("hidden")
+      setTimeout(function() {
+        container.classList.add("hidden")
+      }, timeout);
+    }
+  }
 }
 
 export {AdminEngine}
