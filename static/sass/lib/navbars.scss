@@ -200,6 +200,7 @@
   }
 
   .banner {
+    align-items: center;
     display: flex;
     justify-content: space-between;
     padding: 0 1vh;
@@ -279,5 +280,26 @@
   .menu-divider {
     border-bottom: 1px solid $inactive;
     margin: 1vh 1vw;
+  }
+
+  .navbar-message-container {
+    align-items: center;
+    background-color: $white;
+    border-radius: 6px;
+    display: flex;
+    font-family: Open Sans;
+    font-size: 1.5vh;
+    height: fit-content;
+    padding: .5vh .5vw;
+
+    &.hidden {
+      display: none;
+    }
+
+    .icon {
+      height: 1.6vh;
+      margin-right: 1vh;
+      padding-right: 1.6vh;
+    }
   }
 }
