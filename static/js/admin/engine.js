@@ -14,6 +14,8 @@ class AdminEngine {
     this.url_base = url_base
     this.ready = this.ready.bind(this)
     this._onpopstate = this._onpopstate.bind(this)
+    this.blocked = false
+    this.blocked_to = null
     document.addEventListener("DOMContentLoaded", this.ready)
     this.view_names = [
       "loading",
@@ -29,6 +31,7 @@ class AdminEngine {
     ]
     this.views = {}
     this._general_click = this._general_click.bind(this)
+    this._click_confirm_blocked_to = this._click_confirm_blocked_to.bind(this)
     document.querySelector("body > .main-container").addEventListener("click", this._general_click, false)
   }
 
@@ -118,21 +121,48 @@ class AdminEngine {
   }
 
   show_view(name, on_history) {
+    if (this.blocked === true) {
+      this.blocked_to = {name, on_history}
+      let config = {
+        class: "blocket-to-confirmation",
+        icon: "alert",
+        title: "¿Estás seguro que quieres salir sin guardar ?",
+        content: "",
+        actions: [
+          {name: "Sí", click: this._click_confirm_blocked_to},
+          {name: "No", click: this.hide_modal},
+        ],
+      }
+      this.show_modal(config)
+      return
+    }
     this._set_loading()
     this.cursor.focus = name
-    let view_name = name.split("-")
-    let view_kind = view_name[0]
-    let view_selector = view_name[1]
-    let manager = null
-    if (view_kind == "query") {
-      manager = this.query_manager[view_selector]
-    }
+    let manager = this._get_view_manager(name)
     if (manager && manager.show_view) {
       manager.show_view(on_history)
     } else {
       this.cursor.focus = "query-list"
       this.query_manager.list.show_view(on_history)
     }
+  }
+
+  _click_confirm_blocked_to(event) {
+    this.blocked = false
+    this.hide_modal()
+    this.show_view(this.blocked_to.name, this.blocked_to.on_history)
+    this.blocked_to = null
+  }
+
+  _get_view_manager(name) {
+    let view_name = name.split("-")
+    let view_kind = view_name[0]
+    let view_selector = view_name[1]
+    let manager = null
+    if (view_kind === "query") {
+      manager = this.query_manager[view_selector]
+    }
+    return manager
   }
 
   _set_url_params(focus, key) {
