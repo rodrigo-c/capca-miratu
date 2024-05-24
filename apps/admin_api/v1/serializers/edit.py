@@ -94,10 +94,14 @@ class CreatePublicQuerySerializer(PublicQuerySerializer):
                     "options": self._get_options(question),
                 }
             )
-            for question in self.data["questions"]
+            for question in self.validated_data["questions"]
         ]
         return PublicQueryData(
-            **{**self.data, "uuid": self.data.get("uuid"), "questions": questions}
+            **{
+                **self.validated_data,
+                "uuid": self.validated_data.get("uuid"),
+                "questions": questions,
+            }
         )
 
     def _get_options(self, question: dict) -> list[QuestionOptionData]:

@@ -132,6 +132,8 @@ class PublicQueryFactory:
             "required": question.required or False,
             "text_max_length": question.text_max_length or 255,
             "max_answers": question.max_answers or 1,
+            "default_point": question.default_point or None,
+            "default_zoom": question.default_zoom or None,
         }
 
     def _create_options(self) -> list[QuestionOption]:

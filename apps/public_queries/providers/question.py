@@ -14,6 +14,8 @@ QUESTION_FIELDS = [
     "text_max_length",
     "max_answers",
     "min_answers",
+    "default_point",
+    "default_zoom",
 ]
 
 

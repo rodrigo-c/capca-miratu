@@ -27,6 +27,8 @@ class QuestionSerializer(serializers.Serializer):
     options = serializers.ListField(child=QuestionOptionSerializer())
     index = serializers.IntegerField()
     image = serializers.CharField(required=False, allow_null=True)
+    default_point = PointField(required=False, allow_null=True)
+    default_zoom = serializers.IntegerField(required=False, allow_null=True)
 
 
 class PublicQuerySerializer(serializers.Serializer):

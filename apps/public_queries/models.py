@@ -152,6 +152,8 @@ class Question(BaseModel):
         blank=True,
         upload_to=get_public_query_question_image_path,
     )
+    default_point = models.PointField(null=True, blank=True)
+    default_zoom = models.IntegerField(null=True)
 
     class Meta:
         ordering = ["order"]
