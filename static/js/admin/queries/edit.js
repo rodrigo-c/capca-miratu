@@ -839,6 +839,7 @@ class QueryCreateManager extends QueryEditBase {
 
   show_view(on_history) {
     this.manager.engine._hide_all_views()
+    this.manager.engine.blocked = true
     this.manager._build_sidebar()
     this._clean_data()
     this.set_can_edit_active_status()
@@ -860,6 +861,7 @@ class QueryCreateManager extends QueryEditBase {
         response.json()
         .then((data)=> {
           if (data.uuid) {
+            this.manager.engine.blocked = false
             for (let index in data.questions) {
               this.data.questions[index].uuid = data.questions[index].uuid
             }
@@ -928,6 +930,7 @@ class QueryUpdateManager extends QueryEditBase {
     })
     .then(response=> {
       if (response.ok) {
+        this.manager.engine.blocked = false
         response.json()
         .then((data)=> {
           this.manager.engine.set_navbar_message("Consulta borrada correctamente", 4000)
@@ -978,6 +981,7 @@ class QueryUpdateManager extends QueryEditBase {
       if (response.ok) {
         response.json()
         .then((data)=> {
+          this.manager.engine.blocked = true
           this._set_in_view(data)
           if (on_history) {
             this.manager.engine._set_url_params("query-update", data.query.url_code)
@@ -1003,6 +1007,7 @@ class QueryUpdateManager extends QueryEditBase {
         response.json()
         .then((data)=> {
           if (data.uuid) {
+            this.manager.engine.blocked = false
             if (Object.keys(this.question_images).length === 0) {
               this.manager.engine.cursor.key = data.uuid
               this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
