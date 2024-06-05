@@ -136,35 +136,13 @@ class PublicQueryFactory:
             "default_zoom": question.default_zoom or None,
         }
 
-    def _create_options(self) -> list[QuestionOption]:
+    def _get_options_data_list(self) -> list:
         options_data_list = []
         for question in self.data.questions:
-            if question.kind == QuestionConstants.KIND_SELECT:
-                options_kwargs = [
-                    {
-                        "question_uuid": question.uuid,
-                        "name": option.name,
-                        "order": option.order or 0,
-                    }
-                    for option in question.options or []
-                ]
-                options_data_list.extend(options_kwargs)
-        return (
-            question_option_providers.bulk_create_question_options(
-                data_list=options_data_list
-            )
-            if options_data_list
-            else []
-        )
-
-    def _update_options(self) -> list[QuestionOption]:
-        options_data_list = []
-        current_options = question_option_providers.get_question_options_by_query_uuid(
-            query_uuid=self.data.uuid
-        )
-        current_options_map = {str(option.id): option for option in current_options}
-        for question in self.data.questions:
-            if question.kind == QuestionConstants.KIND_SELECT:
+            if question.kind in [
+                QuestionConstants.KIND_SELECT,
+                QuestionConstants.KIND_SELECT_IMAGE,
+            ]:
                 options_kwargs = [
                     {
                         "uuid": option.uuid,
@@ -175,6 +153,24 @@ class PublicQueryFactory:
                     for option in question.options or []
                 ]
                 options_data_list.extend(options_kwargs)
+        return options_data_list
+
+    def _create_options(self) -> list[QuestionOption]:
+        options_data_list = self._get_options_data_list()
+        return (
+            question_option_providers.bulk_create_question_options(
+                data_list=options_data_list
+            )
+            if options_data_list
+            else []
+        )
+
+    def _update_options(self) -> list[QuestionOption]:
+        options_data_list = self._get_options_data_list()
+        current_options = question_option_providers.get_question_options_by_query_uuid(
+            query_uuid=self.data.uuid
+        )
+        current_options_map = {str(option.id): option for option in current_options}
         options_for_update = {}
         options_for_create = []
         for option in options_data_list:
