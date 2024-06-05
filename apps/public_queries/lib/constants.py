@@ -61,11 +61,13 @@ class QuestionConstants:
     KIND_TEXT = "TEXT"
     KIND_IMAGE = "IMAGE"
     KIND_SELECT = "SELECT"
+    KIND_SELECT_IMAGE = "SELECT_IMAGE"
     KIND_POINT = "POINT"
     KIND_CHOICES = [
         (KIND_TEXT, "Text"),
         (KIND_IMAGE, "Image"),
         (KIND_SELECT, "Select"),
+        (KIND_SELECT_IMAGE, "Select images"),
         (KIND_POINT, "Geo Point"),
     ]
     RESULT_AVAILABLE_KINDS = [
@@ -79,6 +81,7 @@ class QuestionConstants:
         KIND_TEXT: "text",
         KIND_IMAGE: "image",
         KIND_SELECT: "options",
+        KIND_SELECT_IMAGE: "options",
         KIND_POINT: "point",
     }
 
