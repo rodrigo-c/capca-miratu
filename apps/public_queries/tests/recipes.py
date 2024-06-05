@@ -59,11 +59,19 @@ def make_ended_public_query(uploaded_image=None):
         ),
         question_recipe.make(
             query_id=public_query.id,
+            kind=QuestionConstants.KIND_SELECT_IMAGE,
+        ),
+        question_recipe.make(
+            query_id=public_query.id,
             kind=QuestionConstants.KIND_POINT,
         ),
     ]
     options = [
         question_option_recipe.make(question_id=questions[2].id, order=index)
+        for index in range(5)
+    ]
+    image_options = [
+        question_option_recipe.make(question_id=questions[3].id, order=index)
         for index in range(5)
     ]
     responses = []
@@ -100,6 +108,8 @@ def make_ended_public_query(uploaded_image=None):
             )
             if question.kind == QuestionConstants.KIND_SELECT:
                 answer.options.add(options[1 if index % 2 == 0 else 2].id)
+            if question.kind == QuestionConstants.KIND_SELECT_IMAGE:
+                answer.options.add(image_options[1 if index % 2 == 0 else 2].id)
     return public_query
 
 
@@ -117,7 +127,7 @@ def make_public_query_data() -> PublicQueryData:
             text_max_length=200,
             max_answers=2,
         )
-        if kind == QuestionConstants.KIND_SELECT:
+        if kind in [QuestionConstants.KIND_SELECT, QuestionConstants.KIND_SELECT_IMAGE]:
             question.options = [
                 QuestionOptionData(
                     uuid=None,
