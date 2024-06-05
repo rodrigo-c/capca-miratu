@@ -174,7 +174,10 @@ class AnswerForm(forms.Form):
                 question_uuid=self.question_data.uuid,
                 text=self.cleaned_data.get("text") or None,
             )
-        elif self.question_data.kind == QuestionConstants.KIND_SELECT:
+        elif self.question_data.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             options = self.cleaned_data.get("options", [])
             answer_data = AnswerData(
                 question_uuid=self.question_data.uuid,
