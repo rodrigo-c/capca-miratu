@@ -159,7 +159,7 @@ class TestPublicQueryManager:
                 "order": index,
                 "required": question.required,
             }
-            if question.kind == "SELECT":
+            if question.kind in ["SELECT", "SELECT_IMAGE"]:
                 question_data["options"] = [
                     {
                         "name": option.name if i > 0 else "new",
