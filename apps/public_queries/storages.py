@@ -14,7 +14,4 @@ def get_public_query_question_image_path(instance, filename) -> str:
 
 def get_public_query_question_option_image_path(instance, filename) -> str:
     url_code = instance.question.query.url_code
-    return (
-        f"public_queries/{url_code}/questions/"
-        f"{instance.question_id}/options/{instance.id}/{filename}"
-    )
+    return f"public_queries/{url_code}/questions-options/{instance.id}/{filename}"
