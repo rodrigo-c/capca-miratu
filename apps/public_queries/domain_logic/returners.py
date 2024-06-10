@@ -166,6 +166,7 @@ class PublicQueryReturner:
                 "options": (
                     [opt.name for opt in question.options] if question.options else None
                 ),
+                "default_point": None,
             }
             for question in query["questions"] or []
         ]
