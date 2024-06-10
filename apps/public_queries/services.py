@@ -34,6 +34,7 @@ from apps.public_queries.lib.exceptions import (
 from apps.public_queries.models import Question, Response
 from apps.public_queries.providers import public_query as public_query_providers
 from apps.public_queries.providers import question as question_providers
+from apps.public_queries.providers import question_option as question_option_providers
 from apps.public_queries.providers import response as response_providers
 from apps.utils.dataclasses import build_dataclass_from_model_instance
 
@@ -75,6 +76,18 @@ def update_question_image(
     try:
         image_url = question_providers.update_question_image(
             question_uuid=question_uuid, image=image
+        )
+    except Question.DoesNotExist:
+        raise QuestionDoesNotExist
+    return image_url
+
+
+def update_question_option_image(
+    option_uuid: UUID, image: InMemoryUploadedFile | None = None
+) -> str:
+    try:
+        image_url = question_option_providers.update_question_option_image(
+            option_uuid=option_uuid, image=image
         )
     except Question.DoesNotExist:
         raise QuestionDoesNotExist

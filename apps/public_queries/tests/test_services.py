@@ -248,6 +248,16 @@ def test_update_question_image(question, uploaded_image):
 
 
 @pytest.mark.django_db
+def test_update_question_option_image(question_option, uploaded_image):
+    assert not question_option.image
+    returned_url = services.update_question_option_image(
+        option_uuid=question_option.id, image=uploaded_image
+    )
+    question_option.refresh_from_db()
+    assert returned_url == question_option.image.url
+
+
+@pytest.mark.django_db
 class TestSubmitResponse:
     def test_success(self):
         public_query = public_query_recipe.make(active=True)
