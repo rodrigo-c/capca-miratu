@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
 from apps.public_queries.models import QuestionOption
 
 QUESTION_OPTION_FIELDS = ["name", "order"]
@@ -38,3 +40,12 @@ def bulk_update_question_options(data_list: list[dict]) -> list[QuestionOption]:
 
 def delete_question_option_by_uuids(uuids: list[UUID]) -> None:
     return QuestionOption.objects.filter(id__in=uuids).delete()
+
+
+def update_question_option_image(
+    option_uuid: UUID, image: InMemoryUploadedFile
+) -> str | None:
+    instance = QuestionOption.objects.get(id=option_uuid)
+    instance.image = image
+    instance.save(update_fields=["image"])
+    return instance.image.url if instance.image else None

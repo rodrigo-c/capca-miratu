@@ -181,12 +181,13 @@ class TestPublicQuerySubmit:
         assert created_response.rut == data["rut"]
         assert str(created_response.id) == http_response.url[11:]
         created_answers = list(created_response.answers.all())
-
-        assert created_answers[0].text == test_text
-        assert uploaded_image.name[:-4] in created_answers[1].image.name
-        assert (
-            created_answers[2].options.values_list("id", flat=True)[0] == options[0].id
-        )
+        for answer in created_answers:
+            if answer.question.kind == QuestionConstants.KIND_TEXT:
+                assert answer.text == test_text
+            if answer.question.kind == QuestionConstants.KIND_IMAGE:
+                assert uploaded_image.name[:-4] in answer.image.name
+            if answer.question.kind == QuestionConstants.KIND_SELECT:
+                assert answer.options.values_list("id", flat=True)[0] == options[0].id
 
 
 @pytest.mark.django_db

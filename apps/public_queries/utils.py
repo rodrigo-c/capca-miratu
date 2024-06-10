@@ -55,7 +55,11 @@ def create_test_data(public_query_uuid: UUID, response_num: int = 100) -> None:
                     )
                 )
                 answers_list.append(answer_data)
-            elif question.kind == QuestionConstants.KIND_SELECT and add:
+            elif (
+                question.kind
+                in [QuestionConstants.KIND_SELECT, QuestionConstants.KIND_SELECT_IMAGE]
+                and add
+            ):
                 option = (
                     question.options.first() if alternate else question.options.last()
                 )

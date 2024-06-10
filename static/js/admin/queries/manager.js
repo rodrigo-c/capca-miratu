@@ -125,6 +125,8 @@ class QueryManager {
       kind_label = "Texto corto"
     } else if (question_data.kind === "SELECT") {
       kind_label = "Selección múltiple"
+    } else if (question_data.kind === "SELECT_IMAGE") {
+      kind_label = "Selección múltiple e imágenes"
     } else if (question_data.kind === "IMAGE") {
       kind_label = "Imagen"
     } else if (question_data.kind === "POINT") {

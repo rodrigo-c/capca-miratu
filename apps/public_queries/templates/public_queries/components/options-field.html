@@ -1,18 +1,34 @@
+{{ widget.field }}
 {% with id=widget.attrs.id %}
-    <div {% if id %}id="{{ id }}"{% endif %}class="options-field">
+    <div {% if id %}id="{{ id }}"{% endif %}
+         class="options-field {% if is_select_image %}option-images-field{% endif %}">
         {% for group, options, index in widget.optgroups %}
             {% for option in options %}
                 <div>
                     {% if option.wrap_label %}
-                        <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}>
+                        {% if option.image_url %}
+                            <div class="option-field-image">
+                                <strong class="option-field-image-index">{{ forloop.parentloop.counter }}.</strong>
+                                <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
+                                       class="option-field-image-label">
+                                    {% include "django/forms/widgets/input.html" with widget=option %}
+                                    <!-- djlint:off --><img src="{{ option.image_url }}"
+                                    class="option-field-image-img option-field-image-img-{{ widget.optgroups|length }}"><!-- djlint:on -->
+                                    <div class="option-field-image-text">
+                                        <strong class="option-field-image-label-index">{{ forloop.parentloop.counter }}.</strong>{{ option.label }}
+                                    </div>
+                                </label>
+                            </div>
+                        {% else %}
+                            <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
+                                   class="option-field-label">
+                                {% include "django/forms/widgets/input.html" with widget=option %}
+                                <strong>
+                                    {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' as prefixes %}.
+                                </strong>
+                                {{ option.label }}
+                            </label>
                         {% endif %}
-                        {% include "django/forms/widgets/input.html" with widget=option %}
-                        {% if option.wrap_label %}
-                            <strong>
-                                {% cycle 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' as prefixes %}.
-                            </strong>
-                            {{ option.label }}
-                        </label>
                     {% endif %}
                 </div>
             {% endfor %}

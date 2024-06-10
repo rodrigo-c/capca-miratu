@@ -39,6 +39,7 @@ function pathsConfig(appName) {
     vendorsJs: [
       `${vendorsRoot}/file-saver/dist/FileSaver.js`,
       `${vendorsRoot}/jszip/dist/jszip.js`,
+      `${vendorsRoot}/cropperjs/dist/cropper.js`,
     ],
     app: this.app,
     templates: `${this.app}/templates`,

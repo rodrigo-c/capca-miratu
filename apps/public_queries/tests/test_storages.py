@@ -42,6 +42,5 @@ def test_get_public_query_question_option_image_path(question_option):
     url_code = question_option.question.query.url_code
     filename = "file.jpg"
     assert get_public_query_question_option_image_path(question_option, filename) == (
-        f"public_queries/{url_code}/questions/"
-        f"{question_option.question_id}/options/{question_option.id}/{filename}"
+        f"public_queries/{url_code}/questions-options/{question_option.id}/{filename}"
     )

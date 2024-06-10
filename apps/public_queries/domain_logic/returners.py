@@ -201,19 +201,26 @@ class PublicQueryReturner:
             return answer.text
         if question.kind == QuestionConstants.KIND_IMAGE:
             return answer.image.url if answer.image else ""
-        if question.kind == QuestionConstants.KIND_SELECT:
+        if question.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             return list([option.name for option in answer.options.all()])
         if question.kind == QuestionConstants.KIND_POINT:
             return {"longitude": answer.point[0], "latitude": answer.point[1]}
 
     def _get_options_data(self, question: Question) -> list[QuestionOptionData]:
-        if question.kind == QuestionConstants.KIND_SELECT:
+        if question.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             return [
                 build_dataclass_from_model_instance(
                     klass=QuestionOptionData,
                     instance=option,
                     uuid=option.id,
                     question_uuid=option.question_id,
+                    image=option.image.url if option.image else None,
                 )
                 # TODO: use one query select for all questions instead
                 for option in question.options.all()

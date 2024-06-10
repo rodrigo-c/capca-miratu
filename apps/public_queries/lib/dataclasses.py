@@ -12,6 +12,7 @@ class QuestionOptionData:
     question_uuid: UUID
     name: str
     order: int
+    image: str | None = None
 
 
 @dataclass

@@ -167,8 +167,12 @@ class TestCreatePublicQuery:
         assert created_query.uuid is not None
         assert all(question.uuid is not None for question in created_query.questions)
         assert created_query.questions[2].kind == QuestionConstants.KIND_SELECT
+        assert created_query.questions[3].kind == QuestionConstants.KIND_SELECT_IMAGE
         assert all(
             option.uuid is not None for option in created_query.questions[2].options
+        )
+        assert all(
+            option.uuid is not None for option in created_query.questions[3].options
         )
 
     def test_error(self):
@@ -241,6 +245,16 @@ def test_update_question_image(question, uploaded_image):
     )
     question.refresh_from_db()
     assert returned_url == question.image.url
+
+
+@pytest.mark.django_db
+def test_update_question_option_image(question_option, uploaded_image):
+    assert not question_option.image
+    returned_url = services.update_question_option_image(
+        option_uuid=question_option.id, image=uploaded_image
+    )
+    question_option.refresh_from_db()
+    assert returned_url == question_option.image.url
 
 
 @pytest.mark.django_db
@@ -367,7 +381,7 @@ def test_get_public_query_result(ended_public_query):
         len(result_data.partial_responses)
         == PublicQueryResultConstants.LENGTH_PARTIAL_LIST
     )
-    assert len(result_data.answer_results) == 4
+    assert len(result_data.answer_results) == 5
 
     for answer_result in result_data.answer_results:
         if answer_result.question.kind in [

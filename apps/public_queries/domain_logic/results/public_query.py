@@ -104,7 +104,10 @@ class PublicQueryResultReturner(ServiceBase):
                     instances=queryset[: PublicQueryResultConstants.LENGTH_PARTIAL_LIST]
                 )
                 result.partial_list = partial_list
-            elif question.kind == QuestionConstants.KIND_SELECT:
+            elif question.kind in [
+                QuestionConstants.KIND_SELECT,
+                QuestionConstants.KIND_SELECT_IMAGE,
+            ]:
                 result.options = self._get_option_results(
                     question=question, total=result.total
                 )

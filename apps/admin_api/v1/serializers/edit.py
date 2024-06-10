@@ -24,6 +24,7 @@ class CreateQuestionOptionSerializer(QuestionOptionSerializer):
     uuid = None
     question_uuid = None
     order = serializers.IntegerField(default=0)
+    name = serializers.CharField(required=False, allow_null=True)
 
 
 class CreateQuestionSerializer(QuestionSerializer):
@@ -41,14 +42,23 @@ class CreateQuestionSerializer(QuestionSerializer):
     )
 
     def validate(self, data) -> dict:
+        if data["kind"] == QuestionConstants.KIND_SELECT_IMAGE:
+            data = self._set_empty_option_names(data=data)
         options = data.get("options")
-        if data["kind"] == QuestionConstants.KIND_SELECT:
+        if data["kind"] in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             self._validate_options_empty(options=options)
             self._validate_options_equals(options=options)
         return data
 
     def _validate_options_empty(self, options: list) -> dict:
-        if options is None or len(options) < 2:
+        if (
+            options is None
+            or len(options) < 2
+            or not any(opt["name"] for opt in options)
+        ):
             raise serializers.ValidationError(
                 {"options": PublicQueryErrorConstants.OPTIONS_EMPTY}
             )
@@ -59,6 +69,22 @@ class CreateQuestionSerializer(QuestionSerializer):
             raise serializers.ValidationError(
                 {"options": PublicQueryErrorConstants.OPTIONS_EQUALS}
             )
+
+    def _set_empty_option_names(self, data: dict) -> dict:
+        options = [
+            {
+                **option,
+                "name": (
+                    option["name"]
+                    if option.get("name")
+                    else f"*q-opt-img-{data['order']}-{option['order']}"
+                ),
+            }
+            for option in data.get("options", [])
+        ]
+        if options:
+            data["options"] = options
+        return data
 
 
 class CreatePublicQuerySerializer(PublicQuerySerializer):
@@ -133,6 +159,11 @@ class UpdatePublicQuerySerializer(CreatePublicQuerySerializer):
 
 class UpdateQuestionSerializer(serializers.Serializer):
     question_uuid = serializers.UUIDField(required=True)
+    image = serializers.ImageField(required=False, allow_null=True)
+
+
+class UpdateQuestionOptionImageSerializer(serializers.Serializer):
+    option_uuid = serializers.UUIDField(required=True)
     image = serializers.ImageField(required=False, allow_null=True)
 
 

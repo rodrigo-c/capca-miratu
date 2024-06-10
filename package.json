@@ -27,7 +27,8 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "file-saver": "^2.0.4",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "cropperjs": "^1.6.2"
   },
   "engines": {
     "node": "18"

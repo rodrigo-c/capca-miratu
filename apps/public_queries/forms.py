@@ -61,6 +61,26 @@ class OptionFieldInput(forms.CheckboxSelectMultiple):
     template_name = "public_queries/components/options-field.html"
     option_template_name = "public_queries/components/options-field-input.html"
 
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        if hasattr(self, "option_images"):
+            option_counter = 0
+            for option in context["widget"]["optgroups"]:
+                _, opts, _ = option
+                for opt in opts:
+                    opt["image_url"] = self._get_image_url(opt)
+                    option_counter += 1
+            if option_counter:
+                context["image_max_width"] = f"{50 // option_counter}vh"
+            context["is_select_image"] = True
+
+        return context
+
+    def _get_image_url(self, opt):
+        for option_image in self.option_images:
+            if str(option_image["option_uuid"]) == str(opt["value"]):
+                return option_image["url"]
+
 
 class AnswerForm(forms.Form):
     text = forms.CharField(
@@ -93,7 +113,10 @@ class AnswerForm(forms.Form):
         elif kind == QuestionConstants.KIND_IMAGE:
             self._set_image_answer()
 
-        elif kind == QuestionConstants.KIND_SELECT:
+        elif kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             self._set_select_answer()
 
         elif kind == QuestionConstants.KIND_POINT:
@@ -143,6 +166,11 @@ class AnswerForm(forms.Form):
         field.validators.append(
             MaxLengthValidator(limit_value=max_length, message=message)
         )
+        if self.question_data.kind == QuestionConstants.KIND_SELECT_IMAGE:
+            field.widget.option_images = [
+                {"option_uuid": option_data.uuid, "url": option_data.image}
+                for option_data in self.question_data.options
+            ]
         self._hide_fields(exclude=["options"])
 
     def _set_point_answer(self):
@@ -174,7 +202,10 @@ class AnswerForm(forms.Form):
                 question_uuid=self.question_data.uuid,
                 text=self.cleaned_data.get("text") or None,
             )
-        elif self.question_data.kind == QuestionConstants.KIND_SELECT:
+        elif self.question_data.kind in [
+            QuestionConstants.KIND_SELECT,
+            QuestionConstants.KIND_SELECT_IMAGE,
+        ]:
             options = self.cleaned_data.get("options", [])
             answer_data = AnswerData(
                 question_uuid=self.question_data.uuid,

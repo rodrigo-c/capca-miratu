@@ -78,17 +78,32 @@ class QueryDetailManager {
       if (question.image) {
         question_container.innerHTML += `<div class="question-item-image-preview-content"><img class="question-item-image-preview" src="${question.image}"></div>`
       }
-      if (question.kind == "SELECT") {
+      // here
+      if (["SELECT", "SELECT_IMAGE"].includes(question.kind)) {
         question_container.innerHTML += `<div class="question-options"></div>`
         let options_container = question_container.querySelector(".question-options")
         let option_index = 0
         for (let option of question.options) {
-          options_container.innerHTML += `
-            <div class="option">
-              <span class="option-label">${this.manager.letters[option_index]}.</span>
-              <span class="option-value">${option.name}</span>
-            </div>
-          `
+          let inner_html = ""
+          if (question.kind === "SELECT") {
+            inner_html = `
+              <div class="option">
+                <span class="option-label">${this.manager.letters[option_index]}.</span>
+                <span class="option-value">${option.name}</span>
+              </div>
+            `
+          } else {
+            inner_html = `
+              <div class="option-image">
+                <div class="option-image-index">${option_index + 1}.</div>
+                <div class="option-image-content">
+                  <img class="option-image-img" src="${option.image}">
+                  <div class="option-image-label">${option.name}</div>
+                </div>
+              </div>
+            `
+          }
+          options_container.innerHTML += inner_html
           option_index += 1
         }
       } else {

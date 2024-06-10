@@ -10,6 +10,7 @@ class QuestionOptionSerializer(serializers.Serializer):
     question_uuid = serializers.UUIDField()
     name = serializers.CharField()
     order = serializers.IntegerField()
+    image = serializers.CharField(required=False, allow_null=True)
 
 
 class QuestionSerializer(serializers.Serializer):

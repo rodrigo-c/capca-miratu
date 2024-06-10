@@ -4,6 +4,7 @@ class QueryEditBase {
     this.required_fields = ["name"]
     this.data = this._get_default_data()
     this.question_images = {}
+    this.question_option_images = []
     this.inputs = {}
     this.errors = {}
     this.buttons = {}
@@ -24,6 +25,7 @@ class QueryEditBase {
     this._click_question_remove_option = this._click_question_remove_option.bind(this)
     this._click_question_image_modal = this._click_question_image_modal.bind(this)
     this._click_question_image_rm = this._click_question_image_rm.bind(this)
+    this._click_question_option_image = this._click_question_option_image.bind(this)
     this._change_map_pointer = this._change_map_pointer.bind(this)
 
     this._change_input_question_image = this._change_input_question_image.bind(this)
@@ -69,6 +71,7 @@ class QueryEditBase {
   _clean_data() {
     this.data = this._get_default_data()
     this.question_images = {}
+    this._remove_all_question_option_image()
     this._build_question_from_data()
     for (let field in this.inputs) {
       let input = this.inputs[field]
@@ -81,7 +84,6 @@ class QueryEditBase {
         input.parentNode.dataset.replicatedValue = this.data[field]
       }
     }
-
     this.validate_inputs()
   }
 
@@ -174,7 +176,7 @@ class QueryEditBase {
             let value = question[field]
             this._val_field_value_is_required(field, value, question.order)
           }
-          if (question.kind == "SELECT") {
+          if (["SELECT", "SELECT_IMAGE"].includes(question.kind)) {
             this._val_question_options(question)
           }
         }
@@ -315,7 +317,7 @@ class QueryEditBase {
       } else {
         question.text_max_length = 150
       }
-    } else if (event.target.kind == "SELECT") {
+    } else if (["SELECT", "SELECT_IMAGE"].includes(event.target.kind)) {
       question.options = []
     } else if (event.target.kind === "POINT") {
       question.default_point = {
@@ -455,7 +457,7 @@ class QueryEditBase {
       <div class="question-move-next"></div>
     `
     let question_content = question.querySelector(".question-item-content")
-    if (question_data.kind === "SELECT") {
+    if (["SELECT", "SELECT_IMAGE"].includes(question_data.kind)) {
       this._set_question_options(question, question_data)
       this._set_question_max_answers(question, question_data)
     } else if (question_data.kind === "POINT") {
@@ -599,7 +601,7 @@ class QueryEditBase {
       this.error_containers.questions[question.index] = {}
     }
     let fields = ["name", "description"]
-    if (question.kind == "SELECT") {
+    if (["SELECT", "SELECT_IMAGE"].includes(question.kind)) {
       fields.push("options")
     }
     for (let field of fields) {
@@ -641,10 +643,13 @@ class QueryEditBase {
       option.classList.add("question-option")
       let option_id = `query-${this.view_type}-question-option-${question.index}-${option_index}`
       option.innerHTML = `
+      <div class="question-option-main-content">
         <div class="question-option-label">${this.manager.letters[option_index]}.</div>
         <input id="${option_id}" type="text" class="question-option-input" placeholder="Opción ${option_index + 1}">
         <div class="question-option-delete">X</div>
+      </div>
       `
+      option.option_index = option_index
       let input = option.querySelector(".question-option-input")
       input.field = "question-option"
       input.index = question.index
@@ -660,6 +665,9 @@ class QueryEditBase {
         delete_button.remove()
       }
       option_index += 1
+      if (question_data.kind === "SELECT_IMAGE") {
+        this._set_question_option_image(option, option_data, question_data)
+      }
       option_list.appendChild(option)
     }
   }
@@ -667,9 +675,137 @@ class QueryEditBase {
   _click_question_remove_option(event) {
     let question = event.target.closest(".question-item")
     this.data.questions[question.index].options.splice(event.target.option_index, 1)
+    let question_option_image = this._get_question_option_image(question.index, event.target.option_index)
+    if (question_option_image != null) {
+      question_option_image.cropper.destroy()
+      this._remove_question_option_image(question.index, event.target.option_index)
+    }
     this._build_question_from_data()
     this.validate_inputs()
     this._set_errors_message()
+  }
+
+  _set_question_option_image(option, option_data, question_data) {
+    let image_widget = document.createElement("div")
+    image_widget.classList.add("question-option-image-widget")
+    let input_id = `question-option-image-input-${question_data.order}-${option_data.order}`
+    image_widget.innerHTML = `
+      <label for="${input_id}">
+        <div class="question-option-image-input icon image"></div>
+      </label>
+      <input
+        type="file"
+        accept="image/*"
+        class="hidden"
+        id="${input_id}"
+      >
+    `
+    image_widget.addEventListener("input", this._click_question_option_image, false)
+    let image_preview = document.createElement("div")
+    image_preview.innerHTML = `
+      <img class="question-option-image" id="question-option-image-${question_data.order}-${option_data.order}">
+    `
+    image_preview.classList.add("question-option-image-preview")
+    option.appendChild(image_preview)
+    let image_element = image_preview.querySelector(`.question-option-image`)
+    let question_option_image = this._get_question_option_image(question_data.order, option_data.order)
+    if (question_option_image != null) {
+      image_element.setAttribute("src", question_option_image.url)
+      let cropper_data = question_option_image.cropper? question_option_image.cropper.getData(): {}
+      question_option_image.cropper = new Cropper(image_element, {
+        aspectRatio: 1.333,
+        viewMode: 2,
+        data: cropper_data,
+        movable: false,
+        zoomable: false,
+        rotatable: false,
+        scalable: false,
+      })
+    }
+    else if (option_data.image) {
+      image_element.setAttribute("src", option_data.image)
+    } else {
+      image_preview.classList.add("hidden")
+    }
+    option.querySelector(".question-option-main-content").insertBefore(image_widget, option.querySelector(".question-option-delete"))
+  }
+
+  _get_question_option_image (question_index, option_index) {
+    for (let data of this.question_option_images) {
+      if (question_index === data.question_index && option_index === data.option_index) {
+        return data
+      }
+    }
+    return null
+  }
+
+  _set_internal_question_option_image (question_index, option_index, value) {
+    let founded_index = null
+    for (let index in this.question_option_images) {
+      let data = this.question_option_images[index]
+      if (question_index === data.question_index && option_index === data.option_index) {
+        founded_index = index
+      }
+    }
+    if (founded_index != null) {
+      this.question_option_images[founded_index] = value
+    } else {
+      this.question_option_images.push(value)
+    }
+  }
+
+  _remove_question_option_image (question_index, option_index) {
+    let index_for_remove = null
+    for (let index in this.question_option_images) {
+      let data = this.question_option_images[index]
+      if (question_index === data.question_index && option_index === data.option_index) {
+        index_for_remove = index
+      }
+    }
+    if (index_for_remove != null) {
+      this.question_option_images.splice(index_for_remove, 1)
+    }
+  }
+
+  _remove_all_question_option_image () {
+    for (let data of this.question_option_images) {
+      data.cropper.destroy()
+    }
+    this.question_option_images = []
+  }
+
+  _click_question_option_image(event) {
+    let question_item = event.target.closest(".question-item")
+    let option_item = event.target.closest(".question-option")
+    if (event.target.files.length > 0) {
+      let reducer = new window.ImageBlobReduce({
+        pica: window.ImageBlobReduce.pica({ features: [ 'js', 'wasm', 'ww' ] })
+      })
+      reducer.toBlob(
+        event.target.files[0], {max: 1000}
+      ).then(
+        blob => {
+          let reduced_file = new File([blob], event.target.files[0].name, {type:"mime/type", lastModified:new Date().getTime()})
+          let data_transfer = new DataTransfer()
+          event.target.files = data_transfer.files
+          let url = URL.createObjectURL(blob)
+          let question_option_image = {
+            file: event.target.files[0],
+            url: url,
+            question_index: question_item.index,
+            option_index: option_item.option_index,
+          }
+          this._set_internal_question_option_image(
+            question_item.index, option_item.option_index, question_option_image
+          )
+          this._build_question_from_data()
+          this.validate_inputs()
+        }
+      )
+      .catch(
+        error => {console.log(error)}
+      )
+    }
   }
 
   _set_question_max_answers (question, question_data) {
@@ -702,9 +838,16 @@ class QueryEditBase {
 
   _click_question_add_option (event) {
     let question = event.target.closest(".question-item")
-    let order = this.data.questions[question.index].options.length
+    let question_data = this.data.questions[question.index]
+    let order = question_data.options.length
+    if (question_data.kind === "SELECT_IMAGE" && order >= 4) {
+      return
+    }
     let empty_option = {
       name: null, order: order
+    }
+    if (question_data.kind === "SELECT_IMAGE") {
+      empty_option.name = `Opción ${order + 1}`
     }
     this.data.questions[question.index].options.push(empty_option)
     this._build_question_from_data()
@@ -829,6 +972,26 @@ class QueryEditBase {
       })
     }
   }
+
+  async _upload_question_option_images() {
+    for (let option_data of this.question_option_images) {
+      let question = this.data.questions[option_data.question_index]
+      let option = question.options[option_data.option_index]
+      if (option_data.cropper) {
+        let canvas = option_data.cropper.getCroppedCanvas()
+        let blob = await new Promise(resolve => canvas.toBlob(resolve));
+        let data = new FormData()
+        data.append("option_uuid", option.uuid)
+        data.append("image", blob, `${option.uuid}.jpg`)
+        await fetch(this.manager.url_base + "update_question_option_image/", {
+          method: "POST",
+          body: data,
+          headers: {"X-CSRFToken": this.manager.engine.csrf_token},
+          credentials: "same-origin"
+        })
+      }
+    }
+  }
 }
 
 
@@ -862,22 +1025,15 @@ class QueryCreateManager extends QueryEditBase {
         .then((data)=> {
           if (data.uuid) {
             this.manager.engine.blocked = false
-            for (let index in data.questions) {
-              this.data.questions[index].uuid = data.questions[index].uuid
-            }
-            if (Object.keys(this.question_images).length === 0) {
-              this.manager.engine.cursor.key = data.uuid
-              this.manager.engine.set_navbar_message("Consulta creada correctamente", 4000)
-              this.manager.engine.show_view("query-detail", true)
-              this._clean_data()
-            } else {
-              this._upload_question_images().then(o =>{
+            this.data = data
+            this._upload_question_images().then((a) => {
+              this._upload_question_option_images().then((b) => {
                 this.manager.engine.cursor.key = data.uuid
                 this.manager.engine.set_navbar_message("Consulta creada correctamente", 4000)
                 this.manager.engine.show_view("query-detail", true)
                 this._clean_data()
               })
-            }
+            })
           } else {
             console.log(data)
           }
@@ -995,6 +1151,13 @@ class QueryUpdateManager extends QueryEditBase {
     })
   }
 
+  _set_done (data) {
+    this.manager.engine.cursor.key = data.uuid
+    this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
+    this.manager.engine.show_view("query-detail", true)
+    this._clean_data()
+  }
+
   execute_service () {
     fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}/`, {
       method: "PUT",
@@ -1008,20 +1171,15 @@ class QueryUpdateManager extends QueryEditBase {
         .then((data)=> {
           if (data.uuid) {
             this.manager.engine.blocked = false
-            if (Object.keys(this.question_images).length === 0) {
-              this.manager.engine.cursor.key = data.uuid
-              this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
-              this.manager.engine.show_view("query-detail", true)
-              this._clean_data()
-            } else {
-              this._upload_question_images().then(a=> {
+            this.data = data
+            this._upload_question_images().then((a) => {
+              this._upload_question_option_images().then((b) => {
                 this.manager.engine.cursor.key = data.uuid
                 this.manager.engine.set_navbar_message("Consulta editada correctamente", 4000)
                 this.manager.engine.show_view("query-detail", true)
                 this._clean_data()
               })
-            }
-
+            })
           } else {
             console.log(data)
           }
@@ -1091,7 +1249,7 @@ class QueryUpdateManager extends QueryEditBase {
     }
     if (question.kind == "TEXT") {
       cleaned_question.text_max_length = question.text_max_length
-    } else if (question.kind == "SELECT") {
+    } else if (["SELECT", "SELECT_IMAGE"].includes(question.kind)) {
       cleaned_question.max_answers = question.max_answers
       cleaned_question.options = question.options
     } else if (question.kind == "POINT") {

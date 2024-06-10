@@ -81,7 +81,10 @@ class SubmitResponseEngine(ServiceBase):
             elif question.kind == QuestionConstants.KIND_IMAGE:
                 answer_data["image"] = answer.image
                 empty = False if answer.image else True
-            elif question.kind == QuestionConstants.KIND_SELECT:
+            elif question.kind in [
+                QuestionConstants.KIND_SELECT,
+                QuestionConstants.KIND_SELECT_IMAGE,
+            ]:
                 assert question.max_answers >= len(answer.options)
                 options_map[answer.question_uuid] = answer
                 empty = False if answer.options else True

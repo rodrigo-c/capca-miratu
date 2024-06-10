@@ -18,6 +18,7 @@ from apps.admin_api.lib.constants import PublicQueryDataResultConstants
 from apps.admin_api.v1.serializers.edit import (
     CreatePublicQuerySerializer,
     UpdatePublicQuerySerializer,
+    UpdateQuestionOptionImageSerializer,
     UpdateQuestionSerializer,
     UpdateResponseVisiblity,
 )
@@ -108,6 +109,22 @@ class PublicQueryManager(ViewSet):
             raise Http404
         success_data = {
             "question_uuid": serializer.validated_data["question_uuid"],
+            "image_url": image_url,
+        }
+        return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=["post"])
+    def update_question_option_image(self, request) -> Response:
+        serializer = UpdateQuestionOptionImageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            image_url = public_queries_services.update_question_option_image(
+                **serializer.validated_data
+            )
+        except QuestionDoesNotExist:
+            raise Http404
+        success_data = {
+            "option_uuid": serializer.validated_data["option_uuid"],
             "image_url": image_url,
         }
         return Response(success_data, status=response_status.HTTP_202_ACCEPTED)
