@@ -175,7 +175,7 @@ class QueryResultManager {
   _get_first_select_result () {
     let result = null
     for (let answer_result of this.data.answer_results) {
-      if (answer_result.question.kind == "SELECT") {
+      if (["SELECT", "SELECT_IMAGE"].includes(answer_result.question.kind)) {
         result = answer_result
         break
       }
@@ -199,7 +199,7 @@ class QueryResultManager {
       template.querySelector(".question-name").textContent = answer_result.question.name
       template.querySelector(".responses-total .total-value").textContent = answer_result.total
       content.appendChild(template)
-      if (answer_result.question.kind == "SELECT") {
+      if (["SELECT", "SELECT_IMAGE"].includes(answer_result.question.kind)) {
         let id = `result-question-chart-${index}`
         let canvas = template.querySelector(".question-chart")
         canvas.setAttribute("id", id)
@@ -398,7 +398,7 @@ class QueryResultManager {
       if (question.kind == "IMAGE") {
         message += this._set_html_message("- Imagen", `<img class="image" src="${answer.image}">`)
       }
-      if (question.kind == "SELECT") {
+      if (["SELECT", "SELECT_IMAGE"].includes(question.kind)) {
         let options = "<div class='options-list'>"
         for (let option of answer.options) {
           options += `<div class="option">${option.name}</div>`
@@ -572,7 +572,7 @@ class QueryResultManager {
           </a>
         </div>
       `
-    } else if (question.kind == "SELECT" && value) {
+    } else if (["SELECT", "SELECT_IMAGE"].includes(question.kind) && value) {
       final_value = "<ul>"
       for (let opt of value) {
         final_value += `<li>${opt}</li>`
