@@ -40,3 +40,13 @@ def test_bulk_update_question_options(question_option):
     ) == len(data_list)
     question_option.refresh_from_db()
     assert question_option.name == name
+
+
+@pytest.mark.django_db
+def test_update_question_option_image(question_option, uploaded_image):
+    assert not question_option.image
+    returned_url = question_option_providers.update_question_option_image(
+        option_uuid=question_option.id, image=uploaded_image
+    )
+    question_option.refresh_from_db()
+    assert returned_url == question_option.image.url
