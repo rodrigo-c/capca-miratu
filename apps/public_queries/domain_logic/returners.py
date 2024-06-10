@@ -220,6 +220,7 @@ class PublicQueryReturner:
                     instance=option,
                     uuid=option.id,
                     question_uuid=option.question_id,
+                    image=option.image.url if option.image else None,
                 )
                 # TODO: use one query select for all questions instead
                 for option in question.options.all()
