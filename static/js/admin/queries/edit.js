@@ -840,6 +840,9 @@ class QueryEditBase {
     let question = event.target.closest(".question-item")
     let question_data = this.data.questions[question.index]
     let order = question_data.options.length
+    if (question_data.kind === "SELECT_IMAGE" && order >= 4) {
+      return
+    }
     let empty_option = {
       name: null, order: order
     }
