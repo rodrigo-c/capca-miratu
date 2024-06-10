@@ -208,6 +208,20 @@ class TestPublicQueryManager:
         question.refresh_from_db()
         assert question.image.url is not None
 
+    def test_update_question_option_image(self, api_client, user, ended_public_query):
+        uploaded_image = create_fake_uploaded_image()
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(f"{self.base_pattern}-update-question-option-image")
+        question = ended_public_query.questions.filter(kind="SELECT_IMAGE").first()
+        question_option = question.options.first()
+        data = {"option_uuid": question_option.id, "image": uploaded_image}
+        response = api_client.post(url, data=data)
+        assert response.status_code == 202
+        question_option.refresh_from_db()
+        assert question_option.image.url is not None
+
     def test_update_response_visibility(self, api_client, user, ended_public_query):
         api_client.force_login(user)
         url = reverse(f"{self.base_pattern}-update-response-visibility")
