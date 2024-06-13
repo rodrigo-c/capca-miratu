@@ -14,6 +14,8 @@ from apps.public_queries.lib.constants import (
 )
 from apps.public_queries.storages import (
     get_public_query_answer_image_path,
+    get_public_query_answer_image_path_thumb,
+    get_public_query_answer_image_path_thumb_medium,
     get_public_query_image_path,
     get_public_query_question_image_path,
     get_public_query_question_option_image_path,
@@ -263,6 +265,16 @@ class Answer(BaseModel):
         null=True,
         blank=True,
         upload_to=get_public_query_answer_image_path,
+    )
+    thumb = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=get_public_query_answer_image_path_thumb,
+    )
+    thumb_medium = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=get_public_query_answer_image_path_thumb_medium,
     )
     options = models.ManyToManyField(
         QuestionOption,
