@@ -66,6 +66,56 @@ class QueryResultManager {
   }
 
   _donwload_images () {
+    const _get_image_fields = (data) => {
+      let images_fields = []
+      for (let question of data.query.questions) {
+        if (question.kind === "IMAGE") {
+          let field = `pregunta_${question.index + 1}`
+          images_fields.push(field)
+        }
+      }
+      return images_fields.length === 0 ? null : images_fields
+    }
+
+    const _get_image_data_list = (data, fields) => {
+      let image_data_list = []
+      for (let response of data.dataset) {
+        if (response.visible === "True") {
+          let base_data = {
+            "response": {send_at: response.send_at, uuid: response.uuid}
+          }
+          for (let field of fields) {
+            let original = response[field] === "" ? null : response[field].original
+            if (original) {
+              let url = response[field].thumb_medium
+              let extension = url.slice(url.length - 3)
+              let image_data = {...base_data, url, extension, field}
+              image_data_list.push(image_data)
+            }
+          }
+        }
+      }
+      return image_data_list.length > 0 ? image_data_list : null
+    }
+
+    const _create_async_download = (image_data) => {
+      return new Promise((resolve, reject) => {
+        let image_blob = fetch(image_data.url).then(response => response.blob());
+        resolve({...image_data, blob: image_blob})
+      })
+    }
+
+    const _download_image_callback = (results, query_url_code) => {
+      let zip = new JSZip()
+      let folder = zip.folder("images")
+      for (let image_data of results) {
+        let response = image_data.response
+        let filename = `${response.send_at}-${image_data.field}-${response.uuid}.${image_data.extension}`
+        folder.file(filename, image_data.blob)
+      }
+      folder.generateAsync({type: "blob"}).then(content => saveAs(content, `consulta-imagenes-${query_url_code}-${new Date().toLocaleDateString()}`))
+    }
+
     fetch (`${this.manager.url_base}${this.manager.engine.cursor.key}/data/`, {
       method: "GET",
       headers: {"Content-Type": "application/json"},
@@ -75,30 +125,27 @@ class QueryResultManager {
       if (response.ok) {
         response.json()
         .then((data)=> {
-          let images_fields = []
-          for (let question of data.query.questions) {
-            if (question.kind === "IMAGE") {
-              let field = `pregunta_${question.index + 1}`
-              images_fields.push(field)
-            }
+          let images_fields = _get_image_fields(data)
+          let image_data_list = _get_image_data_list(data, images_fields)
+          let tasks = []
+          for (let image_data of image_data_list) {
+            let task = _create_async_download(image_data)
+            tasks.push(task)
           }
-          if (images_fields.length === 0) {
-            return
-          }
-          let response_images = []
-          let zip = new JSZip()
-          let folder = zip.folder("images")
-          for (let response of data.dataset) {
-            for (let field of images_fields) {
-              let image_url = response[field] === ""? null: response[field]
-              if (image_url && response.visible === "True") {
-                let extension = image_url.slice(image_url.length - 3)
-                let image_blob = fetch(image_url).then(response => response.blob());
-                folder.file(`${response.send_at}-${field}-${response.uuid}.${extension}`, image_blob)
+          let results = []
+          let task_completed = 0
+          tasks.forEach((task) => {
+            task.then((value)=> {
+              results.push(value)
+            })
+            .catch((error)=> console.log(error))
+            .finally(() => {
+              task_completed++
+              if (task_completed >= tasks.length) {
+                _download_image_callback(results, data.query.url_code)
               }
-            }
-          }
-          folder.generateAsync({type: "blob"}).then(content => saveAs(content, `consulta-imagenes-${data.query.url_code}-${new Date().toLocaleDateString()}`))
+            })
+          })
         })
       } else {
         console.log(response)
