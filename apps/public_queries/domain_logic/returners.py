@@ -201,6 +201,19 @@ class PublicQueryReturner:
         if question.kind == QuestionConstants.KIND_TEXT:
             return answer.text
         if question.kind == QuestionConstants.KIND_IMAGE:
+            return (
+                {
+                    "original": answer.image.url,
+                    "thumb": answer.thumb.url if answer.thumb else answer.image.url,
+                    "thumb_medium": (
+                        answer.thumb_medium.url
+                        if answer.thumb_medium
+                        else answer.image.url
+                    ),
+                }
+                if answer.image
+                else ""
+            )
             return answer.image.url if answer.image else ""
         if question.kind in [
             QuestionConstants.KIND_SELECT,
