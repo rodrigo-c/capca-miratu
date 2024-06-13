@@ -1,11 +1,9 @@
 from datetime import datetime
 from io import BytesIO
-from tempfile import NamedTemporaryFile
 from uuid import uuid4
 
 import pytest
 from django.contrib.gis.geos import Point
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
@@ -281,28 +279,20 @@ class TestSubmitResponse:
         assert all(answer.uuid for answer in returned_response.answers)
         assert returned_response.uuid == public_query.responses.first().id
 
-    def test_success_with_image(self):
+    def test_success_with_image(self, uploaded_image):
         public_query = public_query_recipe.make(active=True)
         image_question = question_recipe.make(
             query_id=public_query.id, order=0, kind=QuestionConstants.KIND_IMAGE
         )
-        with NamedTemporaryFile() as image_file:
-            answer_data = AnswerData(
-                question_uuid=image_question.id,
-                image=InMemoryUploadedFile(
-                    image_file,
-                    name="fake-image.png",
-                    field_name="form-field",
-                    content_type="image/png",
-                    size=1,
-                    charset=None,
-                ),
-            )
-            response_data = ResponseData(
-                query_uuid=public_query.id,
-                answers=[answer_data],
-            )
-            returned_response = services.submit_response(response=response_data)
+        answer_data = AnswerData(
+            question_uuid=image_question.id,
+            image=uploaded_image,
+        )
+        response_data = ResponseData(
+            query_uuid=public_query.id,
+            answers=[answer_data],
+        )
+        returned_response = services.submit_response(response=response_data)
 
         assert returned_response.uuid
         assert all(answer.uuid and answer.image for answer in returned_response.answers)
