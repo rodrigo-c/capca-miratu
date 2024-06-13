@@ -7,13 +7,16 @@ from apps.public_queries.tests.recipes import question_recipe
 
 
 @pytest.mark.django_db
-def test_bulk_create_answers(response):
+def test_bulk_create_answers(response, uploaded_image):
     questions = [
         question_recipe.make(
             query_id=response.query_id, required=True, kind=QuestionConstants.KIND_TEXT
         )
-        for _ in range(3)
+        for _ in range(2)
     ]
+    image_question = question_recipe.make(
+        query_id=response.query_id, required=True, kind=QuestionConstants.KIND_IMAGE
+    )
     answers = [
         {
             "question_id": question.id,
@@ -22,8 +25,16 @@ def test_bulk_create_answers(response):
         }
         for index, question in enumerate(questions)
     ]
+    image_answer = {
+        "question_id": image_question.id,
+        "response_id": response.id,
+        "image": uploaded_image,
+    }
+    answers.append(image_answer)
     returned_instances = answer_providers.bulk_create_answers(answers=answers)
     assert all(isinstance(instance, Answer) for instance in returned_instances)
+    assert returned_instances[-1].thumb.url
+    assert returned_instances[-1].thumb_medium.url
 
 
 @pytest.mark.django_db
