@@ -16,6 +16,9 @@
                     {% if form.password.errors %}{{ form.password.errors }}{% endif %}
                 </div>
                 <input class="primary-button" type="submit" value="Ingresar">
+                <div class="form-field">
+                    <a class="recovery-link" href="{% url 'admin:password_reset' %}">¿Desea recuperar su contraseña?</a>
+                </div>
             </form>
         </div>
     </div>
