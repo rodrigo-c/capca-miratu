@@ -45,6 +45,10 @@
                 <div class="menu-label">{{ user.email }}</div>
             </div>
             <div class="menu-divider"></div>
+            <a class="menu-item link" href="{% url 'admin:password_change' %}">
+                <icon class="icon"></icon>
+                <div class="menu-label">Cambiar contraseña</div>
+            </a>
             <a class="menu-item link" href="{% url 'admin:logout' %}">
                 <icon class="icon"></icon>
                 <div class="menu-label">Cerrar sesión</div>
