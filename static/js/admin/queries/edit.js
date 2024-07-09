@@ -462,6 +462,7 @@ class QueryEditBase {
       this._set_question_max_answers(question, question_data)
     } else if (question_data.kind === "POINT") {
       question_content.innerHTML += `<div class="query-map-pointer" id="map-pointer-question-edit-${index}"></div>`
+      question_content.querySelector(".query-map-pointer").draggable = true
     } else {
       question_content.innerHTML += this.manager._get_question_kind_html(question_data)
     }
@@ -896,6 +897,9 @@ class QueryEditBase {
   }
 
   _move_question_ondragstart(event) {
+    if (event.target.classList.contains("query-map-pointer")) {
+      return
+    }
     let question = event.target.closest(".question-item")
     let questions_container = document.querySelector(`#query-${this.view_type}-questions-tab`)
     this.current_pos = question.index
