@@ -1,11 +1,9 @@
 from django.contrib.admin import AdminSite
 
-from apps.admin.registrations.public_queries import public_queries_tuple_models
 from apps.admin.registrations.users import users_tuple_models
 
 TUPLE_MODEL_ARRAY = [
     *users_tuple_models,
-    *public_queries_tuple_models,
 ]
 
 
