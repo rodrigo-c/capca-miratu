@@ -198,6 +198,19 @@ class QueryEditBase {
       this.buttons.new_question.disabled = false
       this.buttons.new_question.classList.remove("disabled")
     }
+    if (this.data.questions.length >= 30) {
+      this.buttons.new_question.disabled = true
+      this.buttons.new_question.classList.add("disabled")
+      let max_question_message = document.createElement("div")
+      max_question_message.classList.add("end-max-question-message")
+      max_question_message.innerText = "Has superado el número máximo de preguntas para este formulario."
+      document.querySelector(`#query-components-${this.view_type}`).appendChild(max_question_message)
+    } else {
+      let max_question_message = document.querySelector(`#query-components-${this.view_type} .end-max-question-message`)
+      if (max_question_message != null) {
+        max_question_message.remove()
+      }
+    }
     if (!this.can_edit_questions) {
       this.buttons.new_question.disabled = true
       this.buttons.new_question.classList.add("disabled")
