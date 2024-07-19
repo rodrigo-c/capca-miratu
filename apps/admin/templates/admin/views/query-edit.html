@@ -77,7 +77,7 @@
                     </div>
                     {% if view_type == "update" %}
                         <div class="primary-button" id="update-query-delete-button">
-                            <i class="icon delete"></i> Borrar
+                            <i class="icon delete"></i> Eliminar
                         </div>
                     {% endif %}
                 </div>
@@ -100,8 +100,11 @@
                 </div>
             </div>
         </div>
-        <div class="query-components">
-            <div class="subtitle">Preguntas</div>
+        <div class="query-components" id="query-components-{{ view_type }}">
+            <div class="questions-title">
+                <div class="subtitle">Preguntas</div>
+                <div class="max-question-title">El formulario admite como máximo 30 preguntas</div>
+            </div>
             <div class="{{ view_type }}-questions-tab"
                  id="query-{{ view_type }}-questions-tab"></div>
         </div>

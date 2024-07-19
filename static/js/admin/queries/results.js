@@ -607,7 +607,7 @@ class QueryResultManager {
 
     if (question.kind == "IMAGE" && value) {
       final_value = `<div class="query-datable-image" style="background-image: url('${value.thumb}')"></div>`
-      final_value = `<a href="${value.original}" target="_blank">${final_value}</a>`
+      final_value = `<a href="${value.original}" download="${item.send_at}.png">${final_value}</a>`
     } else if (question.kind == "POINT" && value) {
       let query_url_code = this.data.query.url_code
       let link = item.visible === "True"? `href="?f=query-map&k=${query_url_code}&r=${item.uuid}"`: ""

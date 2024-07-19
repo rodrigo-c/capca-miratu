@@ -106,6 +106,29 @@
       font-weight: 600;
       padding: 1vh 1vw;
     }
+
+    .questions-title {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .max-question-title {
+      color: $terciary;
+      font-family: Open Sans;
+      font-size: 1.2vh;
+    }
+
+    .end-max-question-message {
+      background: $inactive;
+      border-radius: 6px;
+      box-shadow: 0 0 5.3px 0 $shadow, 0 2px 4px 0 $shadow-ligth;
+      font-family: Open Sans;
+      font-size: 1.5vh;
+      margin-top: 1vh;
+      padding: 2vh 1vw;
+      text-align: center;
+    }
   }
 
   .update-questions-tab,
