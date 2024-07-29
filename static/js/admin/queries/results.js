@@ -483,6 +483,7 @@ class QueryResultManager {
     config.data.headings = this._get_datables_heading(config)
     this.data_table = new simpleDatatables.DataTable("#query-result-data-table", config)
     this._set_cell_options()
+    this._set_single_image_download()
 
   }
   _set_cell_options () {
@@ -498,6 +499,23 @@ class QueryResultManager {
     }
     for (let button of document.querySelectorAll(".dropdown-item.visiblity")) {
       button.addEventListener("click", this._click_response_visibility, false)
+    }
+  }
+
+  _set_single_image_download() {
+    let images = document.querySelectorAll(".query-datable-image")
+    if (images.length > 0) {
+      for (let image of images) {
+        image.addEventListener("click", function () {
+          let original_url = this.getAttribute("original")
+          let send_at = this.getAttribute("send_at").slice(0, 19).replace(" ", ".")
+          let filename = `${send_at}.png`
+          new Promise((resolve, reject) => {
+            let image_blob = fetch(original_url).then(response => response.blob());
+            resolve(image_blob)
+          }).then(blob => saveAs(blob, filename))
+        })
+      }
     }
   }
 
@@ -606,8 +624,7 @@ class QueryResultManager {
     let final_value = value
 
     if (question.kind == "IMAGE" && value) {
-      final_value = `<div class="query-datable-image" style="background-image: url('${value.thumb}')"></div>`
-      final_value = `<a href="${value.original}" download="${item.send_at}.png">${final_value}</a>`
+      final_value = `<div class="query-datable-image" style="background-image: url('${value.thumb}')" send_at="${item.send_at}" original="${value.original}"></div>`
     } else if (question.kind == "POINT" && value) {
       let query_url_code = this.data.query.url_code
       let link = item.visible === "True"? `href="?f=query-map&k=${query_url_code}&r=${item.uuid}"`: ""
