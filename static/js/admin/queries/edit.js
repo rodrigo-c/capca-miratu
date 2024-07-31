@@ -198,7 +198,7 @@ class QueryEditBase {
       this.buttons.new_question.disabled = false
       this.buttons.new_question.classList.remove("disabled")
     }
-    if (this.data.questions.length >= 30) {
+    if (this.data.questions.length >= 60) {
       this.buttons.new_question.disabled = true
       this.buttons.new_question.classList.add("disabled")
       let max_question_message = document.createElement("div")
