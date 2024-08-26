@@ -36,9 +36,10 @@
                 {% endif %}
             </div>
         </div>
-        <div class="detail content-container hidden" id="detail-container">
+        <div class="detail content-container hidden"
+             id="detail-container"
+             {% if not public_query.description %}nodescription{% endif %}>
             {% include "public_queries/components/public-query-card.html" with noimage="true" %}
-            <div class="section title">{{ app_context.DETAIL_LABEL }}</div>
             <div class="section text-content">{{ public_query.description|linebreaks }}</div>
         </div>
         {{ answer_formset.management_form }}
