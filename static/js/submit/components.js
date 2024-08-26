@@ -39,6 +39,7 @@ function get_components() {
     navbars: {
       main: document.getElementById("navbar"),
     },
+    has_nodescription: document.querySelector("#detail-container").hasAttribute("nodescription"),
     containers: containers,
     buttons: {
       start: document.getElementById(button_names.start),

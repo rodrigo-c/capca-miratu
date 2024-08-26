@@ -220,6 +220,10 @@ class QuerySubmitEngine {
       this.comp.buttons.back.classList.remove(this.hidden_class_name)
       this.comp.buttons.submit.classList.remove(this.hidden_class_name)
     }
+    if (focus == "detail" && this.comp.has_nodescription) {
+      focus = 0
+    }
+
     if (Number.isInteger(focus)) {
       for (let input of this.comp.input_map.question_list[focus]) {
         this.validate_input(input, false)
@@ -243,7 +247,13 @@ class QuerySubmitEngine {
       this.show_view("identifier")
     }
     else if (!isNaN(this.focus)) {
-        if (this.focus == 0) {this.show_view("detail")}
+        if (this.focus == 0) {
+          if (this.comp.has_nodescription) {
+            this.show_view("identifier")
+          } else {
+            this.show_view("detail")
+          }
+        }
         else {this.show_view(this.focus - 1)}
     }
   }
