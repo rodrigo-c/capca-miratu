@@ -107,31 +107,23 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
 if AWS_ACCESS_KEY_ID:
     STATIC_LOCATION = "static"
     PUBLIC_MEDIA_LOCATION = "media"
-    PRIVATE_MEDIA_LOCATION = "private"
     AWS_DEFAULT_ACL = None
     STORAGES = {
         "default": {
             "BACKEND": "config.storages.PublicMediaStorage",
+            "LOCATION": PUBLIC_MEDIA_LOCATION,
         },
         "staticfiles": {
             "BACKEND": "config.storages.StaticStorage",
-        },
-        "private": {
-            "BACKEND": "config.storages.PrivateMediaStorage",
+            "LOCATION": STATIC_LOCATION,
         },
     }
     AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
     AWS_S3_REGION_NAME = "us-east-2"
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-    STATIC_LOCATION = "static"
-    PUBLIC_MEDIA_LOCATION = "media"
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
-    AWS_QUERYSTRING_EXPIRE = 3600
-    AWS_QUERYSTRING_AUTH = True
-    AWS_S3_SIGNATURE_VERSION = "s3v4"
-    AWS_S3_REGION_NAME = "us-east-2"
 
 # Template
 
