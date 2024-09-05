@@ -7,3 +7,9 @@
 docker-compose.yml
 htmlcov/
 Makefile
+.idea
+media/
+node_modules/
+static/
+.pytest_cache
+.ipython
