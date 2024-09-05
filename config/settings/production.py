@@ -2,7 +2,7 @@ from .base import *  # noqa
 from .base import env
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+
 
 EMAIL_HOST = env("EMAIL_HOST", default=None)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@vision.cegirapp.cl")
