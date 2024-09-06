@@ -38,7 +38,3 @@ LOGGING["loggers"]["qinspect"] = {  # noqa
     "level": "DEBUG",
     "propagate": True,
 }
-
-# django-extensions
-# https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
-INSTALLED_APPS += ["django_extensions"]  # noqa F405

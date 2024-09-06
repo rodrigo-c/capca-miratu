@@ -40,6 +40,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "nested_inline",
     "rest_framework",
+    "django_extensions",
+    "storages",
 ]
 
 LOCAL_APPS = [
@@ -100,6 +102,29 @@ STATICFILES_DIRS = [str(ROOT_DIR / "static")]
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = str(ROOT_DIR / "media")
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
+if AWS_ACCESS_KEY_ID:
+    STATIC_LOCATION = "static"
+    PUBLIC_MEDIA_LOCATION = "media"
+    AWS_DEFAULT_ACL = None
+    STORAGES = {
+        "default": {
+            "BACKEND": "config.storages.PublicMediaStorage",
+            "LOCATION": PUBLIC_MEDIA_LOCATION,
+        },
+        "staticfiles": {
+            "BACKEND": "config.storages.StaticStorage",
+            "LOCATION": STATIC_LOCATION,
+        },
+    }
+    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = "us-east-1"
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
 
 # Template
 

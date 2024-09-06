@@ -44,10 +44,10 @@ function pathsConfig(appName) {
     app: this.app,
     templates: `${this.app}/templates`,
     css: `./static/css`,
-    sass: `./static/sass`,
+    sass: `./src/sass`,
     fonts: `./static/fonts`,
     images: `./static/images`,
-    js: `./static/js`,
+    js: `./src/js`,
   };
 }
 
@@ -113,7 +113,7 @@ function adminStyles() {
 // Submit JS
 function submitJS() {
   return rollup({
-    input: "./static/js/submit/index.js",
+    input: "./src/js/submit/index.js",
     plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), nodeResolve()],
     cache: cache,
     output: {
@@ -132,7 +132,7 @@ function submitJS() {
 
 function adminJs() {
   return rollup({
-    input: "./static/js/admin/index.js",
+    input: "./src/js/admin/index.js",
     plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), nodeResolve()],
     cache: cache,
     output: {
@@ -151,11 +151,11 @@ function adminJs() {
 function vendorScripts() {
   return src(paths.vendorsJs, { sourcemaps: true })
     .pipe(concat('vendors.js'))
-    .pipe(dest(paths.js))
+    .pipe(dest('./static/js/'))
     .pipe(plumber()) // Checks for errors
     .pipe(uglify()) // Minifies the js
     .pipe(rename({ suffix: '.min' }))
-    .pipe(dest(paths.js, { sourcemaps: '.' }));
+    .pipe(dest('./static/js/', { sourcemaps: '.' }));
 }
 
 // Image compression
@@ -199,7 +199,7 @@ function initBrowserSync() {
 function watchPaths() {
   watch(`${paths.sass}/*.scss`, styles);
   watch(`${paths.templates}/**/*.html`).on('change', reload);
-  watch([`${paths.js}/*.js`, `!${paths.js}/*.min.js`], scripts).on(
+  watch([`./src/js/*.js`], scripts).on(
     'change',
     reload,
   );
