@@ -244,6 +244,7 @@ class PublicQueryManager(PublicQueryBase):
             "user": request.user.email,
             "token": token.key,
             "paths": paths,
+            "host": request.get_host(),
         }
         return Response(api_config)
 
