@@ -5,7 +5,9 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 
 EMAIL_HOST = env("EMAIL_HOST", default=None)
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@visionciudadana.cegir.cl")
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="no-reply@visionciudadana.cegir.cl"
+)
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["visionciudadana.cegir.cl"])
 CSRF_TRUSTED_ORIGINS = env.list(
