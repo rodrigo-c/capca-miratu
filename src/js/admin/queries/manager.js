@@ -3,6 +3,7 @@ import {QueryDetailManager} from "./detail.js"
 import {QueryCreateManager, QueryUpdateManager} from "./edit.js"
 import {QueryResultManager} from "./results.js"
 import {QueryShareManager} from "./share.js"
+import {QueryAPIManager} from "./api.js"
 
 
 class QueryManager {
@@ -19,6 +20,7 @@ class QueryManager {
     this.map = new QueryResultManager({manager:this, kind: "map"})
     this.data = new QueryResultManager({manager:this, kind: "data"})
     this.share = new QueryShareManager({manager: this})
+    this.api = new QueryAPIManager({manager: this})
     this._click_go_to_view = this._click_go_to_view.bind(this)
   }
 

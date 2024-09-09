@@ -28,6 +28,7 @@ class AdminEngine {
       "query_map",
       "query_data",
       "query_share",
+      "query_api",
     ]
     this.views = {}
     this._general_click = this._general_click.bind(this)
@@ -79,6 +80,7 @@ class AdminEngine {
     })
     this._set_admin_menu_item("query-create-link", "query-create", menu_content)
     this._set_admin_menu_item("query-list-link", "query-list", menu_content)
+    this._set_admin_menu_item("query-api-link", "query-api", menu_content)
   }
 
   _set_admin_menu_item(id, focus, menu_content) {
