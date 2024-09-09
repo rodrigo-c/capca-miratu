@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 
 from apps.public_queries.lib.constants import (
     CreatePublicQueryConstants,
@@ -14,6 +15,45 @@ from apps.public_queries.tests.recipes import (
     public_query_recipe,
 )
 from apps.public_queries.utils import create_fake_uploaded_image
+
+
+@pytest.mark.django_db
+class TestPublicQueryAPI:
+    base_pattern = "admin_api:v1:public-query-api"
+
+    def test_get_list(self, api_client, user):
+        token, _ = Token.objects.get_or_create(user=user)
+        public_query = public_query_recipe.make(created_by_id=user.id)
+        url = reverse(
+            f"{self.base_pattern}-list",
+        )
+        response = api_client.get(url, headers={"Authorization": f"Token {token.key}"})
+        assert response.status_code == 200
+        assert response.data["list"][0]["uuid"] == str(public_query.id)
+
+    def test_get_retrieve(self, api_client, user, ended_public_query):
+        token, _ = Token.objects.get_or_create(user=user)
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        url = reverse(
+            f"{self.base_pattern}-detail", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url, headers={"Authorization": f"Token {token.key}"})
+        assert response.status_code == 200
+        assert response.data["query"]["uuid"] == str(ended_public_query.id)
+        assert len(response.data["dataset"]) == 16
+
+    def test_get_geojson(self, api_client, user, ended_public_query):
+        token, _ = Token.objects.get_or_create(user=user)
+        ended_public_query.created_by_id = user.id
+        ended_public_query.save()
+        api_client.force_login(user)
+        url = reverse(
+            f"{self.base_pattern}-geojson", kwargs={"pk": ended_public_query.url_code}
+        )
+        response = api_client.get(url, headers={"Authorization": f"Token {token.key}"})
+        assert response.status_code == 200
+        assert "features" in response.data
 
 
 @pytest.mark.django_db
@@ -317,3 +357,13 @@ class TestPublicQueryManager:
         response = api_client.get(url)
         assert response.status_code == 200
         assert response.filename == f"consulta-{ended_public_query.url_code}-geo.json"
+
+    def test_get_api_config(self, api_client, user):
+        url = reverse(
+            f"{self.base_pattern}-api-config",
+        )
+        api_client.force_login(user)
+        response = api_client.get(url)
+        assert response.status_code == 200
+        assert response.data["user"] == user.email
+        assert response.data["token"] == user.auth_token.key
