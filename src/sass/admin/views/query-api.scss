@@ -1,0 +1,166 @@
+.view.query-api {
+  margin-left: 5vw;
+  padding: 4vh 0;
+  width: 90vw;
+
+  @include small {
+    margin-left: 20vw;
+    width: 60vw;
+  }
+
+  @include medium {
+    margin-left: 25vw;
+    width: 50vw;
+  }
+
+  @include large {
+    margin-left: 30vw;
+    width: 40vw;
+  }
+
+  .action-success {
+    align-content: center;
+    border: 1px solid $shadow-ligth;
+    border-radius: 4px;
+    color: $terciary;
+    font-size: 1vh;
+    padding: .4vh .6vw;
+  }
+
+  .api-swagger-token {
+    align-items: center;
+    display: flex;
+    font-family: Open Sans;
+    padding: 1vh 1vw;
+
+    .api-swagger-token-label {
+      font-size: 1.4vh;
+      font-weight: bold;
+      padding: 1vh 1vw;
+    }
+
+    .api-swagger-token-value {
+      font-size: 1.2vh;
+    }
+  }
+
+
+
+  .copy-link-container {
+    display: flex;
+  }
+
+  .secondary-button {
+    font-size: 1vh;
+  }
+
+  .api-swagger-token-action {
+    font-size: 1.2vh;
+    min-width: 14vh;
+  }
+
+  .query-api-endpoints {
+    .query-api-endpoint {
+      border: 1px solid $shadow-ligth;
+      border-radius: 4px;
+      margin-bottom: 1vh;
+      padding: 1vh 1vw;
+    }
+
+    .endpoint-name {
+      font-family: Gotham;
+      font-size: 1.3vh;
+      font-weight: bold;
+      margin-bottom: 1vh;
+    }
+
+    .endpoint-description {
+      font-size: 1vh;
+      margin-bottom: 1vh;
+    }
+
+    .endpoint-buttons {
+      align-items: center;
+      display: flex;
+      justify-content: right;
+    }
+
+    .endpoint-clear {
+      padding: .9vh 1vw;
+    }
+
+    .primary-button {
+      font-size: 1vh;
+      padding: 1vh 1vw;
+      width: max-content;
+    }
+
+    .endpoint-controls {
+      margin-bottom: 1vh;
+      margin-right: 1vw;
+    }
+
+    .endpoint-params {
+      margin-bottom: .5vh;
+    }
+
+    .param-url-code {
+      align-items: center;
+      display: flex;
+    }
+
+    .param-url-code-desc {
+      font-size: 1.2vh;
+      font-weight: bold;
+      margin-right: 2vw;
+    }
+  }
+
+  .param-url-code-input {
+    font-size: 1.1vh;
+
+    &:focus-visible {
+      outline: 1px solid $cegir-primary;
+    }
+  }
+
+  .endpoint-curl-preview {
+    padding: 1vh 1vw;
+
+    .endpoint-curl-desc {
+      font-family: Gotham;
+      font-size: 1.2vh;
+      margin-bottom: 1vh;
+    }
+
+    .endpoint-curl-value {
+      background-color: $shadow-ligth;
+      border: 1px solid $primary;
+      border-radius: 4px;
+      font-family: Roboto;
+      font-size: 1vh;
+      margin-bottom: 1vh;
+      padding: .5vh 1vw;
+    }
+  }
+
+  .endpoint-response {
+    padding: 1vh 1vw;
+
+    .endpoint-response-desc {
+      font-family: Gotham;
+      font-size: 1.2vh;
+      margin-bottom: 1vh;
+    }
+
+    .endpoint-response-value {
+      border: 1px solid $primary;
+      border-radius: 4px;
+      font-family: Roboto;
+      font-size: 1vh;
+      outline: none;
+      resize: vertical;
+      width: 90%;
+    }
+  }
+}

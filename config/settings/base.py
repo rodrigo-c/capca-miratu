@@ -40,6 +40,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "nested_inline",
     "rest_framework",
+    "rest_framework.authtoken",
     "django_extensions",
     "storages",
 ]
