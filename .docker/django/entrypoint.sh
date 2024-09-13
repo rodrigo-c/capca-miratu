@@ -55,6 +55,12 @@ if [[ "${1}" == "shell" ]]; then
     exec /bin/bash
 elif [[ "${1}" == "runserver" ]]; then
     exec dev up
+elif [[ "${1}" == "test" ]]; then
+    exec dev test
+elif [[ "${1}" == "cov" ]]; then
+    exec dev cov
+elif [[ "${1}" == "migrate" ]]; then
+    exec python manage.py migrate
 elif [[ "${1}" == "migrate-noinput" ]]; then
     exec python manage.py migrate --noinput
 elif [[ "${1}" == "collectstatic" ]]; then
