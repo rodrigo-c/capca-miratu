@@ -86,6 +86,9 @@ makemessages|mkmsgs)
 compilemessages|cmplmsgs)
   python manage.py compilemessages "$@"
 ;;
+collectstatic)
+  python manage.py collectstatic "$@"
+;;
 createsuperuser|createroot)
   python manage.py createsuperuser "$@"
 ;;
