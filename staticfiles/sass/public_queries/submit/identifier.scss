@@ -1,0 +1,30 @@
+.identifier.content-container {
+  justify-content: start;
+  margin-bottom: 3vh;
+  padding-top: 5vh;
+
+  .card {
+    margin-bottom: 3vh;
+  }
+
+  .section.title,
+  .errors,
+  .form-field {
+    align-self: center;
+    width: 70%;
+
+    input {
+      padding: 2vh;
+    }
+  }
+
+  .form-field-detail {
+    align-self: center;
+    color: $secondary;
+    font-size: 1.8vh;
+    font-style: italic;
+    margin-bottom: 2vh;
+    margin-left: 4vw;
+    width: 70%;
+  }
+}

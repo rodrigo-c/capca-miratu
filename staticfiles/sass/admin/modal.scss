@@ -1,0 +1,98 @@
+
+.admin-modal {
+  background-color: $shadow-strong;
+  display: flex;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10000;
+
+  &.hidden {
+    display: none;
+  }
+
+  .admin-modal-content {
+    background-color: $white;
+    border-radius: 2px;
+    margin: auto;
+    min-width: 50vh;
+    padding: 2vh 2vw;
+    width: max-content;
+  }
+
+  .admin-modal-close {
+    cursor: pointer;
+    margin-left: auto;
+    padding: 1.5vh;
+    width: fit-content;
+
+    &:has(+.blocket-to-confirmation) {
+      display: none;
+    }
+  }
+
+  .modal-title {
+    font-family: Roboto;
+    font-size: 2.5vh;
+    font-weight: 600;
+    margin-bottom: 2vh;
+    text-align: center;
+  }
+
+  .modal-content {
+    font-family: Open Sans;
+    font-size: 2vh;
+    margin-bottom: 3vh;
+    max-width: 65%;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+
+    .primary-button {
+      margin: 1vh 1vw;
+      min-width: 2vw;
+      text-align: center;
+    }
+  }
+
+  .modal-icon-alert {
+    align-self: end;
+    background-image: url('../images/icons/alert.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 2vw;
+  }
+
+  .query-delete-confirmation {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 3vh 3vw;
+  }
+
+  .question-image-upload-content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 50vh;
+    min-width: 40vw;
+  }
+
+  .blocket-to-confirmation {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 50vw;
+    padding: 3vh 3vw;
+
+    .admin-modal-close {
+      display: none;
+    }
+  }
+}

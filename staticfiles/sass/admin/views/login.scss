@@ -1,0 +1,74 @@
+.login.admin-content {
+  align-items: center;
+  height: 80vh;
+  justify-content: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+
+  form {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .primary-button {
+    font-family: Open Sans;
+    font-size: 2.2vh;
+    margin-top: 2vh;
+    min-width: 50%;
+  }
+
+  .form-field {
+    width: 45vw;
+
+    @include small {
+      width: 30vw;
+    }
+
+    @include medium {
+      width: 25vw;
+    }
+
+    @include large {
+      width: 20vw;
+    }
+
+    &::placeholder {
+      color: $terciary;
+    }
+
+    input {
+      font-family: Open Sans;
+    }
+
+  }
+
+  .recovery-link {
+    font-size: 2vh;
+    margin: 2vh auto;
+    margin-top: 3vh;
+    text-decoration: none;
+  }
+
+  .vision-ciudadana {
+    margin-bottom: 4vh;
+    padding-bottom: 10vh;
+  }
+
+  .login-submit {
+    align-self: center;
+    background-color: $primary;
+    color: $white;
+    cursor: pointer;
+    font-family: Gotham;
+    margin: 3vh 0;
+    padding: 1vh 3vw;
+
+    &:hover {
+      opacity: .7;
+    }
+  }
+}

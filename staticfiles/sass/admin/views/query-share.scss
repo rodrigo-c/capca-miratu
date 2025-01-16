@@ -1,0 +1,59 @@
+
+.view.query-share {
+  margin-left: 5vw;
+  padding: 4vh 0;
+  width: 90vw;
+
+  @include small {
+    margin-left: 20vw;
+    width: 60vw;
+  }
+
+  @include medium {
+    margin-left: 25vw;
+    width: 50vw;
+  }
+
+  @include large {
+    margin-left: 30vw;
+    width: 40vw;
+  }
+
+  .icon {
+    margin-right: .5vw;
+    padding-right: 3vh;
+  }
+
+  .ok-simple {
+    padding-right: 1.6vh;
+  }
+
+  .share-container {
+    border: 1px solid $shadow-ligth;
+    border-radius: 4px;
+    padding: 2vh 4vw;
+    padding-bottom: 3vh;
+  }
+
+  .subtitle {
+    margin-top: 2vh;
+  }
+
+  .action-container {
+    display: flex;
+    padding: 1vh 0;
+  }
+
+  .secondary-button {
+    padding: 1vh 1.3vw;
+  }
+
+  .action-success {
+    border: 1px solid $shadow-ligth;
+    border-radius: 4px;
+    color: $terciary;
+    font-size: 2vh;
+    margin: 0 1vw;
+    padding: .8vh 1.8vw;
+  }
+}

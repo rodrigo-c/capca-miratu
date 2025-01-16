@@ -1,0 +1,177 @@
+.query-result-to-map {
+  background-color: $white;
+  border-radius: 6px;
+  filter: drop-shadow(0 0 3px $shadow);
+  width: max-content;
+
+  .query-result-to-map-link {
+    display: flex;
+    padding: 1.5vh .5vw;
+    text-decoration: none;
+  }
+
+  .to-map-link-label {
+    color: $secondary;
+    font-family: Open Sans;
+    user-select: none;
+  }
+
+  .icon {
+    padding-bottom: 2vh;
+    padding-right: 2vw;
+  }
+}
+
+.query-datable-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+  height: 10vw;
+  width: 10vw;
+}
+
+.query-data .data-result-container {
+  padding: 1vh 1vw;
+}
+
+.data-result-container {
+  font-size: 1.5vh;
+
+  .cell-tooltip {
+    position: relative;
+
+  }
+
+  .datatable-container {
+    max-height: 100%;
+    overflow-x: scroll;
+    overflow-y: auto;
+    padding-bottom: 15%;
+    width: 100%;
+
+    th {
+      text-wrap: nowrap;
+      vertical-align: baseline;
+    }
+
+    .cell {
+      vertical-align: middle;
+    }
+
+    .rut {
+      text-wrap: nowrap;
+    }
+
+    .dt-field-desc {
+      font-size: 1.5vh;
+      font-weight: 400;
+      text-wrap: balance;
+    }
+
+    .cell-options-button {
+      cursor: pointer;
+      height: 2vh;
+      width: 2vh;
+    }
+
+    .dropdown-item {
+      display: flex;
+      margin: 0;
+    }
+  }
+
+  .cell-options-content {
+    right: 5vw;
+
+    .icon {
+      margin-right: 1vh;
+      padding: 1vh;
+    }
+
+    .dropdown-item-value {
+      font-family: Roboto;
+      font-size: 1.5vh;
+      font-weight: 400;
+    }
+  }
+
+  .row-response:has(.response-hidden-alert) {
+    background-color: $disabled;
+
+    .cell {
+      opacity: .5;
+    }
+
+    .cell.email,
+    .cell.visible {
+      opacity: 1;
+    }
+
+    .query-result-to-map-link {
+      cursor: not-allowed;
+    }
+  }
+
+  .response-hidden-alert-spacer {
+    min-height: 8vh;
+  }
+
+  .response-hidden-alert {
+    background: $disabled;
+    display: flex;
+    font-family: Open Sans;
+    margin-top: -1vh;
+    max-width: 45vw;
+    padding: 1vh 1vw;
+    position: absolute;
+    z-index: 1;
+
+
+    @include small {
+      max-width: 25vw;
+    }
+
+    .icon {
+      height: 4vh;
+      margin-right: 1vh;
+      width: 4vh;
+    }
+
+    .response-hidden-title {
+      font-size: 1.6vh;
+      font-weight: 600;
+    }
+  }
+
+  .datatable-sorter {
+    &::before,
+    &::after {
+      right: -1vw;
+    }
+  }
+
+  .datatable-input {
+    font-family: Open Sans;
+    font-size: 1.5vh;
+    min-width: 35vw;
+    padding-block: 2px; // scss-lint:disable PropertySpelling
+  }
+
+  .datatable-selector {
+    font-family: Open Sans;
+    font-size: 1.6vh;
+    padding: 0;
+  }
+
+  .datatable-top {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 1vh 3vw;
+
+    &::after {
+      content: none;
+    }
+  }
+}
