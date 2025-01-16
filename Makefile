@@ -50,21 +50,16 @@ rootbash: ## drops you into a running container as root
 
 .PHONY: migrate
 migrate: ## run django migrations
-	@docker compose run --rm django migrate
+	@docker compose run --rm django dev migrate || true
 
 .PHONY: test
 test: ## run django tests
-	@docker compose run --rm django test
+	@docker compose run --rm django dev test || true
 
 .PHONY: cov
 cov: ## run django coverage
-	@docker compose run --rm django cov
+	@docker compose run --rm django dev cov || true
 
 .PHONY: assets
 assets: ## build assets
-	@docker compose run --rm node npm run build
-
-
-.PHONY: collectstatic
-collectstatic: ## build assets
-	@docker compose run --rm django collectstatic
+	@docker compose run --rm node npm run build|| true

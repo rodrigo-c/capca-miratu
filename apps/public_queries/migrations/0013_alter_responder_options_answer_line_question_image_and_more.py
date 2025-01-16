@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("public_queries", "0012_alter_publicquery_auth_email_and_more"),
+        ("public_queries", "0001_initial"),
     ]
 
     operations = [
