@@ -83,7 +83,7 @@ elif [[ "${1}" == "celerybeat" ]]; then
     printf "started Docker container as runtype \e[1;93mcelerybeat\e[0m\n"
     exec celery -A config.celery_app beat
 else
-    python manage.py migrate --noinput
+    #python manage.py migrate --noinput
     printf "Starting production Gunicorn server --timeout 120"
     exec gunicorn --timeout 120 config.wsgi:application --bind 0.0.0.0:8000
 fi
