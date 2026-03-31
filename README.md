@@ -1,7 +1,7 @@
 # Documentación técnica: Visión Ciudadana
 ## Arquitectura
 ### Stack
-La aplicación está escrita en [Python (3.11)](https://docs.python.org/3.11/) y se sostiene en [Django (4.2)](https://docs.djangoproject.com/en/4.2/) y [Postgres](https://www.postgresql.org/), el proceso de desarrollo está contenizado ([Docker Compose](https://docs.docker.com/compose/)). 
+La aplicación está escrita en [Python (3.11)](https://docs.python.org/3.11/) y se sostiene en [Django (4.2)](https://docs.djangoproject.com/en/4.2/) y [PostgreSQL](https://www.postgresql.org/) con [PostGIS](https://postgis.net/) (GeoDjango). El entorno local usa un virtualenv y herramientas del sistema (GDAL/GEOS según plataforma).
 ### Lineamientos
 - Se intenta seguir de [The Twelve Factors](https://12factor.net/). 
 - Se busca mantener el código desacoplado entre la interfáz y la lógica de negocio.
@@ -36,15 +36,14 @@ Funciona principalmente como punto de entrada para el levantamiento de la clase 
 ![Untitled (1)](https://github.com/Cegir-Project/app-consultas-ciudadanas/assets/52863930/af6dffa6-df0f-4758-b425-5523f4cc5a92)
 ## Desarrollo
 ### Entorno local
-Para levantar el entorno de desarrollo local se requiere tener instalado [Docker Engine](https://docs.docker.com/engine/) o [Docker Desktop](https://www.docker.com/products/docker-desktop/) con [Docker Compose](https://docs.docker.com/compose/). Con el comando `make build` se inicia la construcción de las imágenes, luego el comando `make up` sirve para levantar todos los contenedores como un conjunto. Ahora se puede acceder a la aplicación en `http://localhost:8000`.
+Se requiere Python 3.11, PostgreSQL con extensión PostGIS, y bibliotecas del sistema para GDAL (necesarias para GeoDjango). Los CSS y JS ya están generados y versionados bajo `static/`; no hace falta Node ni paso de build para ejecutar la app. Crear un virtualenv en el directorio del proyecto, por ejemplo `python3.11 -m venv venv_server`, activarlo e instalar dependencias con `./venv_server/bin/pip install -r requirements/local.txt`. Definir `DATABASE_URL` (por ejemplo en `.env`) o usar el valor por defecto de `config.settings.local` apuntando a una base PostGIS local. Ejecutar `./venv_server/bin/python manage.py migrate` y `./venv_server/bin/python manage.py runserver`; la app queda en `http://127.0.0.1:8000/`.
 ### Contribuciones
-Para contribuir al código primero es necesario tener instalado [pre-commit](https://pre-commit.com/) en el equipo. Se recomienda utilizar el comando `make run` para levantar los contenedores pero ingresando a la terminal, esto faculta a utilizar comandos útiles para el desarrollo como:
-- `dev test`: Permite correr pytest sobre el repositorio, todos los tests deben correr exitosamente para aportar.
-- `dev cov`: Permite correr coverage para indicar el porcentaje de código testeado.
-- `dev up`: Levanta el servidor de desarrollo en `http://localhost:8000`.
-- `dev shell`: Para acceder a la consola de Django.
-- `dev migrate`: Corre las migraciones sobre la base de datos.
-- `dev makemigrations`: Crea las migraciones faltantes.
+Para contribuir al código primero es necesario tener instalado [pre-commit](https://pre-commit.com/) en el equipo. Con el virtualenv activo o invocando `./venv_server/bin/python`, comandos útiles:
+- `pytest` o `./venv_server/bin/python -m pytest`: ejecuta las pruebas; todas deben pasar para aportar.
+- Cobertura: `./venv_server/bin/python -m pytest --cov=apps --cov-report=term-missing --cov-fail-under=95`
+- `./venv_server/bin/python manage.py runserver`: servidor de desarrollo en `http://127.0.0.1:8000/`.
+- `./venv_server/bin/python manage.py shell_plus`: consola Django.
+- `./venv_server/bin/python manage.py migrate`: aplica migraciones.
+- `./venv_server/bin/python manage.py makemigrations`: crea migraciones pendientes.
 
-Para poder compilar los estáticos (Sass y JS) es necesario desde una terminal del host correr el comando `make assets`, esto levantará un contenedor que lo procesará.
-Finalmente se ruega no realizar commit directos a la rama `main`, sino que crear una rama (`git checkout -b [nombre de la rama]`) y crear un pull request. Esto permitirá que [Github](https://github.com/Cegir-Project/app-consultas-ciudadanas) corra los tests y haga las confirmaciones necesarias antes de ingresar nuevo código.
+Finalmente se ruega no realizar commit directos a la rama `main`, sino que crear una rama (`git checkout -b [nombre de la rama]`) y abrir un pull request para revisión antes de integrar cambios.

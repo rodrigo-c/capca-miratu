@@ -2,6 +2,9 @@
 .idea/
 .vscode/
 .env
+venv_server/
+.venv/
+venv/
 .bash_history
 .cache/
 .ipython/
@@ -12,6 +15,7 @@
 .pytest_cache/
 .python_history
 htmlcov/
+test-results/
 *.ipynb
 .DS_Store
 _*/

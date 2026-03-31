@@ -1,6 +1,15 @@
 from .base import *  # noqa
 from .base import env
 
+# Require explicit DATABASE_URL in production (no dev default from base).
+DATABASES = {
+    "default": {
+        **env.db("DATABASE_URL"),
+        "ATOMIC_REQUESTS": True,
+        "TEST": {"NAME": "test_consultas_ciudadanas_db"},
+    }
+}
+
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 #DEBUG = True
 
