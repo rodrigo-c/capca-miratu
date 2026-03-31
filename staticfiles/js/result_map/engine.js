@@ -32,7 +32,7 @@ class QueryMapResultEngine {
   _get_map () {
     let latlng = L.latLng(-33.447869, -70.668423)
     let map = L.map("map").setView(latlng, 9)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
     }).addTo(map);
     map.attributionControl.setPrefix("")

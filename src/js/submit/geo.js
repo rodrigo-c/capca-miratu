@@ -32,7 +32,7 @@ class SubmitMapWidget extends MapWidget {
     return new ol.Map({
         target: this.options.map_id,
         controls: ol.control.defaults.defaults({attribution: false}),
-        layers: [new ol.layer.Tile({source: new ol.source.OSM()})],
+        layers: [new ol.layer.Tile({source: new ol.source.XYZ({url: 'https://{a-c}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'})})],
         view: new ol.View({
             zoom: this.options.default_zoom
         })

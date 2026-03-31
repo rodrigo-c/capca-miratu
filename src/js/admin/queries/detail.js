@@ -119,7 +119,7 @@ class QueryDetailManager {
         let zoom = question.default_zoom? question.default_zoom: 9
         let latlng = L.latLng(latitude, longitude)
         let map = L.map(`map-pointer-${question.uuid}`).setView(latlng, zoom)
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           maxZoom: 19,
           zoomControl: false,
         }).addTo(map);

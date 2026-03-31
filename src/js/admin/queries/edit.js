@@ -382,7 +382,7 @@ class QueryEditBase {
     let zoom = question_data.default_zoom? question_data.default_zoom: 9
     let latlng = L.latLng(latitude, longitude)
     let map = L.map(`map-pointer-question-edit-${question.index}`).setView(latlng, zoom)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
     }).addTo(map);
     map.attributionControl.setPrefix("")

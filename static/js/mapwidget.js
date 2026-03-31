@@ -59,7 +59,7 @@ class MapWidget {
             }
         }
         if (!options.base_layer) {
-            this.options.base_layer = new ol.layer.Tile({source: new ol.source.OSM()});
+            this.options.base_layer = new ol.layer.Tile({source: new ol.source.XYZ({url: 'https://{a-c}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'})});
         }
 
         // RemovedInDjango51Warning: when the deprecation ends, remove setting
