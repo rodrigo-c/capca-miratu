@@ -57,6 +57,7 @@ LOCAL_APPS = [
     "apps.users",
     "apps.admin.apps.AdminConfig",
     "apps.public_queries",
+    "apps.mobile_api",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

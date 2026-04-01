@@ -17,6 +17,10 @@ urlpatterns = [
         "api/admin/",
         include("apps.admin_api.urls", namespace="admin_api"),
     ),
+    path(
+        "api/mobile/",
+        include("apps.mobile_api.urls", namespace="mobile_api"),
+    ),
     path("", include("apps.public_queries.urls", namespace="public_queries")),
 ]
 
