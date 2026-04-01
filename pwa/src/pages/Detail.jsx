@@ -15,7 +15,12 @@ export default function Detail() {
 
   useEffect(() => {
     db.consultas.get(urlCode).then(setConsulta);
-    db.syncedResponses.get(urlCode).then((s) => setSynced(!!s));
+    db.syncedResponses.get(urlCode).then((s) => {
+      const count = s?.count || 0;
+      db.consultas.get(urlCode).then((consultaData) => {
+        setSynced(!!(consultaData && consultaData.max_responses > 0 && count >= consultaData.max_responses));
+      });
+    });
   }, [urlCode]);
 
   if (!consulta) return <div className="screen"><p className="empty">Cargando...</p></div>;

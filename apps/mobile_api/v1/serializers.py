@@ -42,6 +42,7 @@ class ConsultaListSerializer(serializers.Serializer):
     end_at = serializers.DateTimeField(required=False, allow_null=True)
     auth_rut = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
     auth_email = serializers.ChoiceField(choices=PublicQueryConstants.AUTH_CHOICES)
+    max_responses = serializers.IntegerField(required=False, allow_null=True)
     image = serializers.CharField(required=False, allow_null=True)
     total_responses = serializers.IntegerField(required=False, allow_null=True)
 

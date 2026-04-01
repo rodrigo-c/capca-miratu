@@ -13,7 +13,7 @@ export default function Home() {
   const [syncing, setSyncing] = useState(false);
   const [offline, setOffline] = useState(!navigator.onLine);
   const [pendingSet, setPendingSet] = useState(new Set());
-  const [syncedSet, setSyncedSet] = useState(new Set());
+  const [syncedCounts, setSyncedCounts] = useState({});
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showIosInstall, setShowIosInstall] = useState(false);
   const navigate = useNavigate();
@@ -24,7 +24,9 @@ export default function Home() {
     const pending = await db.pendingResponses.toArray();
     setPendingSet(new Set(pending.map((p) => p.url_code)));
     const synced = await db.syncedResponses.toArray();
-    setSyncedSet(new Set(synced.map((s) => s.url_code)));
+    setSyncedCounts(
+      Object.fromEntries(synced.map((s) => [s.url_code, s.count || 1]))
+    );
   }
 
   async function handleSync() {
@@ -109,7 +111,8 @@ export default function Home() {
 
       <ul className="consulta-list">
         {consultas.map((c) => {
-          const synced = syncedSet.has(c.url_code);
+          const syncedCount = syncedCounts[c.url_code] || 0;
+          const synced = c.max_responses > 0 && syncedCount >= c.max_responses;
           const hasPending = pendingSet.has(c.url_code);
           return (
             <li

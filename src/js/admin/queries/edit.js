@@ -45,6 +45,7 @@ class QueryEditBase {
         questions: [],
         auth_rut: "OPTIONAL",
         auth_email: "OPTIONAL",
+        max_responses: 0,
     }
   }
 
@@ -95,7 +96,8 @@ class QueryEditBase {
     let active = document.querySelector(`#query-${this.view_type}-active`)
     let auth_email = document.querySelector(`#query-${this.view_type}-auth-email`)
     let auth_rut = document.querySelector(`#query-${this.view_type}-auth-rut`)
-    for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut]) {
+    let max_responses = document.querySelector(`#query-${this.view_type}-max_responses`)
+    for (let input of [name, description, start_at, end_at, active, auth_email, auth_rut, max_responses]) {
       input.field = input.getAttribute("field")
       input.addEventListener("input", this._change_input, false)
       this.inputs[input.field] = input
@@ -142,6 +144,12 @@ class QueryEditBase {
   _change_input (event) {
     let field = event.target.field
     let value = event.target.value != ""? event.target.value: null
+    if (field == "max_responses") {
+      value = value !== null ? parseInt(value) : 0
+      if (Number.isNaN(value) || value < 0) {
+        value = 0
+      }
+    }
     if (event.target.question) {
       if (field == "required") {
         value = event.target.checked? true: false
@@ -1223,6 +1231,7 @@ class QueryUpdateManager extends QueryEditBase {
         active: data.query.active,
         auth_email: data.query.auth_email,
         auth_rut: data.query.auth_rut,
+        max_responses: data.query.max_responses,
         questions: [],
     }
     this.total_responses = data.query.total_responses

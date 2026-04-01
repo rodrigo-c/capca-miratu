@@ -66,6 +66,17 @@
                             </select>
                         </div>
                         <div class="error-label" id="query-{{ view_type }}-auth_rut-error"></div>
+                        <div class="attribute with-label">
+                            <div class="attribute-label">Respuestas por usuario</div>
+                            <input id="query-{{ view_type }}-max_responses"
+                                   class="status-value"
+                                   field="max_responses"
+                                   type="number"
+                                   min="0"
+                                   placeholder="0">
+                            <div class="attribute-help">0 = sin límite</div>
+                        </div>
+                        <div class="error-label" id="query-{{ view_type }}-max_responses-error"></div>
                     </div>
                 </div>
             </div>

@@ -79,7 +79,8 @@ export async function flushPendingResponses() {
     const result = await submitResponse(item.url_code, item.payload);
     if (result.ok) {
       await db.pendingResponses.delete(item.id);
-      await db.syncedResponses.put({ url_code: item.url_code });
+      const current = await db.syncedResponses.get(item.url_code);
+      await db.syncedResponses.put({ url_code: item.url_code, count: (current?.count || 0) + 1 });
     }
   }
 }

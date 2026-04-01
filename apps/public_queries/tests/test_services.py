@@ -580,6 +580,31 @@ class TestCanSubmitPublicQuery:
             is None
         )
 
+    def test_with_email_max_responses_optional(self):
+        public_query = public_query_recipe.make(
+            max_responses=1,
+            auth_email=PublicQueryConstants.AUTH_OPTIONAL,
+        )
+        repeated_email = "reapeated@email.com"
+        response_recipe.make(query_id=public_query.id, email=repeated_email)
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, email=repeated_email
+            )
+        assert error.value.data["email"] == AuthConstants.EMAIL_MAX_RESPONSES
+
+    def test_with_rut_max_responses_optional(self):
+        public_query = public_query_recipe.make(
+            max_responses=1, auth_rut=PublicQueryConstants.AUTH_OPTIONAL
+        )
+        repeated_rut = "10000000-8"
+        response_recipe.make(query_id=public_query.id, rut=repeated_rut)
+        with pytest.raises(CantSubmitPublicQueryError) as error:
+            services.can_submit_public_query(
+                query_identifier=public_query.id, rut=repeated_rut
+            )
+        assert error.value.data["rut"] == AuthConstants.RUT_MAX_RESPONSES
+
 
 @pytest.mark.django_db
 def test_get_public_query_share_document(ended_public_query):

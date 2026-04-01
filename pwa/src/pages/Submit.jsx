@@ -37,8 +37,8 @@ export default function Submit() {
 
     const result = await submitResponse(urlCode, payload);
     if (result.ok) {
-      await db.syncedResponses.put({ url_code: urlCode });
-      await db.pendingResponses.where('url_code').equals(urlCode).delete();
+      const current = await db.syncedResponses.get(urlCode);
+      await db.syncedResponses.put({ url_code: urlCode, count: (current?.count || 0) + 1 });
       setResponseUuid(result.data.response_uuid);
       setStatus('success');
     } else {

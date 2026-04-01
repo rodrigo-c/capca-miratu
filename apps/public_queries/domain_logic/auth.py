@@ -96,7 +96,6 @@ class CanSubmitPublicQuery(ServiceBase):
         if (
             not error
             and self.public_query.max_responses > PublicQueryConstants.NOT_MAX_RESPONSES
-            and self.public_query.auth_email == PublicQueryConstants.AUTH_REQUIRED
         ):
             current_responses = response_providers.count_responses_by_query_and_email(
                 query_uuid=self.public_query.uuid,
@@ -119,16 +118,13 @@ class CanSubmitPublicQuery(ServiceBase):
         error = None
         if not is_valid_rut(self.responder["rut"]):
             error = AuthConstants.RUT_INVALID
-        elif (
-            self.public_query.auth_rut == PublicQueryConstants.AUTH_REQUIRED
-            and self.public_query.max_responses > PublicQueryConstants.NOT_MAX_RESPONSES
-        ):
+        elif self.public_query.max_responses > PublicQueryConstants.NOT_MAX_RESPONSES:
             cleaned_rut = format_rut(self.responder["rut"])
             current_responses = response_providers.count_responses_by_query_and_rut(
                 query_uuid=self.public_query.uuid,
                 rut=cleaned_rut,
             )
-            if current_responses == self.public_query.max_responses:
+            if current_responses >= self.public_query.max_responses:
                 error = AuthConstants.RUT_MAX_RESPONSES
         if error:
             self._raise_validation(errors={"rut": error})
