@@ -40,6 +40,7 @@ class PublicQueryExporter:
     def get_share_pdf(self) -> BytesIO:
         pdf_file = BytesIO()
         canvas = Canvas(pdf_file, pagesize=self.canvas_size)
+        self._add_header(canvas=canvas)
         self._add_rect_mark(canvas=canvas)
         query_name_height = self._add_query_title(canvas=canvas)
         self._add_qr(canvas=canvas, query_name_height=query_name_height)
@@ -51,7 +52,15 @@ class PublicQueryExporter:
         pdf_file.seek(0)
         return pdf_file
 
-    def _add_rect_mark
+    def _add_header(self, canvas) -> None:
+        canvas.setFont("Open Sans Bold", size=36)
+        canvas.drawCentredString(
+            int(self.width / 2),
+            self.height - 100,
+            "Consulta pública",
+        )
+
+    def _add_rect_mark(self, canvas) -> None:
         canvas.setStrokeColor("#454546")
         canvas.roundRect(
             100,
