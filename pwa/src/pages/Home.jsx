@@ -82,11 +82,6 @@ export default function Home() {
       <header className="app-header">
         <h1>Consultas</h1>
         <div className="app-header-actions">
-          {!isStandalone() && (
-            <button className="btn-icon btn-install" onClick={handleInstall} title="Instalar app">
-              <span className="btn-install-label">Instalar</span>
-            </button>
-          )}
           <button className="btn-icon" onClick={handleSync} disabled={syncing} title="Sincronizar">
             {syncing ? <SpinnerIcon /> : <SyncIcon />}
           </button>
