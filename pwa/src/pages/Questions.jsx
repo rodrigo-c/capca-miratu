@@ -137,16 +137,27 @@ export default function Questions() {
 
         {question.kind === 'IMAGE' && (
           <div className="image-answer">
-            <label className="btn-secondary upload-label">
-              Seleccionar foto
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                style={{ display: 'none' }}
-                onChange={handleImageChange}
-              />
-            </label>
+            <div className="image-actions">
+              <label className="btn-secondary upload-label">
+                Tomar foto
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  style={{ display: 'none' }}
+                  onChange={handleImageChange}
+                />
+              </label>
+              <label className="btn-secondary upload-label">
+                Elegir foto
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleImageChange}
+                />
+              </label>
+            </div>
             {answer.image && (
               <img src={answer.image} alt="Vista previa" className="image-preview" />
             )}
