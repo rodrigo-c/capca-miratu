@@ -20,13 +20,15 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
+        id: '/static/app/',
         name: 'Consultas Ciudadanas',
         short_name: 'Consultas',
         description: 'Responde consultas ciudadanas desde tu teléfono',
         theme_color: '#2563eb',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/static/app/',
+        scope: '/static/app/',
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },

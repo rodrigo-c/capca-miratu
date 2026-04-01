@@ -14,6 +14,8 @@ export default function Home() {
   const [offline, setOffline] = useState(!navigator.onLine);
   const [pendingSet, setPendingSet] = useState(new Set());
   const [syncedSet, setSyncedSet] = useState(new Set());
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [showIosInstall, setShowIosInstall] = useState(false);
   const navigate = useNavigate();
 
   async function load() {
@@ -37,16 +39,39 @@ export default function Home() {
     }
   }
 
+  async function handleInstall() {
+    if (installPrompt) {
+      installPrompt.prompt();
+      await installPrompt.userChoice.catch(() => null);
+      return;
+    }
+    if (isIos() && !isStandalone()) {
+      setShowIosInstall(true);
+    }
+  }
+
   useEffect(() => {
     load();
     handleSync();
     const onOnline = () => { setOffline(false); handleSync(); };
     const onOffline = () => setOffline(true);
+    const onBeforeInstallPrompt = (event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+    const onAppInstalled = () => {
+      setInstallPrompt(null);
+      setShowIosInstall(false);
+    };
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    window.addEventListener('appinstalled', onAppInstalled);
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', onAppInstalled);
     };
   }, []);
 
@@ -54,14 +79,27 @@ export default function Home() {
     <div className="screen">
       <header className="app-header">
         <h1>Consultas</h1>
-        <button className="btn-icon" onClick={handleSync} disabled={syncing} title="Sincronizar">
-          {syncing ? <SpinnerIcon /> : <SyncIcon />}
-        </button>
+        <div className="app-header-actions">
+          {!isStandalone() && (
+            <button className="btn-icon btn-install" onClick={handleInstall} title="Instalar app">
+              <InstallIcon />
+            </button>
+          )}
+          <button className="btn-icon" onClick={handleSync} disabled={syncing} title="Sincronizar">
+            {syncing ? <SpinnerIcon /> : <SyncIcon />}
+          </button>
+        </div>
       </header>
 
       {offline && (
         <div className="banner banner-warn">
           Sin conexión — mostrando consultas guardadas
+        </div>
+      )}
+
+      {!isStandalone() && (installPrompt || isIos()) && (
+        <div className="banner banner-install" onClick={handleInstall}>
+          Instalar app
         </div>
       )}
 
@@ -100,6 +138,18 @@ export default function Home() {
           );
         })}
       </ul>
+
+      {showIosInstall && (
+        <div className="install-sheet-backdrop" onClick={() => setShowIosInstall(false)}>
+          <div className="install-sheet" onClick={(e) => e.stopPropagation()}>
+            <h2>Instalar app</h2>
+            <p>En Safari: Compartir → Agregar a pantalla de inicio.</p>
+            <button className="btn-primary" onClick={() => setShowIosInstall(false)}>
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -127,4 +177,27 @@ function SpinnerIcon() {
       />
     </svg>
   );
+}
+
+function InstallIcon() {
+  return (
+    <svg className="icon-sync" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function isIos() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }

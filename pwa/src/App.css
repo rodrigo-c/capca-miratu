@@ -74,6 +74,7 @@ body { min-height: 100dvh; }
   border-bottom: 1px solid var(--gray-border);
 }
 .app-header h1 { font-size: 1.1rem; font-weight: 700; font-family: 'Gotham', 'Open Sans', sans-serif; color: var(--blue); }
+.app-header-actions { display: flex; align-items: center; gap: 8px; }
 
 /* Banners */
 .banner {
@@ -83,6 +84,7 @@ body { min-height: 100dvh; }
 }
 .banner-warn { background: #fef3c7; color: #92400e; }
 .banner-done { background: #dcfce7; color: #166534; }
+.banner-install { background: #e8f0fa; color: var(--blue); cursor: pointer; }
 
 /* Buttons */
 .btn-primary {
@@ -141,6 +143,38 @@ body { min-height: 100dvh; }
   font-size: 0.85rem;
   cursor: pointer;
   padding: 4px 0;
+}
+.btn-install { color: var(--blue-dark); }
+
+.install-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 16px;
+  z-index: 300;
+}
+.install-sheet {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.install-sheet h2 {
+  font-size: 1rem;
+  font-family: 'Gotham', 'Open Sans', sans-serif;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+.install-sheet p {
+  color: var(--gray);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 14px;
 }
 
 /* Consulta list */
