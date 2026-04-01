@@ -12,6 +12,7 @@ class ContextConstants:
     NEXT_LABEL = "Siguiente"
     BACK_LABEL = "Volver"
     SUCCESS_MESSAGE = "Tu respuesta fue enviada con éxito"
+    SUCCESS_GRATITUDE = "¡Muchas gracias por tu respuesta!"
     QUERY_SUCCES = "¡Muchas gracias por tu respuesta!"
 
 
