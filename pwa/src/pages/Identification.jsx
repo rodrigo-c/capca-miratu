@@ -3,6 +3,27 @@ import { useParams, useNavigate } from 'react-router-dom';
 import db from '../db';
 import { canSubmit } from '../api';
 
+function formatRut(raw) {
+  const cleaned = raw.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (cleaned.length < 2) return cleaned;
+  return cleaned.slice(0, -1) + '-' + cleaned.slice(-1);
+}
+
+function isValidRut(rut) {
+  const cleaned = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (cleaned.length < 2) return false;
+  const body = cleaned.slice(0, -1);
+  const dv = cleaned.slice(-1);
+  let sum = 0, factor = 2;
+  for (let i = body.length - 1; i >= 0; i--) {
+    sum += parseInt(body[i]) * factor;
+    factor = factor === 7 ? 2 : factor + 1;
+  }
+  const rem = 11 - (sum % 11);
+  const expected = rem === 11 ? '0' : rem === 10 ? 'K' : String(rem);
+  return expected === dv;
+}
+
 export default function Identification() {
   const { urlCode } = useParams();
   const navigate = useNavigate();
@@ -24,9 +45,14 @@ export default function Identification() {
   const showEmail = consulta.auth_email !== 'DISABLE';
   const requireEmail = consulta.auth_email === 'REQUIRED';
 
+  function handleRutChange(e) {
+    setRut(formatRut(e.target.value));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     const errs = {};
+    if (showRut && rut.trim() && !isValidRut(rut)) errs.rut = 'RUT inválido';
     if (requireRut && !rut.trim()) errs.rut = 'El RUT es requerido';
     if (requireEmail && !email.trim()) errs.email = 'El correo es requerido';
     if (Object.keys(errs).length) { setErrors(errs); return; }
@@ -66,7 +92,7 @@ export default function Identification() {
                 id="rut"
                 type="text"
                 value={rut}
-                onChange={(e) => setRut(e.target.value)}
+                onChange={handleRutChange}
                 placeholder="12345678-9"
                 autoComplete="off"
               />
