@@ -21,8 +21,8 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
         id: '/static/app/',
-        name: 'Consultas Ciudadanas',
-        short_name: 'Consultas',
+        name: 'DimeTú',
+        short_name: 'DimeTú',
         description: 'Responde consultas ciudadanas desde tu teléfono',
         theme_color: '#2563eb',
         background_color: '#ffffff',
