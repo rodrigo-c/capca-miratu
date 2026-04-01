@@ -24,3 +24,5 @@ admin.css
 submit.css
 vendors.js
 media/
+
+staticfiles/
