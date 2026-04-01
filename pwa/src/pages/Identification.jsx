@@ -7,8 +7,9 @@ export default function Identification() {
   const { urlCode } = useParams();
   const navigate = useNavigate();
   const [consulta, setConsulta] = useState(null);
-  const [rut, setRut] = useState('');
-  const [email, setEmail] = useState('');
+  const saved = (() => { try { return JSON.parse(localStorage.getItem('dimetu_identity') || '{}'); } catch { return {}; } })();
+  const [rut, setRut] = useState(saved.rut || '');
+  const [email, setEmail] = useState(saved.email || '');
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 

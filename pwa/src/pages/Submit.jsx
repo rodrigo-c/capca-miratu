@@ -39,6 +39,12 @@ export default function Submit() {
     if (result.ok) {
       const current = await db.syncedResponses.get(urlCode);
       await db.syncedResponses.put({ url_code: urlCode, count: (current?.count || 0) + 1 });
+      if (identity.email || identity.rut) {
+        localStorage.setItem('dimetu_identity', JSON.stringify({
+          email: identity.email || '',
+          rut: identity.rut || '',
+        }));
+      }
       setResponseUuid(result.data.response_uuid);
       setStatus('success');
     } else {
