@@ -40,7 +40,7 @@ class PublicQueryExporter:
     def get_share_pdf(self) -> BytesIO:
         pdf_file = BytesIO()
         canvas = Canvas(pdf_file, pagesize=self.canvas_size)
-        self._add_header(canvas=canvas)
+        # self._add_header(canvas=canvas)
         self._add_rect_mark(canvas=canvas)
         query_name_height = self._add_query_title(canvas=canvas)
         self._add_qr(canvas=canvas, query_name_height=query_name_height)
