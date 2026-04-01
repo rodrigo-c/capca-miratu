@@ -145,6 +145,11 @@ body { min-height: 100dvh; }
   padding: 4px 0;
 }
 .btn-install { color: var(--blue-dark); }
+.btn-install-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
 
 .install-sheet-backdrop {
   position: fixed;

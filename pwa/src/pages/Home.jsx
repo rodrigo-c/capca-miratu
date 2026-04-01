@@ -45,7 +45,7 @@ export default function Home() {
       await installPrompt.userChoice.catch(() => null);
       return;
     }
-    if (isIos() && !isStandalone()) {
+    if (!isStandalone()) {
       setShowIosInstall(true);
     }
   }
@@ -82,7 +82,7 @@ export default function Home() {
         <div className="app-header-actions">
           {!isStandalone() && (
             <button className="btn-icon btn-install" onClick={handleInstall} title="Instalar app">
-              <InstallIcon />
+              <span className="btn-install-label">Instalar</span>
             </button>
           )}
           <button className="btn-icon" onClick={handleSync} disabled={syncing} title="Sincronizar">
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
       )}
 
-      {!isStandalone() && (installPrompt || isIos()) && (
+      {!isStandalone() && (
         <div className="banner banner-install" onClick={handleInstall}>
           Instalar app
         </div>
@@ -143,7 +143,11 @@ export default function Home() {
         <div className="install-sheet-backdrop" onClick={() => setShowIosInstall(false)}>
           <div className="install-sheet" onClick={(e) => e.stopPropagation()}>
             <h2>Instalar app</h2>
-            <p>En Safari: Compartir → Agregar a pantalla de inicio.</p>
+            <p>
+              {isIos()
+                ? 'En Safari: Compartir → Agregar a pantalla de inicio.'
+                : 'Si el navegador no muestra el diálogo automáticamente, usa el menú del navegador y elige instalar la app.'}
+            </p>
             <button className="btn-primary" onClick={() => setShowIosInstall(false)}>
               Cerrar
             </button>
@@ -179,20 +183,6 @@ function SpinnerIcon() {
   );
 }
 
-function InstallIcon() {
-  return (
-    <svg className="icon-sync" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function isIos() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
