@@ -25,6 +25,7 @@ from apps.public_queries.lib.exceptions import (
 
 
 class ConsultaViewSet(ViewSet):
+    authentication_classes = []
     def list(self, request) -> Response:
         all_queries = public_queries_services.get_public_query_list()
         active_open = [

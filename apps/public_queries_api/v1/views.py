@@ -12,6 +12,7 @@ from apps.public_queries.services import can_submit_public_query
 
 
 class PublicQueryAuth(ViewSet):
+    authentication_classes = []
     @action(detail=True, methods=["post"])
     def can_submit(self, request, pk) -> Response:
         try:
