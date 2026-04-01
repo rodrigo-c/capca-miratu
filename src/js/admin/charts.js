@@ -5,7 +5,7 @@ function get_chart (config) {
     let labels = config.labels
     let options = config.options? config.options: {}
     let barColors = [
-        "#c1368c", "#a34895","#6f448c","#495599","#54baae"
+        "#c1368c", "#a34895","#143358","#495599","#54baae"
     ]
     let data = {
         labels: labels,
