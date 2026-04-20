@@ -7,10 +7,10 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="keywords" content="chile,consulta,ciudadana," />
-        <meta name="description" content="CAPCA | DimeTú" />
+        <meta name="description" content="CAPCA | Miratú" />
         <title>
             {% block title %}
-                CAPCA | DimeTú
+                CAPCA | Miratú
             {% endblock title %}
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,7 @@
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap"
+            <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@300;500&display=swap"
                   rel="stylesheet">
             <link rel="stylesheet"
                   href="https://cdn.jsdelivr.net/npm/cf-gotham-fonts@1.0.0/gotham-font.min.css">
@@ -41,15 +41,30 @@
         {% endblock extra_css %}
     </head>
     <body>
-        <div class="main-container">
+        <div class="main-container public-nucleos">
+            <div class="public-nucleos-top-fill" aria-hidden="true"></div>
+            <div class="public-nucleos-hero" aria-hidden="true"></div>
             {% block navigation %}
-                <div class="navbar dark">
+                <div class="navbar public-nucleos-header" id="navbar">
                     <div class="banner">
                         <div class="left">
-                            <div class="logo-capca-white"></div>
-                            <span class="navbar-title">DimeTú</span>
+                            <a class="public-logo-link"
+                               href="https://www.capca.cl/"
+                               rel="noopener"
+                               target="_blank">
+                                <img src="{% static 'images/logos/capca-azul-nucleos.png' %}"
+                                     class="public-logo-capca"
+                                     width="84"
+                                     height="20"
+                                     alt="CAPCA" />
+                            </a>
                         </div>
                         <div class="right">
+                            <div class="public-brand-miratu"
+                                 role="group"
+                                 aria-label="Miratú">
+                                <span class="public-brand-mira" aria-hidden="true">Mira</span><span class="public-brand-tu" aria-hidden="true">tú</span>
+                            </div>
                         </div>
                     </div>
                 </div>

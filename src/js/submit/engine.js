@@ -237,6 +237,20 @@ class QuerySubmitEngine {
     if (focus == "identifier") {
       this.set_next_button_status(focus)
     }
+    this._syncPublicNucleosHero()
+  }
+
+  /** Hide multicolor hero once the user leaves the landing step (Nucleos entry). */
+  _syncPublicNucleosHero () {
+    const root = document.querySelector(".main-container.public-nucleos")
+    if (!root) {
+      return
+    }
+    if (this.focus === "entry") {
+      root.classList.remove("public-nucleos--flow-started")
+    } else {
+      root.classList.add("public-nucleos--flow-started")
+    }
   }
 
   show_back_form () {

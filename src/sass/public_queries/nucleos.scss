@@ -1,0 +1,313 @@
+// Nucleos 57 / Figma public shell (CAPCA 1: #03385F, Mira tú, light header, hero image)
+// Fold line: exactly 50vh — white above, hero below; question card centered on that line (Figma ~119px frame).
+
+$capca-nucleos: #03385f;
+// Half of Figma card frame height (119px) — used to align welcome zone and CTA to the card
+$entry-card-half-y: 59.5px;
+
+.public-nucleos {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+}
+
+// Solid white fills viewport top half (split at 50vh, same as Figma board)
+.public-nucleos-top-fill {
+  background: $white;
+  height: 50vh;
+  left: 0;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+// Hero: exactly bottom half of viewport (starts at fold); removed after leaving entry (see --flow-started)
+.public-nucleos-hero {
+  background: url('../images/backgrounds/nucleos-57-hero.jpg') center center / cover no-repeat;
+  bottom: auto;
+  height: 50vh;
+  left: 0;
+  opacity: .95;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  top: 50vh;
+  transition: opacity .25s ease, visibility .25s ease;
+  z-index: 0;
+}
+
+// After “Responder consulta”: full white shell, no multicolor band
+.public-nucleos.public-nucleos--flow-started {
+  .public-nucleos-hero {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .public-nucleos-top-fill {
+    height: 100vh;
+  }
+}
+
+.public-nucleos {
+  .submit-content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 37px;
+  }
+
+  // Light top bar: white + soft shadow (replaces .navbar.dark)
+  .navbar.public-nucleos-header {
+    min-height: 37px;
+    height: 37px;
+    background: $white;
+    box-shadow: 0 0 3px 0 rgba(151, 151, 151, .58);
+  }
+
+  .public-logo-link {
+    display: flex;
+    align-items: center;
+    line-height: 0;
+  }
+
+  .public-logo-capca {
+    display: block;
+    height: 20px;
+    width: auto;
+  }
+
+  // Wordmark: no extra tracking — it was opening a gap between Mira and tú
+  .public-brand-miratu {
+    color: $capca-nucleos;
+    font-family: Roboto, sans-serif;
+    font-size: 17.778px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.1;
+    text-align: right;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .public-brand-tu {
+    font-weight: 300;
+  }
+
+  // Main card: Figma double shadow, query title type ramp
+  .card .content {
+    box-shadow: 0 0 5.3px 0 $shadow, 0 2px 4px 0 rgba(0, 0, 0, .1);
+  }
+
+  .public-query-name {
+    color: $secondary;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    line-height: 28px;
+  }
+
+  .card-times {
+    .start-at,
+    .end-at {
+      color: $secondary;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: .5px;
+      line-height: 13px;
+    }
+  }
+
+  // Welcome + display title
+  .entry-welcome {
+    color: $capca-nucleos;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: .5px;
+    line-height: 17px;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .entry-title-miratu {
+    color: $capca-nucleos;
+    font-family: Roboto, sans-serif;
+    font-size: 64px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 39px;
+    margin: 0 0 1.5rem;
+    text-align: center;
+    user-select: none;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .entry-title-tu {
+    font-weight: 300;
+  }
+
+  // Entry fold layout: welcome/title in white band; card center on 50vh; CTA in hero band
+  .entry-fold-stack {
+    margin: 0 auto;
+    max-width: min(90%, 780px);
+    min-height: calc(100vh - 37px);
+    // Room for CTA + long card titles without clipping
+    padding-bottom: max(4rem, 18vh);
+    position: relative;
+    width: 100%;
+  }
+
+  .entry-fold-above {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    // White band ends just above card top; stack starts below fixed navbar (~37px)
+    height: max(6rem, calc(50vh - 37px - #{$entry-card-half-y} - 1rem));
+    justify-content: flex-end;
+    left: 0;
+    padding: 0 1rem;
+    position: relative;
+    right: 0;
+    top: 0;
+    z-index: 2;
+  }
+
+  // Viewport fold at 50vh (fixed layers). Position fixed so center is vs viewport, not .entry-fold-stack
+  // (absolute + 50vh was measured from stack top → card sat too low in the dark band).
+  .entry-fold-card {
+    left: 50%;
+    max-width: 755px;
+    position: fixed;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    width: min(90%, 755px);
+    z-index: 2;
+
+    .card {
+      border: 0;
+      margin: 0;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .card .content {
+      min-height: 119px;
+    }
+  }
+
+  .entry-fold-below {
+    left: 50%;
+    max-width: 755px;
+    position: fixed;
+    top: calc(50vh + #{$entry-card-half-y} + 1.5rem);
+    transform: translateX(-50%);
+    width: min(90%, 755px);
+    z-index: 2;
+  }
+
+  .entry-cta-row {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 0;
+    width: 100%;
+  }
+
+  // Primary CTA: light (white) outer glow on dark hero; compact equal vertical padding
+  .entry-cta-row .button#start-button {
+    align-items: center;
+    background-color: $capca-nucleos;
+    border-radius: 4px;
+    box-shadow: 0 0 16px rgba(255, 255, 255, .4),
+      0 0 32px rgba(255, 255, 255, .22),
+      0 2px 8px rgba(0, 0, 0, .2);
+    box-sizing: border-box;
+    display: inline-flex;
+    font-size: 18px;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 1.2;
+    margin: 0;
+    min-height: 0;
+    min-width: 200px;
+    padding: 10px 28px;
+    transition: box-shadow .2s ease;
+
+    &:hover {
+      box-shadow: 0 0 22px rgba(255, 255, 255, .5),
+        0 0 44px rgba(255, 255, 255, .3),
+        0 3px 10px rgba(0, 0, 0, .22);
+    }
+  }
+
+  .entry.content-container {
+    height: auto;
+    justify-content: flex-start;
+    margin: 0 auto;
+    max-width: 100%;
+    min-height: calc(100vh - 37px);
+    padding: 0;
+    width: 100%;
+  }
+
+  // CTA is inside #entry for Nucleos; no duplicate bottom bar on welcome
+  .response-form:has(#entry-container:not(.hidden)) .buttons-container {
+    display: none;
+  }
+
+  .buttons-container {
+    z-index: 2;
+  }
+
+  .load.content-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .earring.content-container .welcome-app {
+    color: $capca-nucleos;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+    width: 100%;
+  }
+
+  .earring-brand-title {
+    margin-bottom: 1.5rem;
+  }
+
+  // Success + earring sit above hero
+  .success.content-container,
+  .earring.content-container {
+    max-width: min(90%, 600px);
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  .public-nucleos {
+    .entry-title-miratu {
+      font-size: 42px;
+      line-height: 32px;
+      white-space: normal;
+    }
+
+    .public-brand-miratu {
+      white-space: normal;
+    }
+  }
+}

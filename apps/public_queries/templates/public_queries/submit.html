@@ -11,10 +11,23 @@
           enctype="multipart/form-data">
         {% csrf_token %}
         <div class="entry content-container hidden" id="entry-container">
-            <div class="welcome-app">Bienvenido a</div>
-            <p style="font-size:24px;text-align:center;width:100%;">DimeTú</p>
-            {% include "public_queries/components/public-query-card.html" with noimage="true" %}
-            <div class="button" id="start-button">{{ app_context.QUERY_RESPONSE }}</div>
+            <div class="entry-fold-stack">
+                <div class="entry-fold-above">
+                    <div class="entry-welcome">Bienvenido a</div>
+                    <h1 class="entry-title-miratu"
+                        aria-label="Miratú">
+                        <span class="entry-title-mira" aria-hidden="true">Mira</span><span class="entry-title-tu" aria-hidden="true">tú</span>
+                    </h1>
+                </div>
+                <div class="entry-fold-card">
+                    {% include "public_queries/components/public-query-card.html" with noimage="true" %}
+                </div>
+                <div class="entry-fold-below">
+                    <div class="entry-cta-row">
+                        <div class="button" id="start-button">{{ app_context.QUERY_RESPONSE }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="identifier content-container hidden" id="identifier-container">
             {% include "public_queries/components/public-query-card.html" with noimage="true" %}

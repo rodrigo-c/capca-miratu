@@ -4,20 +4,35 @@
   height: 70vh;
   justify-content: center;
 
+  // White panel on top of hero (same shadow language as .card .content in Nucleos)
+  .success-card {
+    align-items: center;
+    background-color: $white;
+    border-radius: 6px;
+    box-shadow: 0 0 5.3px 0 $shadow, 0 2px 4px 0 rgba(0, 0, 0, .1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-width: min(90vw, 480px);
+    padding: 2rem 1.75rem 1.75rem;
+    width: 100%;
+  }
+
   .success-icon {
     background-image: url('../images/icons/ok.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    padding-bottom: 8vh;
-    padding-right: 12vw;
+    flex-shrink: 0;
+    height: 4rem;
+    margin-bottom: .75rem;
+    width: 4rem;
   }
 
   .success-message,
   .success-gratitude {
     font-family: Open Sans;
-    margin-top: 3vh;
-    max-width: 50vw;
+    max-width: 100%;
     text-align: center;
 
     @include small {
@@ -30,6 +45,7 @@
     font-size: 16px;
     font-weight: 700;
     line-height: 115%;
+    margin-top: 0;
   }
 
   .success-gratitude {
@@ -37,5 +53,6 @@
     font-size: 12px;
     font-weight: 400;
     line-height: 133%;
+    margin-top: 1rem;
   }
 }
