@@ -1,0 +1,20 @@
+// Global admin shell: Nucleos light header + CAPCA blue via $cegir-primary (no hero layers by default)
+// Menu control uses dark icon on white bar (lib/navbars defaults to menu-white.svg)
+
+.public-nucleos.admin-app-shell {
+  background: $white;
+  min-height: 100vh;
+
+  // Hamburger for light navbar (base lib uses menu-white.svg)
+  .navbar.public-nucleos-header .menu-button {
+    background-image: url('../images/icons/menu.svg');
+    height: 37px;
+    margin-right: .25rem;
+    width: 40px;
+  }
+
+  // Keep dropdown above app content
+  .navbar.public-nucleos-header .menu-content {
+    z-index: 2100;
+  }
+}

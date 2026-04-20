@@ -37,22 +37,35 @@
     <body>
         {% block modal %}
         {% endblock modal %}
-        <div class="main-container {% block main_container_class %}{% endblock main_container_class %}">
+        <div class="main-container {% block main_container_class %}public-nucleos admin-app-shell{% endblock main_container_class %}">
             {% block shell_background %}{% endblock shell_background %}
             {% block navbar %}
-            <div class="navbar dark">
+            <div class="navbar public-nucleos-header" id="navbar">
                 {% block menu %}
                 {% endblock menu %}
                 <div class="banner">
                     <div class="left">
-                        <div class="logo-capca-white"></div>
-                        <span class="navbar-title">DimeTú</span>
+                        <a class="public-logo-link"
+                           href="https://www.capca.cl/"
+                           rel="noopener"
+                           target="_blank">
+                            <img src="{% static 'images/logos/capca-azul-nucleos.png' %}"
+                                 class="public-logo-capca"
+                                 width="84"
+                                 height="20"
+                                 alt="CAPCA" />
+                        </a>
                     </div>
                     <div class="navbar-message-container hidden">
                         <div class="icon msg-ok"></div>
                         <div class="navbar-message-text"></div>
                     </div>
                     <div class="right">
+                        <div class="public-brand-miratu"
+                             role="group"
+                             aria-label="Miratú">
+                            <span class="public-brand-mira" aria-hidden="true">Mira</span><span class="public-brand-tu" aria-hidden="true">tú</span>
+                        </div>
                     </div>
                 </div>
             </div>

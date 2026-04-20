@@ -1,36 +1,6 @@
 {% extends "admin/admin_base.html" %}
-{% load static %}
 {% block title %}CAPCA | Miratú / Administración{% endblock %}
-{% block main_container_class %}public-nucleos admin-login-nucleos{% endblock %}
-{% block shell_background %}
-            <div class="public-nucleos-top-fill" aria-hidden="true"></div>
-            <div class="public-nucleos-hero" aria-hidden="true"></div>
-{% endblock %}
-{% block navbar %}
-                <div class="navbar public-nucleos-header" id="navbar">
-                    <div class="banner">
-                        <div class="left">
-                            <a class="public-logo-link"
-                               href="https://www.capca.cl/"
-                               rel="noopener"
-                               target="_blank">
-                                <img src="{% static 'images/logos/capca-azul-nucleos.png' %}"
-                                     class="public-logo-capca"
-                                     width="84"
-                                     height="20"
-                                     alt="CAPCA" />
-                            </a>
-                        </div>
-                        <div class="right">
-                            <div class="public-brand-miratu"
-                                 role="group"
-                                 aria-label="Miratú">
-                                <span class="public-brand-mira" aria-hidden="true">Mira</span><span class="public-brand-tu" aria-hidden="true">tú</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-{% endblock %}
+{% block main_container_class %}public-nucleos admin-app-shell admin-login-nucleos{% endblock %}
 {% block content %}
     <div class="submit-content">
         <div class="login admin-content">
