@@ -5,12 +5,13 @@ $capca-nucleos: #03385f;
 // Half of Figma card frame height (119px) — used to align welcome zone and CTA to the card
 $entry-card-half-y: 59.5px;
 
+// Bottom half is never white: if the fixed hero paints late, this still matches the fold (no white flash)
 .public-nucleos {
-  position: relative;
-  min-height: 100vh;
+  background: linear-gradient(to bottom, $white 0, $white 50vh, #121c24 50vh 100%);
   display: flex;
   flex-direction: column;
-  background: $white;
+  min-height: 100vh;
+  position: relative;
 }
 
 // Solid white fills viewport top half (split at 50vh, same as Figma board)
@@ -40,7 +41,9 @@ $entry-card-half-y: 59.5px;
   z-index: 0;
 }
 
+// Browsers often paint a light placeholder on <img> before decode — match the gradient corner
 .public-nucleos-hero-photo {
+  background-color: #121c24;
   display: block;
   height: 100%;
   left: 0;

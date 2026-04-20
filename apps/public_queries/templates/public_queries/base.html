@@ -14,6 +14,9 @@
             {% endblock title %}
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preload"
+              as="image"
+              href="{% static 'images/backgrounds/nucleos-57-hero.jpg' %}">
         <!--[if lt IE 9]>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -49,7 +52,8 @@
                      alt=""
                      width="1920"
                      height="1080"
-                     decoding="async" />
+                     decoding="sync"
+                     fetchpriority="high" />
             </div>
             {% block navigation %}
                 <div class="navbar public-nucleos-header" id="navbar">
