@@ -14,6 +14,14 @@ $entry-card-half-y: 59.5px;
   position: relative;
 }
 
+// Public consulta only: kill document scrollbar on entry — do NOT set overflow:hidden on
+// .public-nucleos (it clips position:fixed descendants and hides the hero layers).
+html:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started)),
+body:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started)) {
+  height: 100%;
+  overflow: hidden;
+}
+
 // Solid white fills viewport top half (split at 50vh, same as Figma board)
 .public-nucleos-top-fill {
   background: $white;
@@ -26,7 +34,7 @@ $entry-card-half-y: 59.5px;
   z-index: 0;
 }
 
-// Hero: bottom half = gradient; img on top (fills when decoded — nothing else to wire)
+// Hero: bottom half = gradient; img on top (JPEG is cropped — file had a dark column on the right edge)
 .public-nucleos-hero {
   background: linear-gradient(to bottom right, #121c24, #111636);
   bottom: auto;
@@ -44,11 +52,13 @@ $entry-card-half-y: 59.5px;
 // Browsers often paint a light placeholder on <img> before decode — match the gradient corner
 .public-nucleos-hero-photo {
   background-color: #121c24;
+  border: 0;
   display: block;
   height: 100%;
   left: 0;
   object-fit: cover;
   object-position: center;
+  outline: none;
   position: absolute;
   top: 0;
   width: 100%;
@@ -68,12 +78,13 @@ $entry-card-half-y: 59.5px;
 
 .public-nucleos {
   .submit-content {
-    flex: 1;
-    position: relative;
-    z-index: 1;
+    background: transparent;
     display: flex;
+    flex: 1;
     flex-direction: column;
     margin-top: 37px;
+    position: relative;
+    z-index: 1;
   }
 
   // Light top bar: white + soft shadow (replaces .navbar.dark)
