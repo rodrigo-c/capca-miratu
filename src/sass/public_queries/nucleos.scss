@@ -25,25 +25,30 @@ $entry-card-half-y: 59.5px;
   z-index: 0;
 }
 
-// Hero: exactly bottom half of viewport (starts at fold); removed after leaving entry (see --flow-started)
-// Gradient shows instantly; photo stacks on top when loaded (top layer first in list)
+// Hero: bottom half = gradient; img on top (fills when decoded — nothing else to wire)
 .public-nucleos-hero {
-  background-color: #121c24;
-  background-image: url('../images/backgrounds/nucleos-57-hero.jpg'),
-    linear-gradient(to bottom right, #121c24, #111636);
-  background-position: center center, center center;
-  background-repeat: no-repeat, no-repeat;
-  background-size: cover, cover;
+  background: linear-gradient(to bottom right, #121c24, #111636);
   bottom: auto;
   height: 50vh;
   left: 0;
-  opacity: .95;
+  overflow: hidden;
   pointer-events: none;
   position: fixed;
   right: 0;
   top: 50vh;
   transition: opacity .25s ease, visibility .25s ease;
   z-index: 0;
+}
+
+.public-nucleos-hero-photo {
+  display: block;
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 // After “Responder consulta”: full white shell, no multicolor band
