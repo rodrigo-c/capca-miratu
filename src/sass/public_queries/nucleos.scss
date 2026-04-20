@@ -26,8 +26,14 @@ $entry-card-half-y: 59.5px;
 }
 
 // Hero: exactly bottom half of viewport (starts at fold); removed after leaving entry (see --flow-started)
+// Gradient shows instantly; photo stacks on top when loaded (top layer first in list)
 .public-nucleos-hero {
-  background: url('../images/backgrounds/nucleos-57-hero.jpg') center center / cover no-repeat;
+  background-color: #121c24;
+  background-image: url('../images/backgrounds/nucleos-57-hero.jpg'),
+    linear-gradient(to bottom right, #121c24, #111636);
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
   bottom: auto;
   height: 50vh;
   left: 0;
