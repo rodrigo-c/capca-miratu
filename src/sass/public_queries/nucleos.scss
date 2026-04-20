@@ -18,6 +18,7 @@ $entry-card-half-y: 59.5px;
 // .public-nucleos (it clips position:fixed descendants and hides the hero layers).
 html:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started)),
 body:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started)) {
+  border-radius: 0;
   height: 100%;
   overflow: hidden;
 }
@@ -34,17 +35,21 @@ body:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started
   z-index: 0;
 }
 
-// Hero: bottom half = gradient; img on top (JPEG is cropped — file had a dark column on the right edge)
+// Hero: bottom half = gradient; img on top. Flush to viewport edges (no rounded corners / no seam).
+// Anchored with bottom:0 so fold math can’t leave a 1px gap that reads as “rounded” + gray leak.
 .public-nucleos-hero {
   background: linear-gradient(to bottom right, #121c24, #111636);
-  bottom: auto;
+  border-radius: 0;
+  bottom: 0;
+  box-shadow: none;
   height: 50vh;
   left: 0;
+  outline: none;
   overflow: hidden;
   pointer-events: none;
   position: fixed;
   right: 0;
-  top: 50vh;
+  top: auto;
   transition: opacity .25s ease, visibility .25s ease;
   z-index: 0;
 }
@@ -53,9 +58,11 @@ body:has(.public-nucleos:not(.admin-app-shell):not(.public-nucleos--flow-started
 .public-nucleos-hero-photo {
   background-color: #121c24;
   border: 0;
+  border-radius: 0;
   display: block;
   height: 100%;
   left: 0;
+  max-width: none;
   object-fit: cover;
   object-position: center;
   outline: none;
