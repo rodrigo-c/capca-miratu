@@ -1,25 +1,61 @@
 {% extends "admin/admin_base.html" %}
+{% load static %}
+{% block title %}CAPCA | Miratú / Administración{% endblock %}
+{% block main_container_class %}public-nucleos admin-login-nucleos{% endblock %}
+{% block shell_background %}
+            <div class="public-nucleos-top-fill" aria-hidden="true"></div>
+            <div class="public-nucleos-hero" aria-hidden="true"></div>
+{% endblock %}
+{% block navbar %}
+                <div class="navbar public-nucleos-header" id="navbar">
+                    <div class="banner">
+                        <div class="left">
+                            <a class="public-logo-link"
+                               href="https://www.capca.cl/"
+                               rel="noopener"
+                               target="_blank">
+                                <img src="{% static 'images/logos/capca-azul-nucleos.png' %}"
+                                     class="public-logo-capca"
+                                     width="84"
+                                     height="20"
+                                     alt="CAPCA" />
+                            </a>
+                        </div>
+                        <div class="right">
+                            <div class="public-brand-miratu"
+                                 role="group"
+                                 aria-label="Miratú">
+                                <span class="public-brand-mira" aria-hidden="true">Mira</span><span class="public-brand-tu" aria-hidden="true">tú</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}
 {% block content %}
-    <div class="login admin-content">
-        <div class="login-form">
-            <div class="vision-ciudadana"></div>
-            <form method="post" id="login-form">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
-                <div class="form-field">{{ form.username }}</div>
-                <div class="form-field">{{ form.password }}</div>
-                <div class="errors">
-                    {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-                    {% endif %}
-                    {% if form.username.errors %}{{ form.username.errors }}{% endif %}
-                    {% if form.password.errors %}{{ form.password.errors }}{% endif %}
+    <div class="submit-content">
+        <div class="login admin-content">
+            <div class="login-form">
+                <div class="admin-login-card">
+                    <h1 class="admin-login-heading">Administración</h1>
+                    <form method="post" id="login-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <div class="form-field">{{ form.username }}</div>
+                        <div class="form-field">{{ form.password }}</div>
+                        <div class="errors">
+                            {% if form.non_field_errors %}
+                                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                            {% endif %}
+                            {% if form.username.errors %}{{ form.username.errors }}{% endif %}
+                            {% if form.password.errors %}{{ form.password.errors }}{% endif %}
+                        </div>
+                        <input class="primary-button" type="submit" value="Ingresar">
+                        <div class="form-field">
+                            <a class="recovery-link" href="{% url 'admin:password_reset' %}">¿Desea recuperar su contraseña?</a>
+                        </div>
+                    </form>
                 </div>
-                <input class="primary-button" type="submit" value="Ingresar">
-                <div class="form-field">
-                    <a class="recovery-link" href="{% url 'admin:password_reset' %}">¿Desea recuperar su contraseña?</a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 {% endblock content %}

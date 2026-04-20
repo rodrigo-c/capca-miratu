@@ -1,3 +1,6 @@
+// CAPCA Nucleos blue (public consulta shell; admin variables keep $cegir-primary for legacy screens)
+$admin-login-capca: #03385f;
+
 .login.admin-content {
   align-items: center;
   height: 80vh;
@@ -53,11 +56,6 @@
     text-decoration: none;
   }
 
-  .vision-ciudadana {
-    margin-bottom: 4vh;
-    padding-bottom: 10vh;
-  }
-
   .login-submit {
     align-self: center;
     background-color: $primary;
@@ -69,6 +67,85 @@
 
     &:hover {
       opacity: .7;
+    }
+  }
+}
+
+// Login page: same Nucleos shell as public consulta (hero + light header); white card for the form
+.public-nucleos.admin-login-nucleos {
+  .login.admin-content {
+    align-items: center;
+    flex: 1;
+    height: auto;
+    justify-content: center;
+    margin-top: 0;
+    min-height: calc(100vh - 37px);
+    padding: 1rem 1rem 2rem;
+  }
+
+  .login-form {
+    align-items: stretch;
+    width: 100%;
+
+    form {
+      align-items: stretch;
+    }
+
+    .form-field {
+      width: 100%;
+    }
+
+    .admin-login-card {
+      background-color: $white;
+      border-radius: 6px;
+      box-shadow: 0 0 5.3px 0 $shadow, 0 2px 4px 0 rgba(0, 0, 0, .1);
+      box-sizing: border-box;
+      margin: 0 auto;
+      max-width: min(90vw, 400px);
+      padding: 1.75rem 1.5rem 1.5rem;
+      width: 100%;
+    }
+
+    .admin-login-heading {
+      color: $admin-login-capca;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 1.25rem;
+      text-align: center;
+    }
+
+    .primary-button {
+      align-self: center;
+      background-color: $admin-login-capca;
+      border: 0;
+      border-radius: 6px;
+      box-shadow: 0 0 2px 0 $shadow;
+      color: $white;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      min-width: 12rem;
+      padding: .65rem 1.25rem;
+
+      &:hover {
+        opacity: .92;
+        transition: opacity .2s ease;
+      }
+    }
+
+    .recovery-link {
+      color: $admin-login-capca;
+      display: block;
+      font-size: .85rem;
+      margin: 1.25rem auto 0;
+      text-align: center;
+    }
+
+    .form-field input:focus-visible {
+      outline: 1px solid $admin-login-capca;
     }
   }
 }
